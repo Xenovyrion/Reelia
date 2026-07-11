@@ -10,6 +10,8 @@ data class FilmListItem(
     val posterUrl: String?,
     val progress: Float?,
     val status: WatchStatus,
+    val runtimeMinutes: Int? = null,
+    val genreNames: List<String> = emptyList(),
 )
 
 data class UpcomingMovieItem(

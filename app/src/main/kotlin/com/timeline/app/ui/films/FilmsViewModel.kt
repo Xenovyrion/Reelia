@@ -49,6 +49,7 @@ class FilmsViewModel @Inject constructor(
 
     val uiState: StateFlow<FilmsUiState> = combine(rawData, filterState) { raw, filter ->
         val genreIdsByMovieId = raw.crossRefs.groupBy({ it.movieId }, { it.genreId })
+        val genreNameById = raw.genres.associateBy { it.tmdbId }
 
         val filteredMovies = raw.movies.filter { movie ->
             val matchesStatus = filter.selectedStatuses.isEmpty() || movie.status in filter.selectedStatuses
@@ -68,6 +69,8 @@ class FilmsViewModel @Inject constructor(
                         posterUrl = imageUrlBuilder.posterUrl(movie.posterPath),
                         progress = if (movie.watched) 1f else null,
                         status = movie.status,
+                        runtimeMinutes = movie.runtimeMinutes,
+                        genreNames = genreIdsByMovieId[movie.tmdbId].orEmpty().mapNotNull { genreNameById[it]?.name },
                     )
                 }
             }

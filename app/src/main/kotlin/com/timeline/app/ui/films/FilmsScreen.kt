@@ -121,7 +121,7 @@ fun FilmsScreen(
                         items(sectionItems, key = { "list_${it.id}" }) { item ->
                             MediaListRow(
                                 title = item.title,
-                                subtitle = null,
+                                subtitle = filmMetadataLine(item.runtimeMinutes, item.genreNames),
                                 posterUrl = item.posterUrl,
                                 onClick = { onMovieClick(item.id) },
                             )
@@ -198,4 +198,13 @@ private fun UpcomingMovieCard(movie: UpcomingMovieItem) {
             UpcomingCountdownBadge(movie.daysUntil, modifier = Modifier.padding(start = 8.dp))
         }
     }
+}
+
+@Composable
+private fun filmMetadataLine(runtimeMinutes: Int?, genreNames: List<String>): String? {
+    val parts = listOfNotNull(
+        runtimeMinutes?.let { stringResource(R.string.movie_detail_runtime_minutes_format, it) },
+        genreNames.takeIf { it.isNotEmpty() }?.joinToString(", "),
+    )
+    return parts.takeIf { it.isNotEmpty() }?.joinToString(" · ")
 }
