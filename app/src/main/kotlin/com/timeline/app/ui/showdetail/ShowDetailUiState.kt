@@ -18,6 +18,13 @@ data class SeasonUi(
     val episodes: List<EpisodeUi>,
 )
 
+data class NextEpisodeUi(
+    val seasonNumber: Int,
+    val episodeNumber: Int,
+    val name: String,
+    val stillUrl: String?,
+)
+
 data class ShowDetailUiState(
     val isLoading: Boolean = true,
     val title: String = "",
@@ -30,4 +37,5 @@ data class ShowDetailUiState(
     val watchedEpisodeCount: Int = 0,
     val totalEpisodeCount: Int = 0,
     val seasons: List<SeasonUi> = emptyList(),
+    val nextUnwatchedEpisode: NextEpisodeUi? = null,
 )

@@ -34,4 +34,17 @@ interface EpisodeDao {
 
     @Query("SELECT showId, COUNT(*) AS total, SUM(watched) AS watchedCount FROM episodes GROUP BY showId")
     fun getEpisodeProgressByShow(): Flow<List<ShowEpisodeProgress>>
+
+    @Query(
+        "SELECT * FROM episodes WHERE showId = :showId AND seasonNumber = :seasonNumber AND watched = 0",
+    )
+    suspend fun getUnwatchedEpisodesInSeason(showId: Int, seasonNumber: Int): List<EpisodeEntity>
+
+    @Query(
+        """
+        UPDATE episodes SET watched = :watched, watchedAt = :watchedAt
+        WHERE showId = :showId AND seasonNumber = :seasonNumber
+        """,
+    )
+    suspend fun setSeasonWatched(showId: Int, seasonNumber: Int, watched: Boolean, watchedAt: Instant?)
 }

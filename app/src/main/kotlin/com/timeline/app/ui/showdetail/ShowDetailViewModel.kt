@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.timeline.app.data.remote.tmdb.TmdbImageUrlBuilder
 import com.timeline.app.data.repository.ShowRepository
 import com.timeline.app.domain.usecase.MarkEpisodeWatchedUseCase
+import com.timeline.app.domain.usecase.MarkSeasonWatchedUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.SharingStarted
@@ -20,6 +21,7 @@ class ShowDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val showRepository: ShowRepository,
     private val markEpisodeWatchedUseCase: MarkEpisodeWatchedUseCase,
+    private val markSeasonWatchedUseCase: MarkSeasonWatchedUseCase,
     private val imageUrlBuilder: TmdbImageUrlBuilder,
 ) : ViewModel() {
 
@@ -51,6 +53,12 @@ class ShowDetailViewModel @Inject constructor(
                             },
                     )
                 }
+            val nextUnwatchedEpisode = seasons
+                .flatMap { season -> season.episodes.map { season.seasonNumber to it } }
+                .firstOrNull { (_, episode) -> !episode.watched }
+                ?.let { (seasonNumber, episode) ->
+                    NextEpisodeUi(seasonNumber, episode.episodeNumber, episode.name, episode.stillUrl)
+                }
             ShowDetailUiState(
                 isLoading = false,
                 title = details.show.name,
@@ -63,6 +71,7 @@ class ShowDetailViewModel @Inject constructor(
                 watchedEpisodeCount = seasons.sumOf { season -> season.episodes.count { it.watched } },
                 totalEpisodeCount = seasons.sumOf { it.episodeCount },
                 seasons = seasons,
+                nextUnwatchedEpisode = nextUnwatchedEpisode,
             )
         }
         .stateIn(
@@ -74,6 +83,12 @@ class ShowDetailViewModel @Inject constructor(
     fun onEpisodeToggled(seasonNumber: Int, episodeNumber: Int, watched: Boolean) {
         viewModelScope.launch {
             markEpisodeWatchedUseCase(showId, seasonNumber, episodeNumber, watched)
+        }
+    }
+
+    fun onSeasonMarkAllWatched(seasonNumber: Int) {
+        viewModelScope.launch {
+            markSeasonWatchedUseCase(showId, seasonNumber)
         }
     }
 

@@ -16,7 +16,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -46,6 +46,7 @@ import com.timeline.app.R
 import com.timeline.app.domain.model.displayLabel
 import com.timeline.app.ui.common.components.BackdropHeader
 import com.timeline.app.ui.common.components.SectionHeader
+import com.timeline.app.ui.common.components.WatchedToggleButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -132,6 +133,17 @@ fun ShowDetailScreen(
                     }
                 }
             } else {
+                uiState.nextUnwatchedEpisode?.let { nextEpisode ->
+                    item(key = "continue_watching") {
+                        ContinueWatchingCard(
+                            episode = nextEpisode,
+                            onClick = {
+                                expandedSeasons = expandedSeasons + nextEpisode.seasonNumber
+                                viewModel.onSeasonExpanded(nextEpisode.seasonNumber)
+                            },
+                        )
+                    }
+                }
                 uiState.seasons.forEach { season ->
                     val isExpanded = expandedSeasons.contains(season.seasonNumber)
                     item(key = "season_header_${season.seasonNumber}") {
@@ -145,6 +157,7 @@ fun ShowDetailScreen(
                                     expandedSeasons + season.seasonNumber
                                 }
                             },
+                            onMarkAllWatched = { viewModel.onSeasonMarkAllWatched(season.seasonNumber) },
                         )
                     }
                     if (isExpanded) {
@@ -168,7 +181,7 @@ fun ShowDetailScreen(
                                         .fillMaxWidth()
                                         .padding(horizontal = 16.dp, vertical = 4.dp),
                                 ) {
-                                    Checkbox(
+                                    WatchedToggleButton(
                                         checked = episode.watched,
                                         onCheckedChange = {
                                             viewModel.onEpisodeToggled(season.seasonNumber, episode.episodeNumber, it)
@@ -242,8 +255,9 @@ private fun RatingBadge(rating: Float) {
 }
 
 @Composable
-private fun SeasonHeader(season: SeasonUi, onToggle: () -> Unit) {
+private fun SeasonHeader(season: SeasonUi, onToggle: () -> Unit, onMarkAllWatched: () -> Unit) {
     val watchedCount = season.episodes.count { it.watched }
+    val allWatched = season.episodeCount > 0 && watchedCount == season.episodeCount
 
     Column(
         modifier = Modifier
@@ -251,7 +265,15 @@ private fun SeasonHeader(season: SeasonUi, onToggle: () -> Unit) {
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .clickable(onClick = onToggle),
     ) {
-        SectionHeader(season.name)
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+            SectionHeader(season.name, modifier = Modifier.weight(1f))
+            WatchedToggleButton(
+                checked = allWatched,
+                onCheckedChange = { onMarkAllWatched() },
+                modifier = Modifier.padding(start = 8.dp),
+                contentDescription = stringResource(R.string.show_detail_mark_season_watched_content_description),
+            )
+        }
         Spacer(Modifier.padding(top = 8.dp))
         LinearProgressIndicator(
             progress = { if (season.episodeCount == 0) 0f else watchedCount.toFloat() / season.episodeCount },
@@ -262,5 +284,31 @@ private fun SeasonHeader(season: SeasonUi, onToggle: () -> Unit) {
             style = MaterialTheme.typography.bodySmall,
             modifier = Modifier.padding(top = 4.dp),
         )
+    }
+}
+
+@Composable
+private fun ContinueWatchingCard(episode: NextEpisodeUi, onClick: () -> Unit) {
+    Column(modifier = Modifier.padding(16.dp)) {
+        SectionHeader(stringResource(R.string.show_detail_continue_watching_title))
+        Spacer(Modifier.padding(top = 12.dp))
+        Card(modifier = Modifier.fillMaxWidth().clickable(onClick = onClick)) {
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(12.dp)) {
+                AsyncImage(
+                    model = episode.stillUrl,
+                    contentDescription = episode.name,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .width(96.dp)
+                        .height(54.dp)
+                        .clip(RoundedCornerShape(6.dp))
+                        .background(MaterialTheme.colorScheme.surfaceVariant),
+                )
+                Text(
+                    "${episode.seasonNumber}x${episode.episodeNumber} · ${episode.name}",
+                    modifier = Modifier.padding(start = 12.dp),
+                )
+            }
+        }
     }
 }
