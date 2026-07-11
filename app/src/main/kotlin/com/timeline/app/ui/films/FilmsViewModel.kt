@@ -81,6 +81,7 @@ class FilmsViewModel @Inject constructor(
                 UpcomingMovieItem(
                     movieId = movie.tmdbId,
                     title = movie.title,
+                    posterUrl = imageUrlBuilder.posterUrl(movie.posterPath),
                     releaseDate = releaseDateStr,
                     daysUntil = ChronoUnit.DAYS.between(today, releaseDate),
                 )

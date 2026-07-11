@@ -15,6 +15,7 @@ data class FilmListItem(
 data class UpcomingMovieItem(
     val movieId: Int,
     val title: String,
+    val posterUrl: String?,
     val releaseDate: String,
     val daysUntil: Long,
 )
