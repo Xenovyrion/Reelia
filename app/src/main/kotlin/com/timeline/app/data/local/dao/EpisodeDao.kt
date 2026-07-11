@@ -1,0 +1,34 @@
+package com.timeline.app.data.local.dao
+
+import androidx.room.Dao
+import androidx.room.Query
+import androidx.room.Upsert
+import com.timeline.app.data.local.entity.EpisodeEntity
+import java.time.Instant
+import kotlinx.coroutines.flow.Flow
+
+@Dao
+interface EpisodeDao {
+    @Upsert
+    suspend fun upsertEpisodes(episodes: List<EpisodeEntity>)
+
+    @Query("SELECT * FROM episodes WHERE showId = :showId ORDER BY seasonNumber, episodeNumber")
+    fun getEpisodesForShow(showId: Int): Flow<List<EpisodeEntity>>
+
+    @Query(
+        """
+        UPDATE episodes SET watched = :watched, watchedAt = :watchedAt
+        WHERE showId = :showId AND seasonNumber = :seasonNumber AND episodeNumber = :episodeNumber
+        """,
+    )
+    suspend fun setEpisodeWatched(
+        showId: Int,
+        seasonNumber: Int,
+        episodeNumber: Int,
+        watched: Boolean,
+        watchedAt: Instant?,
+    )
+
+    @Query("SELECT * FROM episodes WHERE showId = :showId AND seasonNumber = :seasonNumber AND episodeNumber = :episodeNumber")
+    suspend fun getEpisode(showId: Int, seasonNumber: Int, episodeNumber: Int): EpisodeEntity?
+}
