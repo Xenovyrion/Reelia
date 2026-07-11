@@ -5,13 +5,17 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -26,6 +30,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.timeline.app.R
 import com.timeline.app.ui.common.components.BackdropHeader
+import com.timeline.app.ui.common.components.CastRow
+import com.timeline.app.ui.common.components.SectionHeader
+import com.timeline.app.ui.common.components.WatchProvidersRow
 import com.timeline.app.ui.common.format.toYearOrNull
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -63,6 +70,7 @@ fun MovieDetailScreen(
                     val metadata = listOfNotNull(
                         uiState.releaseDate.toYearOrNull(),
                         uiState.runtimeMinutes?.let { stringResource(R.string.movie_detail_runtime_minutes_format, it) },
+                        uiState.genreNames.takeIf { it.isNotEmpty() }?.joinToString(", "),
                     ).joinToString(" • ")
                     Text(
                         metadata,
@@ -70,23 +78,44 @@ fun MovieDetailScreen(
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.weight(1f),
                     )
-                    Surface(
-                        shape = MaterialTheme.shapes.small,
-                        color = MaterialTheme.colorScheme.surfaceContainerHigh,
-                    ) {
-                        Text(
-                            if (uiState.watched) {
-                                stringResource(R.string.movie_detail_watched_badge)
-                            } else {
-                                stringResource(R.string.movie_detail_plan_to_watch_badge)
-                            },
-                            style = MaterialTheme.typography.labelMedium,
-                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
-                        )
+                    uiState.voteAverage?.let { rating ->
+                        RatingBadge(rating)
                     }
+                }
+                Spacer(Modifier.padding(top = 8.dp))
+                Surface(
+                    shape = MaterialTheme.shapes.small,
+                    color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                ) {
+                    Text(
+                        if (uiState.watched) {
+                            stringResource(R.string.movie_detail_watched_badge)
+                        } else {
+                            stringResource(R.string.movie_detail_plan_to_watch_badge)
+                        },
+                        style = MaterialTheme.typography.labelMedium,
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+                    )
                 }
                 Spacer(Modifier.padding(top = 16.dp))
                 Text(uiState.overview, style = MaterialTheme.typography.bodyMedium)
+
+                if (uiState.cast.isNotEmpty()) {
+                    Spacer(Modifier.padding(top = 24.dp))
+                    SectionHeader(stringResource(R.string.preview_cast_section_title))
+                    Spacer(Modifier.padding(top = 12.dp))
+                    CastRow(uiState.cast)
+                }
+
+                Spacer(Modifier.padding(top = 24.dp))
+                SectionHeader(stringResource(R.string.preview_watch_providers_section_title))
+                Spacer(Modifier.padding(top = 12.dp))
+                WatchProvidersRow(
+                    flatrate = uiState.watchProvidersFlatrate,
+                    rent = uiState.watchProvidersRent,
+                    buy = uiState.watchProvidersBuy,
+                )
+
                 Spacer(Modifier.padding(top = 24.dp))
                 Button(
                     onClick = { viewModel.onWatchedToggled(!uiState.watched) },
@@ -104,6 +133,31 @@ fun MovieDetailScreen(
                     )
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun RatingBadge(rating: Float) {
+    Surface(
+        shape = MaterialTheme.shapes.small,
+        color = MaterialTheme.colorScheme.surfaceContainerHigh,
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+        ) {
+            Icon(
+                Icons.Filled.Star,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.tertiary,
+                modifier = Modifier.height(16.dp),
+            )
+            Text(
+                stringResource(R.string.show_detail_my_rating_format, rating.toString()),
+                style = MaterialTheme.typography.labelMedium,
+                modifier = Modifier.padding(start = 4.dp),
+            )
         }
     }
 }
