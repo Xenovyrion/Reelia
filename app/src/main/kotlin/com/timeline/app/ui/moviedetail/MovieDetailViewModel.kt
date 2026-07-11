@@ -33,6 +33,7 @@ class MovieDetailViewModel @Inject constructor(
                 title = movie.title,
                 overview = movie.overview,
                 posterUrl = imageUrlBuilder.posterUrl(movie.posterPath),
+                heroUrl = imageUrlBuilder.posterUrl(movie.posterPath, size = "w780"),
                 releaseDate = movie.releaseDate,
                 runtimeMinutes = movie.runtimeMinutes,
                 watched = movie.watched,

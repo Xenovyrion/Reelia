@@ -5,6 +5,9 @@ data class MovieDetailUiState(
     val title: String = "",
     val overview: String = "",
     val posterUrl: String? = null,
+    // Poster fetched at a larger size, standing in for a true backdrop until TrackedMovieEntity
+    // gets a real backdropPath field (movies don't have one today, unlike shows).
+    val heroUrl: String? = null,
     val releaseDate: String? = null,
     val runtimeMinutes: Int? = null,
     val watched: Boolean = false,

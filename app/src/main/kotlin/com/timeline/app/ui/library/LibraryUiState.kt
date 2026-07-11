@@ -7,6 +7,8 @@ data class LibraryItem(
     val mediaType: MediaType,
     val title: String,
     val posterUrl: String?,
+    val progress: Float? = null,
+    val isCompleted: Boolean = false,
 )
 
 data class LibraryUiState(

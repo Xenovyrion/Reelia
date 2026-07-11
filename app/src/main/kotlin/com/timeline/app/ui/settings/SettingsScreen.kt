@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.timeline.app.ui.theme.timeLineTopAppBarColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -34,7 +35,9 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
         storedApiKey?.let { apiKeyInput = it }
     }
 
-    Scaffold(topBar = { TopAppBar(title = { Text("Réglages") }) }) { padding ->
+    Scaffold(
+        topBar = { TopAppBar(title = { Text("Réglages") }, colors = timeLineTopAppBarColors()) },
+    ) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding).padding(16.dp)) {
             Text(
                 "TimeLine utilise TMDB (The Movie Database) pour récupérer les infos des séries et films. " +

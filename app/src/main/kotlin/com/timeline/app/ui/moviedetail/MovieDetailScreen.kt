@@ -5,21 +5,17 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -27,7 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil.compose.AsyncImage
+import com.timeline.app.ui.common.components.BackdropHeader
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -37,18 +33,7 @@ fun MovieDetailScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(uiState.title) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Retour")
-                    }
-                },
-            )
-        },
-    ) { padding ->
+    Scaffold { padding ->
         if (uiState.isLoading) {
             Box(Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator()
@@ -60,26 +45,51 @@ fun MovieDetailScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(16.dp)
                 .verticalScroll(rememberScrollState()),
         ) {
-            Row {
-                AsyncImage(
-                    model = uiState.posterUrl,
-                    contentDescription = uiState.title,
-                    modifier = Modifier.height(220.dp),
-                )
-                Spacer(Modifier.padding(start = 12.dp))
-                Column {
-                    uiState.releaseDate?.let { Text(it, style = MaterialTheme.typography.bodySmall) }
-                    uiState.runtimeMinutes?.let { Text("$it min", style = MaterialTheme.typography.bodySmall) }
+            BackdropHeader(
+                imageUrl = uiState.heroUrl,
+                contentDescription = uiState.title,
+                onBack = onBack,
+            )
+
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text(uiState.title, style = MaterialTheme.typography.headlineLarge)
+                Spacer(Modifier.padding(top = 8.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    val metadata = listOfNotNull(
+                        uiState.releaseDate,
+                        uiState.runtimeMinutes?.let { "$it min" },
+                    ).joinToString(" • ")
+                    Text(
+                        metadata,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.weight(1f),
+                    )
+                    Surface(
+                        shape = MaterialTheme.shapes.small,
+                        color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                    ) {
+                        Text(
+                            if (uiState.watched) "Vu" else "À voir",
+                            style = MaterialTheme.typography.labelMedium,
+                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+                        )
+                    }
                 }
-            }
-            Spacer(Modifier.padding(top = 16.dp))
-            Text(uiState.overview, style = MaterialTheme.typography.bodyMedium)
-            Spacer(Modifier.padding(top = 24.dp))
-            Button(onClick = { viewModel.onWatchedToggled(!uiState.watched) }) {
-                Text(if (uiState.watched) "Vu ✓" else "Marquer comme vu")
+                Spacer(Modifier.padding(top = 16.dp))
+                Text(uiState.overview, style = MaterialTheme.typography.bodyMedium)
+                Spacer(Modifier.padding(top = 24.dp))
+                Button(
+                    onClick = { viewModel.onWatchedToggled(!uiState.watched) },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary,
+                    ),
+                ) {
+                    Text(if (uiState.watched) "Vu ✓" else "Marquer comme vu")
+                }
             }
         }
     }

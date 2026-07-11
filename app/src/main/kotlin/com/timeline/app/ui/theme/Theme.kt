@@ -8,24 +8,43 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80,
+    primary = CoralPrimary,
+    onPrimary = Color.Black,
+    primaryContainer = CoralContainer,
+    onPrimaryContainer = OnCoralContainer,
+    secondary = AppSurfaceContainerHigh,
+    onSecondary = OnAppSurface,
+    tertiary = AmberTertiary,
+    onTertiary = Color.Black,
+    background = AppBackground,
+    onBackground = OnAppSurface,
+    surface = AppSurface,
+    onSurface = OnAppSurface,
+    surfaceVariant = AppSurfaceVariant,
+    onSurfaceVariant = OnAppSurfaceVariant,
+    surfaceContainer = AppSurfaceContainer,
+    surfaceContainerHigh = AppSurfaceContainerHigh,
+    surfaceContainerLow = AppSurfaceContainerLow,
+    outline = AppOutline,
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40,
+    primary = CoralLight,
+    onPrimary = Color.White,
+    tertiary = CoralPrimaryDim,
+    background = LightBackground,
+    surfaceVariant = LightSurfaceVariant,
+    onSurfaceVariant = OnLightSurfaceVariant,
 )
 
 @Composable
 fun TimeLineTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit,
 ) {
     val colorScheme = when {

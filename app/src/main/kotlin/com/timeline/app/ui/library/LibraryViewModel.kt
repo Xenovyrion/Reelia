@@ -6,6 +6,7 @@ import com.timeline.app.data.remote.tmdb.TmdbImageUrlBuilder
 import com.timeline.app.data.repository.MovieRepository
 import com.timeline.app.data.repository.ShowRepository
 import com.timeline.app.domain.model.MediaType
+import com.timeline.app.domain.model.WatchStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.SharingStarted
@@ -24,13 +25,18 @@ class LibraryViewModel @Inject constructor(
     val uiState: StateFlow<LibraryUiState> = combine(
         showRepository.getAllShows(),
         movieRepository.getAllMovies(),
-    ) { shows, movies ->
+        showRepository.getEpisodeProgressByShow(),
+    ) { shows, movies, progressByShow ->
+        val progressById = progressByShow.associateBy { it.showId }
         val showItems = shows.map { show ->
+            val progress = progressById[show.tmdbId]
             LibraryItem(
                 id = show.tmdbId,
                 mediaType = MediaType.TV,
                 title = show.name,
                 posterUrl = imageUrlBuilder.posterUrl(show.posterPath),
+                progress = progress?.let { if (it.total == 0) 0f else it.watchedCount.toFloat() / it.total },
+                isCompleted = show.status == WatchStatus.COMPLETED,
             )
         }
         val movieItems = movies.map { movie ->
@@ -39,6 +45,8 @@ class LibraryViewModel @Inject constructor(
                 mediaType = MediaType.MOVIE,
                 title = movie.title,
                 posterUrl = imageUrlBuilder.posterUrl(movie.posterPath),
+                progress = if (movie.watched) 1f else null,
+                isCompleted = movie.watched,
             )
         }
         LibraryUiState(isLoading = false, items = showItems + movieItems)

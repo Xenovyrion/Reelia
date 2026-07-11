@@ -4,6 +4,7 @@ import com.timeline.app.data.local.dao.EpisodeDao
 import com.timeline.app.data.local.dao.GenreDao
 import com.timeline.app.data.local.dao.SeasonDao
 import com.timeline.app.data.local.dao.ShowDao
+import com.timeline.app.data.local.dao.ShowEpisodeProgress
 import com.timeline.app.data.local.entity.GenreEntity
 import com.timeline.app.data.local.entity.ShowGenreCrossRef
 import com.timeline.app.data.local.entity.ShowWithDetails
@@ -30,6 +31,8 @@ class ShowRepository @Inject constructor(
     fun getAllShows(): Flow<List<TrackedShowEntity>> = showDao.getAllShows()
 
     fun getShowWithDetails(showId: Int): Flow<ShowWithDetails?> = showDao.getShowWithDetails(showId)
+
+    fun getEpisodeProgressByShow(): Flow<List<ShowEpisodeProgress>> = episodeDao.getEpisodeProgressByShow()
 
     /** Fetches full show + season 1 metadata from TMDB and persists it as a new tracked show. */
     suspend fun addShowFromTmdb(tmdbId: Int) {

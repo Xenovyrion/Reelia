@@ -47,6 +47,12 @@ class ShowDetailViewModel @Inject constructor(
                 title = details.show.name,
                 overview = details.show.overview,
                 posterUrl = imageUrlBuilder.posterUrl(details.show.posterPath),
+                backdropUrl = imageUrlBuilder.backdropUrl(details.show.backdropPath),
+                status = details.show.status,
+                userRating = details.show.userRating,
+                seasonCount = seasons.size,
+                watchedEpisodeCount = seasons.sumOf { season -> season.episodes.count { it.watched } },
+                totalEpisodeCount = seasons.sumOf { it.episodeCount },
                 seasons = seasons,
             )
         }

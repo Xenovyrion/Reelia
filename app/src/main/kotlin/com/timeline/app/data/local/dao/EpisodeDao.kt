@@ -31,4 +31,7 @@ interface EpisodeDao {
 
     @Query("SELECT * FROM episodes WHERE showId = :showId AND seasonNumber = :seasonNumber AND episodeNumber = :episodeNumber")
     suspend fun getEpisode(showId: Int, seasonNumber: Int, episodeNumber: Int): EpisodeEntity?
+
+    @Query("SELECT showId, COUNT(*) AS total, SUM(watched) AS watchedCount FROM episodes GROUP BY showId")
+    fun getEpisodeProgressByShow(): Flow<List<ShowEpisodeProgress>>
 }
