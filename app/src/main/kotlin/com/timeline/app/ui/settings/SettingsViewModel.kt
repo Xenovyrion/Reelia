@@ -1,5 +1,7 @@
 package com.timeline.app.ui.settings
 
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.os.LocaleListCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.timeline.app.data.local.prefs.LanguagePreferenceStore
@@ -19,7 +21,7 @@ import kotlinx.coroutines.launch
 
 data class SettingsUiState(
     val apiKey: String? = null,
-    val language: String = LanguagePreferenceStore.DEFAULT_LANGUAGE,
+    val language: String = LanguagePreferenceStore.FALLBACK_LANGUAGE,
     val selectedProviderId: String = "tmdb",
 )
 
@@ -54,7 +56,12 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun onLanguageSelected(languageCode: String) {
-        viewModelScope.launch { settingsRepository.setLanguage(languageCode) }
+        viewModelScope.launch {
+            settingsRepository.setLanguage(languageCode)
+            AppCompatDelegate.setApplicationLocales(
+                LocaleListCompat.forLanguageTags(LanguagePreferenceStore.uiLocaleTagFor(languageCode)),
+            )
+        }
     }
 
     fun onProviderSelected(providerId: String) {
