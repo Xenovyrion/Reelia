@@ -14,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -64,10 +65,10 @@ private fun TimeLineApp() {
                             icon = {
                                 Icon(
                                     if (selected) item.icon else item.outlineIcon,
-                                    contentDescription = item.label,
+                                    contentDescription = stringResource(item.labelRes),
                                 )
                             },
-                            label = { Text(item.label) },
+                            label = { Text(stringResource(item.labelRes)) },
                             colors = NavigationBarItemDefaults.colors(
                                 selectedIconColor = MaterialTheme.colorScheme.primary,
                                 selectedTextColor = MaterialTheme.colorScheme.primary,

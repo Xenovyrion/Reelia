@@ -22,9 +22,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.timeline.app.R
 import com.timeline.app.ui.common.components.BackdropHeader
 import com.timeline.app.ui.common.components.CastRow
 import com.timeline.app.ui.common.components.SectionHeader
@@ -61,7 +63,7 @@ fun MoviePreviewScreen(
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                     val metadata = listOfNotNull(
                         uiState.releaseDate,
-                        uiState.runtimeMinutes?.let { "$it min" },
+                        uiState.runtimeMinutes?.let { stringResource(R.string.movie_detail_runtime_minutes_format, it) },
                         uiState.genreNames.takeIf { it.isNotEmpty() }?.joinToString(", "),
                     ).joinToString(" • ")
                     Text(
@@ -82,13 +84,13 @@ fun MoviePreviewScreen(
 
                 if (uiState.cast.isNotEmpty()) {
                     Spacer(Modifier.padding(top = 24.dp))
-                    SectionHeader("Distribution")
+                    SectionHeader(stringResource(R.string.preview_cast_section_title))
                     Spacer(Modifier.padding(top = 12.dp))
                     CastRow(uiState.cast)
                 }
 
                 Spacer(Modifier.padding(top = 24.dp))
-                SectionHeader("Où regarder")
+                SectionHeader(stringResource(R.string.preview_watch_providers_section_title))
                 Spacer(Modifier.padding(top = 12.dp))
                 WatchProvidersRow(
                     flatrate = uiState.watchProvidersFlatrate,
@@ -96,8 +98,8 @@ fun MoviePreviewScreen(
                     buy = uiState.watchProvidersBuy,
                 )
 
-                uiState.errorMessage?.let {
-                    Text(it, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(top = 16.dp))
+                uiState.errorMessageRes?.let {
+                    Text(stringResource(it), color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(top = 16.dp))
                 }
 
                 Spacer(Modifier.padding(top = 24.dp))
@@ -105,7 +107,13 @@ fun MoviePreviewScreen(
                     onClick = { viewModel.onAddClicked(onAdded) },
                     enabled = !uiState.isAdding && !uiState.added,
                 ) {
-                    Text(if (uiState.added) "Ajouté ✓" else "Ajouter à ma bibliothèque")
+                    Text(
+                        if (uiState.added) {
+                            stringResource(R.string.preview_added_button)
+                        } else {
+                            stringResource(R.string.preview_add_button)
+                        },
+                    )
                 }
             }
         }

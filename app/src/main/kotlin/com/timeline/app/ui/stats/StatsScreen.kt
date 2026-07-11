@@ -19,9 +19,11 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.timeline.app.R
 import com.timeline.app.ui.common.components.BarChart
 import com.timeline.app.ui.common.components.SectionHeader
 import com.timeline.app.ui.common.components.StatCard
@@ -31,11 +33,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Schedule
 
-private fun StatsScope.label(): String = when (this) {
-    StatsScope.ALL -> "Tout"
-    StatsScope.SERIES -> "Séries"
-    StatsScope.FILMS -> "Films"
-}
+@Composable
+private fun StatsScope.label(): String = stringResource(
+    when (this) {
+        StatsScope.ALL -> R.string.stats_scope_all
+        StatsScope.SERIES -> R.string.stats_scope_series
+        StatsScope.FILMS -> R.string.stats_scope_films
+    },
+)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -43,7 +48,7 @@ fun StatsScreen(viewModel: StatsViewModel = hiltViewModel()) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text("Statistiques") }, colors = timeLineTopAppBarColors()) },
+        topBar = { TopAppBar(title = { Text(stringResource(R.string.stats_title)) }, colors = timeLineTopAppBarColors()) },
     ) { padding ->
         Column(
             modifier = Modifier
@@ -69,24 +74,24 @@ fun StatsScreen(viewModel: StatsViewModel = hiltViewModel()) {
                 StatCard(
                     icon = Icons.Filled.Schedule,
                     value = String.format(Locale.getDefault(), "%.1f", uiState.totalHoursWatched),
-                    unitLabel = "HEURES",
-                    caption = "Temps total regardé",
+                    unitLabel = stringResource(R.string.stats_hours_unit_label),
+                    caption = stringResource(R.string.stats_hours_caption),
                     modifier = Modifier.weight(1f),
                 )
                 StatCard(
                     icon = Icons.Filled.CheckCircle,
                     value = uiState.totalWatchedCount.toString(),
-                    unitLabel = "TITRES",
-                    caption = "Épisodes et films vus",
+                    unitLabel = stringResource(R.string.stats_titles_unit_label),
+                    caption = stringResource(R.string.stats_titles_caption),
                     modifier = Modifier.weight(1f),
                 )
             }
 
             Column(modifier = Modifier.padding(top = 24.dp)) {
-                SectionHeader("Par semaine")
+                SectionHeader(stringResource(R.string.stats_weekly_section_title))
                 Row(modifier = Modifier.fillMaxWidth().padding(top = 12.dp)) {
                     Text(
-                        "Heures regardées, 12 dernières semaines",
+                        stringResource(R.string.stats_weekly_caption),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -95,10 +100,10 @@ fun StatsScreen(viewModel: StatsViewModel = hiltViewModel()) {
             }
 
             Column(modifier = Modifier.padding(top = 24.dp)) {
-                SectionHeader("Par mois")
+                SectionHeader(stringResource(R.string.stats_monthly_section_title))
                 Row(modifier = Modifier.fillMaxWidth().padding(top = 12.dp)) {
                     Text(
-                        "Heures regardées, 12 derniers mois",
+                        stringResource(R.string.stats_monthly_caption),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )

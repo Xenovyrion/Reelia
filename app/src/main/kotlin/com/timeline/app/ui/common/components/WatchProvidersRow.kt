@@ -14,8 +14,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.timeline.app.R
 
 data class WatchProviderRowItem(val name: String, val logoUrl: String?)
 
@@ -27,16 +29,16 @@ fun WatchProvidersRow(
 ) {
     if (flatrate.isEmpty() && rent.isEmpty() && buy.isEmpty()) {
         Text(
-            "Aucune plateforme trouvée pour ta région.",
+            stringResource(R.string.watch_providers_empty),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         return
     }
     Column {
-        ProviderGroup("Streaming", flatrate)
-        ProviderGroup("Location", rent)
-        ProviderGroup("Achat", buy)
+        ProviderGroup(stringResource(R.string.watch_providers_streaming), flatrate)
+        ProviderGroup(stringResource(R.string.watch_providers_rent), rent)
+        ProviderGroup(stringResource(R.string.watch_providers_buy), buy)
     }
 }
 

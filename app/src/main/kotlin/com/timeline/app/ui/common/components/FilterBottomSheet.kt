@@ -20,7 +20,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.timeline.app.R
 import com.timeline.app.domain.model.WatchStatus
 import com.timeline.app.domain.model.displayLabel
 
@@ -40,7 +42,7 @@ fun FilterBottomSheet(
 
     ModalBottomSheet(onDismissRequest = onDismiss) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text("Statut", style = MaterialTheme.typography.titleMedium)
+            Text(stringResource(R.string.filter_status_label), style = MaterialTheme.typography.titleMedium)
             FlowRow(modifier = Modifier.padding(top = 8.dp, bottom = 16.dp)) {
                 WatchStatus.entries.forEach { status ->
                     FilterChip(
@@ -54,7 +56,7 @@ fun FilterBottomSheet(
                 }
             }
             if (availableGenres.isNotEmpty()) {
-                Text("Genre", style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(R.string.filter_genre_label), style = MaterialTheme.typography.titleMedium)
                 FlowRow(modifier = Modifier.padding(top = 8.dp, bottom = 16.dp)) {
                     availableGenres.forEach { genre ->
                         FilterChip(
@@ -73,11 +75,11 @@ fun FilterBottomSheet(
                     statuses = emptySet()
                     genreIds = emptySet()
                 }) {
-                    Text("Réinitialiser")
+                    Text(stringResource(R.string.filter_reset_button))
                 }
                 Spacer(Modifier.weight(1f))
                 Button(onClick = { onApply(statuses, genreIds) }) {
-                    Text("Appliquer")
+                    Text(stringResource(R.string.filter_apply_button))
                 }
             }
         }

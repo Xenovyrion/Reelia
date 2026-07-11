@@ -17,8 +17,10 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.timeline.app.R
 
 /**
  * Full-bleed hero image over the top of a detail screen, with a gradient scrim fading into
@@ -66,7 +68,7 @@ fun BackdropHeader(
         ) {
             Icon(
                 Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = "Retour",
+                contentDescription = stringResource(R.string.backdrop_back_content_description),
                 tint = Color.White,
             )
         }

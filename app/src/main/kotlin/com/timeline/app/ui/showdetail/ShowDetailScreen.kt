@@ -32,9 +32,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.timeline.app.R
 import com.timeline.app.domain.model.displayLabel
 import com.timeline.app.ui.common.components.BackdropHeader
 import com.timeline.app.ui.common.components.SectionHeader
@@ -76,7 +78,8 @@ fun ShowDetailScreen(
                         modifier = Modifier.fillMaxWidth(),
                     ) {
                         Text(
-                            "${uiState.seasonCount} saisons • ${uiState.status.displayLabel()}",
+                            stringResource(R.string.season_count_format, uiState.seasonCount) +
+                                " • ${uiState.status.displayLabel()}",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.weight(1f),
@@ -101,15 +104,23 @@ fun ShowDetailScreen(
 
             item {
                 TabRow(selectedTabIndex = selectedTab) {
-                    Tab(selected = selectedTab == 0, onClick = { selectedTab = 0 }, text = { Text("À PROPOS") })
-                    Tab(selected = selectedTab == 1, onClick = { selectedTab = 1 }, text = { Text("ÉPISODES") })
+                    Tab(
+                        selected = selectedTab == 0,
+                        onClick = { selectedTab = 0 },
+                        text = { Text(stringResource(R.string.show_detail_tab_about)) },
+                    )
+                    Tab(
+                        selected = selectedTab == 1,
+                        onClick = { selectedTab = 1 },
+                        text = { Text(stringResource(R.string.show_detail_tab_episodes)) },
+                    )
                 }
             }
 
             if (selectedTab == 0) {
                 item {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        SectionHeader("Informations sur la série")
+                        SectionHeader(stringResource(R.string.show_detail_about_section_title))
                         Spacer(Modifier.padding(top = 12.dp))
                         Text(uiState.overview, style = MaterialTheme.typography.bodyMedium)
                     }
@@ -163,13 +174,14 @@ fun ShowDetailScreen(
                                     Column(modifier = Modifier.padding(start = 48.dp, end = 16.dp, bottom = 12.dp)) {
                                         episode.voteAverage?.let { rating ->
                                             Text(
-                                                "Note : ${"%.1f".format(rating)}/10",
+                                                stringResource(R.string.episode_rating_format, "%.1f".format(rating)),
                                                 style = MaterialTheme.typography.labelMedium,
                                                 color = MaterialTheme.colorScheme.tertiary,
                                             )
                                         }
                                         Text(
-                                            episode.overview?.takeIf { it.isNotBlank() } ?: "Pas de résumé disponible.",
+                                            episode.overview?.takeIf { it.isNotBlank() }
+                                                ?: stringResource(R.string.episode_no_overview),
                                             style = MaterialTheme.typography.bodySmall,
                                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                                             modifier = Modifier.padding(top = 4.dp),
@@ -202,7 +214,7 @@ private fun RatingBadge(rating: Float) {
                 modifier = Modifier.height(16.dp),
             )
             Text(
-                "Ma note : ${rating}/10",
+                stringResource(R.string.show_detail_my_rating_format, rating.toString()),
                 style = MaterialTheme.typography.labelMedium,
                 modifier = Modifier.padding(start = 4.dp),
             )
@@ -227,7 +239,7 @@ private fun SeasonHeader(season: SeasonUi, onToggle: () -> Unit) {
             modifier = Modifier.fillMaxWidth(),
         )
         Text(
-            "$watchedCount / ${season.episodeCount} épisodes vus",
+            stringResource(R.string.show_detail_season_progress_format, watchedCount, season.episodeCount),
             style = MaterialTheme.typography.bodySmall,
             modifier = Modifier.padding(top = 4.dp),
         )

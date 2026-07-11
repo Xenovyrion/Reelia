@@ -25,10 +25,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import com.timeline.app.R
 import com.timeline.app.domain.model.MediaType
 import com.timeline.app.ui.theme.timeLineTopAppBarColors
 
@@ -41,26 +43,26 @@ fun SearchScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text("Rechercher") }, colors = timeLineTopAppBarColors()) },
+        topBar = { TopAppBar(title = { Text(stringResource(R.string.search_title)) }, colors = timeLineTopAppBarColors()) },
     ) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
             OutlinedTextField(
                 value = uiState.query,
                 onValueChange = viewModel::onQueryChange,
-                label = { Text("Titre d'une série ou d'un film") },
+                label = { Text(stringResource(R.string.search_field_label)) },
                 modifier = Modifier.fillMaxWidth().padding(16.dp),
             )
 
             if (!uiState.hasApiKey) {
                 Text(
-                    "Ajoute d'abord ta clé API TMDB dans Réglages pour pouvoir chercher une série ou un film.",
+                    stringResource(R.string.search_missing_api_key_message),
                     modifier = Modifier.padding(horizontal = 16.dp),
                 )
                 return@Column
             }
 
-            uiState.errorMessage?.let {
-                Text(it, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(horizontal = 16.dp))
+            uiState.errorMessageRes?.let {
+                Text(stringResource(it), color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(horizontal = 16.dp))
             }
 
             val isLoading = if (uiState.query.isBlank()) uiState.isLoadingFeed else uiState.isSearching
@@ -83,7 +85,10 @@ fun SearchScreen(
                             },
                             trailingContent = {
                                 IconButton(onClick = { viewModel.onAddClicked(item) }) {
-                                    Icon(Icons.Filled.Add, contentDescription = "Ajouter")
+                                    Icon(
+                                        Icons.Filled.Add,
+                                        contentDescription = stringResource(R.string.search_add_content_description),
+                                    )
                                 }
                             },
                             modifier = Modifier

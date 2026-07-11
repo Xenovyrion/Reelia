@@ -32,9 +32,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.timeline.app.R
 import com.timeline.app.domain.model.displayLabel
 import com.timeline.app.ui.common.components.FilterBottomSheet
 import com.timeline.app.ui.common.components.MediaListRow
@@ -55,16 +57,19 @@ fun FilmsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Films") },
+                title = { Text(stringResource(R.string.films_title)) },
                 colors = timeLineTopAppBarColors(),
                 actions = {
                     IconButton(onClick = { showFilterSheet = true }) {
-                        Icon(Icons.Filled.FilterList, contentDescription = "Filtrer")
+                        Icon(
+                            Icons.Filled.FilterList,
+                            contentDescription = stringResource(R.string.action_filter_content_description),
+                        )
                     }
                     IconButton(onClick = viewModel::onViewModeToggled) {
                         Icon(
                             if (uiState.viewMode == ViewMode.GRID) Icons.Filled.ViewList else Icons.Filled.GridView,
-                            contentDescription = "Changer l'affichage",
+                            contentDescription = stringResource(R.string.action_toggle_view_content_description),
                         )
                     }
                 },
@@ -78,14 +83,14 @@ fun FilmsScreen(
         } else if (uiState.groupedItems.isEmpty() && uiState.upcoming.isEmpty()) {
             Box(Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
                 Text(
-                    "Ajoute un film depuis l'onglet Rechercher.",
+                    stringResource(R.string.films_empty_state),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
         } else {
             LazyColumn(modifier = Modifier.fillMaxSize().padding(padding)) {
                 if (uiState.upcoming.isNotEmpty()) {
-                    item { SectionHeader("À venir", modifier = Modifier.padding(16.dp)) }
+                    item { SectionHeader(stringResource(R.string.section_upcoming), modifier = Modifier.padding(16.dp)) }
                     item {
                         LazyRow(
                             contentPadding = PaddingValues(horizontal = 16.dp),
@@ -169,8 +174,9 @@ private fun UpcomingMovieCard(movie: UpcomingMovieItem) {
     }
 }
 
+@Composable
 private fun daysUntilLabel(days: Long): String = when {
-    days == 0L -> "Aujourd'hui"
-    days == 1L -> "Demain"
-    else -> "Dans $days jours"
+    days == 0L -> stringResource(R.string.days_until_today)
+    days == 1L -> stringResource(R.string.days_until_tomorrow)
+    else -> stringResource(R.string.days_until_in_days, days)
 }

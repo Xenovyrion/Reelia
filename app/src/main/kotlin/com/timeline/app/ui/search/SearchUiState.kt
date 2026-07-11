@@ -1,5 +1,6 @@
 package com.timeline.app.ui.search
 
+import androidx.annotation.StringRes
 import com.timeline.app.domain.model.MediaType
 
 data class SearchResultItem(
@@ -17,7 +18,7 @@ data class SearchUiState(
     val results: List<SearchResultItem> = emptyList(),
     val trendingFeed: List<SearchResultItem> = emptyList(),
     val hasApiKey: Boolean = true,
-    val errorMessage: String? = null,
+    @StringRes val errorMessageRes: Int? = null,
 ) {
     val displayedItems: List<SearchResultItem>
         get() = if (query.isBlank()) trendingFeed else results

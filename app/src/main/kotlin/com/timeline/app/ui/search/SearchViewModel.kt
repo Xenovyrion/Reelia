@@ -2,6 +2,7 @@ package com.timeline.app.ui.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.timeline.app.R
 import com.timeline.app.data.metadata.MetadataProviderRegistry
 import com.timeline.app.data.remote.tmdb.MissingTmdbApiKeyException
 import com.timeline.app.data.remote.tmdb.TmdbImageUrlBuilder
@@ -56,7 +57,7 @@ class SearchViewModel @Inject constructor(
                 _uiState.update { it.copy(isLoadingFeed = false) }
             } catch (e: Exception) {
                 _uiState.update {
-                    it.copy(isLoadingFeed = false, errorMessage = "Impossible de charger les dernières sorties.")
+                    it.copy(isLoadingFeed = false, errorMessageRes = R.string.search_error_feed)
                 }
             }
         }
@@ -71,7 +72,7 @@ class SearchViewModel @Inject constructor(
         }
         searchJob = viewModelScope.launch {
             delay(300)
-            _uiState.update { it.copy(isSearching = true, errorMessage = null) }
+            _uiState.update { it.copy(isSearching = true, errorMessageRes = null) }
             try {
                 val provider = metadataProviderRegistry.activeProvider.first()
                 val results = provider.search(query).map { it.toResultItem() }
@@ -79,7 +80,7 @@ class SearchViewModel @Inject constructor(
             } catch (e: MissingTmdbApiKeyException) {
                 _uiState.update { it.copy(isSearching = false, hasApiKey = false) }
             } catch (e: Exception) {
-                _uiState.update { it.copy(isSearching = false, errorMessage = "Recherche impossible. Vérifie ta connexion.") }
+                _uiState.update { it.copy(isSearching = false, errorMessageRes = R.string.search_error_query) }
             }
         }
     }
@@ -92,7 +93,7 @@ class SearchViewModel @Inject constructor(
                     MediaType.MOVIE -> movieRepository.addMovieFromTmdb(item.id)
                 }
             } catch (e: Exception) {
-                _uiState.update { it.copy(errorMessage = "Impossible d'ajouter ce titre. Réessaie.") }
+                _uiState.update { it.copy(errorMessageRes = R.string.search_error_add) }
             }
         }
     }

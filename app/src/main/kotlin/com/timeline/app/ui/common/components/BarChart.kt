@@ -15,9 +15,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.timeline.app.R
 
 data class BarChartEntry(val label: String, val value: Float)
 
@@ -30,7 +32,7 @@ fun BarChart(
 ) {
     if (entries.isEmpty()) {
         Text(
-            "Pas encore de données.",
+            stringResource(R.string.chart_no_data),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = modifier,

@@ -29,9 +29,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.timeline.app.R
 import com.timeline.app.data.local.prefs.LanguagePreferenceStore
 import com.timeline.app.ui.theme.timeLineTopAppBarColors
 
@@ -41,22 +44,23 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var apiKeyInput by remember { mutableStateOf("") }
     val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
 
     LaunchedEffect(uiState.apiKey) {
         uiState.apiKey?.let { apiKeyInput = it }
     }
     LaunchedEffect(Unit) {
         viewModel.saveEvent.collect {
-            snackbarHostState.showSnackbar("Clé API enregistrée")
+            snackbarHostState.showSnackbar(context.getString(R.string.settings_save_confirmation))
         }
     }
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text("Réglages") }, colors = timeLineTopAppBarColors()) },
+        topBar = { TopAppBar(title = { Text(stringResource(R.string.settings_title)) }, colors = timeLineTopAppBarColors()) },
         snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding).padding(16.dp)) {
-            Text("Langue du contenu", style = MaterialTheme.typography.titleMedium)
+            Text(stringResource(R.string.settings_language_section_title), style = MaterialTheme.typography.titleMedium)
             Spacer(Modifier.height(8.dp))
             var languageMenuExpanded by remember { mutableStateOf(false) }
             ExposedDropdownMenuBox(
@@ -64,10 +68,10 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                 onExpandedChange = { languageMenuExpanded = it },
             ) {
                 OutlinedTextField(
-                    value = uiState.language,
+                    value = LANGUAGE_DISPLAY_NAME_RES[uiState.language]?.let { stringResource(it) } ?: uiState.language,
                     onValueChange = {},
                     readOnly = true,
-                    label = { Text("Langue") },
+                    label = { Text(stringResource(R.string.settings_language_field_label)) },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = languageMenuExpanded) },
                     modifier = Modifier.fillMaxWidth().menuAnchor(),
                 )
@@ -78,7 +82,7 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                 ) {
                     LanguagePreferenceStore.SUPPORTED_LANGUAGES.forEach { code ->
                         DropdownMenuItem(
-                            text = { Text(code) },
+                            text = { Text(LANGUAGE_DISPLAY_NAME_RES[code]?.let { stringResource(it) } ?: code) },
                             onClick = {
                                 viewModel.onLanguageSelected(code)
                                 languageMenuExpanded = false
@@ -89,7 +93,7 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
             }
 
             Spacer(Modifier.height(24.dp))
-            Text("Source des données", style = MaterialTheme.typography.titleMedium)
+            Text(stringResource(R.string.settings_provider_section_title), style = MaterialTheme.typography.titleMedium)
             Spacer(Modifier.height(8.dp))
             viewModel.providers.forEach { provider ->
                 Row(
@@ -112,30 +116,28 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                 }
             }
             Text(
-                "D'autres sources arriveront bientôt.",
+                stringResource(R.string.settings_provider_more_soon),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
 
             Spacer(Modifier.height(24.dp))
-            Text("Clé API TMDB", style = MaterialTheme.typography.titleMedium)
+            Text(stringResource(R.string.settings_api_key_section_title), style = MaterialTheme.typography.titleMedium)
             Spacer(Modifier.height(8.dp))
             Text(
-                "TimeLine utilise TMDB (The Movie Database) pour récupérer les infos des séries et films. " +
-                    "Crée un compte gratuit sur themoviedb.org, puis génère une clé API (v3 auth) dans " +
-                    "les paramètres de ton compte, et colle-la ci-dessous.",
+                stringResource(R.string.settings_api_key_explanation),
                 style = MaterialTheme.typography.bodyMedium,
             )
             Spacer(Modifier.height(16.dp))
             OutlinedTextField(
                 value = apiKeyInput,
                 onValueChange = { apiKeyInput = it },
-                label = { Text("Clé API TMDB") },
+                label = { Text(stringResource(R.string.settings_api_key_field_label)) },
                 modifier = Modifier.fillMaxWidth(),
             )
             Spacer(Modifier.height(12.dp))
             Button(onClick = { viewModel.onApiKeySubmitted(apiKeyInput) }) {
-                Text("Enregistrer")
+                Text(stringResource(R.string.settings_save_button))
             }
         }
     }

@@ -1,5 +1,6 @@
 package com.timeline.app.ui.preview
 
+import androidx.annotation.StringRes
 import com.timeline.app.ui.common.components.CastRowItem
 import com.timeline.app.ui.common.components.WatchProviderRowItem
 
@@ -20,5 +21,5 @@ data class ShowPreviewUiState(
     val watchProvidersBuy: List<WatchProviderRowItem> = emptyList(),
     val isAdding: Boolean = false,
     val added: Boolean = false,
-    val errorMessage: String? = null,
+    @StringRes val errorMessageRes: Int? = null,
 )

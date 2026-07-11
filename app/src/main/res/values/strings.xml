@@ -1,4 +1,130 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">TimeLine</string>
+
+    <!-- Bottom navigation -->
+    <string name="nav_series">Series</string>
+    <string name="nav_films">Movies</string>
+    <string name="nav_search">Search</string>
+    <string name="nav_stats">Stats</string>
+    <string name="nav_settings">Settings</string>
+
+    <!-- WatchStatus display labels -->
+    <string name="watch_status_watching">Watching</string>
+    <string name="watch_status_plan_to_watch">Plan to Watch</string>
+    <string name="watch_status_completed">Completed</string>
+    <string name="watch_status_dropped">Dropped</string>
+    <string name="watch_status_on_hold">On Hold</string>
+
+    <!-- PosterCard -->
+    <string name="poster_completed_badge">DONE</string>
+
+    <!-- BackdropHeader -->
+    <string name="backdrop_back_content_description">Back</string>
+
+    <!-- FilterBottomSheet -->
+    <string name="filter_status_label">Status</string>
+    <string name="filter_genre_label">Genre</string>
+    <string name="filter_reset_button">Reset</string>
+    <string name="filter_apply_button">Apply</string>
+
+    <!-- WatchProvidersRow -->
+    <string name="watch_providers_empty">No streaming platforms found for your region.</string>
+    <string name="watch_providers_streaming">Streaming</string>
+    <string name="watch_providers_rent">Rent</string>
+    <string name="watch_providers_buy">Buy</string>
+
+    <!-- Shared: Séries/Films tabs -->
+    <string name="action_filter_content_description">Filter</string>
+    <string name="action_toggle_view_content_description">Toggle view</string>
+    <string name="section_upcoming">Upcoming</string>
+    <string name="days_until_aired">Aired</string>
+    <string name="days_until_today">Today</string>
+    <string name="days_until_tomorrow">Tomorrow</string>
+    <string name="days_until_in_days">In %1$d days</string>
+
+    <!-- Séries tab -->
+    <string name="series_title">Series</string>
+    <string name="series_empty_state">Add a show from the Search tab.</string>
+
+    <!-- Films tab -->
+    <string name="films_title">Movies</string>
+    <string name="films_empty_state">Add a movie from the Search tab.</string>
+
+    <!-- Search tab -->
+    <string name="search_title">Search</string>
+    <string name="search_field_label">Show or movie title</string>
+    <string name="search_missing_api_key_message">Add your TMDB API key in Settings first to search for a show or movie.</string>
+    <string name="search_error_feed">Couldn\'t load the latest releases.</string>
+    <string name="search_error_query">Search failed. Check your connection.</string>
+    <string name="search_add_content_description">Add</string>
+    <string name="search_add_confirmation">\"%1$s\" added to your library</string>
+    <string name="search_error_add">Couldn\'t add this title. Try again.</string>
+
+    <!-- Stats tab -->
+    <string name="stats_title">Stats</string>
+    <string name="stats_scope_all">All</string>
+    <string name="stats_scope_series">Series</string>
+    <string name="stats_scope_films">Movies</string>
+    <string name="stats_hours_unit_label">HOURS</string>
+    <string name="stats_hours_caption">Total time watched</string>
+    <string name="stats_titles_unit_label">TITLES</string>
+    <string name="stats_titles_caption">Episodes and movies watched</string>
+    <string name="stats_weekly_section_title">By week</string>
+    <string name="stats_weekly_caption">Hours watched, last 12 weeks</string>
+    <string name="stats_monthly_section_title">By month</string>
+    <string name="stats_monthly_caption">Hours watched, last 12 months</string>
+    <string name="chart_no_data">No data yet.</string>
+
+    <!-- Shared: show/movie detail + preview -->
+    <string name="season_count_format">%1$d seasons</string>
+    <string name="preview_cast_section_title">Cast</string>
+    <string name="preview_watch_providers_section_title">Where to Watch</string>
+    <string name="preview_add_button">Add to my library</string>
+    <string name="preview_added_button">Added ✓</string>
+
+    <!-- Show Detail -->
+    <string name="show_detail_tab_about">ABOUT</string>
+    <string name="show_detail_tab_episodes">EPISODES</string>
+    <string name="show_detail_about_section_title">About this show</string>
+    <string name="show_detail_my_rating_format">My rating: %1$s/10</string>
+    <string name="episode_rating_format">Rating: %1$s/10</string>
+    <string name="episode_no_overview">No summary available.</string>
+    <string name="show_detail_season_progress_format">%1$d / %2$d episodes watched</string>
+    <string name="show_detail_continue_watching_title">Continue Watching</string>
+    <string name="show_detail_mark_season_watched_content_description">Mark whole season as watched</string>
+
+    <!-- Movie Detail -->
+    <string name="movie_detail_runtime_minutes_format">%1$d min</string>
+    <string name="movie_detail_watched_badge">Watched</string>
+    <string name="movie_detail_plan_to_watch_badge">To Watch</string>
+    <string name="movie_detail_mark_watched_button">Mark as watched</string>
+    <string name="movie_detail_watched_button">Watched ✓</string>
+
+    <!-- Preview screens -->
+    <string name="preview_error_load_show">Couldn\'t load this show\'s info.</string>
+    <string name="preview_error_load_movie">Couldn\'t load this movie\'s info.</string>
+    <string name="preview_error_add_show">Couldn\'t add this show.</string>
+    <string name="preview_error_add_movie">Couldn\'t add this movie.</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_language_section_title">Content language</string>
+    <string name="settings_language_field_label">Language</string>
+    <string name="settings_provider_section_title">Data source</string>
+    <string name="settings_provider_more_soon">More sources coming soon.</string>
+    <string name="settings_api_key_section_title">TMDB API Key</string>
+    <string name="settings_api_key_explanation">TimeLine uses TMDB (The Movie Database) to fetch show and movie info. Create a free account at themoviedb.org, generate an API key (v3 auth) in your account settings, then paste it below.</string>
+    <string name="settings_api_key_field_label">TMDB API Key</string>
+    <string name="settings_save_button">Save</string>
+    <string name="settings_save_confirmation">API key saved</string>
+
+    <!-- Language display names (shown in the language picker; must reflect the CURRENT ui locale) -->
+    <string name="lang_name_fr">French</string>
+    <string name="lang_name_en_us">English (US)</string>
+    <string name="lang_name_en_gb">English (UK)</string>
+    <string name="lang_name_es">Spanish</string>
+    <string name="lang_name_de">German</string>
+    <string name="lang_name_it">Italian</string>
+    <string name="lang_name_ja">Japanese</string>
 </resources>

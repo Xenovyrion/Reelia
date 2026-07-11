@@ -20,9 +20,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.timeline.app.R
 import com.timeline.app.ui.common.components.BackdropHeader
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -59,7 +61,7 @@ fun MovieDetailScreen(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     val metadata = listOfNotNull(
                         uiState.releaseDate,
-                        uiState.runtimeMinutes?.let { "$it min" },
+                        uiState.runtimeMinutes?.let { stringResource(R.string.movie_detail_runtime_minutes_format, it) },
                     ).joinToString(" • ")
                     Text(
                         metadata,
@@ -72,7 +74,11 @@ fun MovieDetailScreen(
                         color = MaterialTheme.colorScheme.surfaceContainerHigh,
                     ) {
                         Text(
-                            if (uiState.watched) "Vu" else "À voir",
+                            if (uiState.watched) {
+                                stringResource(R.string.movie_detail_watched_badge)
+                            } else {
+                                stringResource(R.string.movie_detail_plan_to_watch_badge)
+                            },
                             style = MaterialTheme.typography.labelMedium,
                             modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
                         )
@@ -88,7 +94,13 @@ fun MovieDetailScreen(
                         contentColor = MaterialTheme.colorScheme.onPrimary,
                     ),
                 ) {
-                    Text(if (uiState.watched) "Vu ✓" else "Marquer comme vu")
+                    Text(
+                        if (uiState.watched) {
+                            stringResource(R.string.movie_detail_watched_button)
+                        } else {
+                            stringResource(R.string.movie_detail_mark_watched_button)
+                        },
+                    )
                 }
             }
         }

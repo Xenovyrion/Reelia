@@ -3,6 +3,7 @@ package com.timeline.app.ui.preview
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.timeline.app.R
 import com.timeline.app.data.metadata.MetadataProviderRegistry
 import com.timeline.app.data.remote.tmdb.TmdbImageUrlBuilder
 import com.timeline.app.data.repository.ShowRepository
@@ -40,7 +41,7 @@ class ShowPreviewViewModel @Inject constructor(
                 _uiState.value = preview.toUiState()
             } catch (e: Exception) {
                 _uiState.update {
-                    it.copy(isLoading = false, errorMessage = "Impossible de charger les informations de cette série.")
+                    it.copy(isLoading = false, errorMessageRes = R.string.preview_error_load_show)
                 }
             }
         }
@@ -54,7 +55,7 @@ class ShowPreviewViewModel @Inject constructor(
                 _uiState.update { it.copy(isAdding = false, added = true) }
                 onAdded()
             } catch (e: Exception) {
-                _uiState.update { it.copy(isAdding = false, errorMessage = "Impossible d'ajouter cette série.") }
+                _uiState.update { it.copy(isAdding = false, errorMessageRes = R.string.preview_error_add_show) }
             }
         }
     }
