@@ -13,6 +13,7 @@ import com.timeline.app.ui.common.components.CastRowItem
 import com.timeline.app.ui.common.components.WatchProviderRowItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -53,6 +54,7 @@ class ShowPreviewViewModel @Inject constructor(
             try {
                 showRepository.addShowFromTmdb(tmdbId)
                 _uiState.update { it.copy(isAdding = false, added = true) }
+                delay(500)
                 onAdded()
             } catch (e: Exception) {
                 _uiState.update { it.copy(isAdding = false, errorMessageRes = R.string.preview_error_add_show) }

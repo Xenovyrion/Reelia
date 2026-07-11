@@ -19,10 +19,14 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -41,9 +45,18 @@ fun SearchScreen(
     viewModel: SearchViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val addedConfirmationFormat = stringResource(R.string.search_add_confirmation)
+
+    LaunchedEffect(Unit) {
+        viewModel.addedEvent.collect { title ->
+            snackbarHostState.showSnackbar(String.format(addedConfirmationFormat, title))
+        }
+    }
 
     Scaffold(
         topBar = { TopAppBar(title = { Text(stringResource(R.string.search_title)) }, colors = timeLineTopAppBarColors()) },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
             OutlinedTextField(

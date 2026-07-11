@@ -15,11 +15,14 @@ import com.timeline.app.domain.model.TmdbSearchResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -36,6 +39,9 @@ class SearchViewModel @Inject constructor(
     val uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
 
     private var searchJob: Job? = null
+
+    private val addedEventChannel = Channel<String>(Channel.BUFFERED)
+    val addedEvent: Flow<String> = addedEventChannel.receiveAsFlow()
 
     init {
         viewModelScope.launch {
@@ -92,6 +98,7 @@ class SearchViewModel @Inject constructor(
                     MediaType.TV -> showRepository.addShowFromTmdb(item.id)
                     MediaType.MOVIE -> movieRepository.addMovieFromTmdb(item.id)
                 }
+                addedEventChannel.send(item.title)
             } catch (e: Exception) {
                 _uiState.update { it.copy(errorMessageRes = R.string.search_error_add) }
             }
