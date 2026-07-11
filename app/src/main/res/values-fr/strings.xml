@@ -42,6 +42,7 @@
     <string name="days_until_today">Aujourd\'hui</string>
     <string name="days_until_tomorrow">Demain</string>
     <string name="days_until_in_days">Dans %1$d jours</string>
+    <string name="days_until_unit_label">JOURS</string>
 
     <!-- Séries tab -->
     <string name="series_title">Séries</string>
