@@ -123,7 +123,6 @@ fun FilmsScreen(
                                 title = item.title,
                                 subtitle = null,
                                 posterUrl = item.posterUrl,
-                                progress = item.progress,
                                 onClick = { onMovieClick(item.id) },
                             )
                         }
