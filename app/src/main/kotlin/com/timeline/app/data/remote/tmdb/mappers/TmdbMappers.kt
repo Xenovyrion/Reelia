@@ -29,6 +29,7 @@ fun TmdbTvDetailsDto.toEntity(status: WatchStatus, addedAt: Instant): TrackedSho
         nextEpisodeSeasonNumber = nextEpisodeToAir?.seasonNumber,
         nextEpisodeNumber = nextEpisodeToAir?.episodeNumber,
         averageEpisodeRuntimeMinutes = episodeRunTime.firstOrNull(),
+        networkNames = networks.map { it.name }.takeIf { it.isNotEmpty() }?.joinToString(", "),
     )
 
 fun TmdbTvDetailsDto.toSeasonEntities(): List<SeasonEntity> =
@@ -56,6 +57,8 @@ fun TmdbSeasonDetailsDto.toEpisodeEntities(showId: Int, defaultRuntimeMinutes: I
             episodeNumber = episode.episodeNumber,
             tmdbEpisodeId = episode.id,
             name = episode.name,
+            overview = episode.overview,
+            voteAverage = episode.voteAverage,
             airDate = episode.airDate,
             runtimeMinutes = episode.runtime ?: defaultRuntimeMinutes,
         )

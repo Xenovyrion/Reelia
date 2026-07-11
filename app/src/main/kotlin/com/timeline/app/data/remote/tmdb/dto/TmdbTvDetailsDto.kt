@@ -16,6 +16,14 @@ data class TmdbTvDetailsDto(
     val genres: List<TmdbGenreDto> = emptyList(),
     val seasons: List<TmdbSeasonSummaryDto> = emptyList(),
     @SerialName("next_episode_to_air") val nextEpisodeToAir: TmdbEpisodeSummaryDto? = null,
+    val networks: List<TmdbNetworkDto> = emptyList(),
+)
+
+@Serializable
+data class TmdbNetworkDto(
+    val id: Int,
+    val name: String,
+    @SerialName("logo_path") val logoPath: String? = null,
 )
 
 @Serializable

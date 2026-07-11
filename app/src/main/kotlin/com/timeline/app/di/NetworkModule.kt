@@ -3,6 +3,7 @@ package com.timeline.app.di
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.timeline.app.data.remote.tmdb.TmdbApi
 import com.timeline.app.data.remote.tmdb.TmdbApiKeyInterceptor
+import com.timeline.app.data.remote.tmdb.TmdbLanguageInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -27,9 +28,13 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(apiKeyInterceptor: TmdbApiKeyInterceptor): OkHttpClient =
+    fun provideOkHttpClient(
+        apiKeyInterceptor: TmdbApiKeyInterceptor,
+        languageInterceptor: TmdbLanguageInterceptor,
+    ): OkHttpClient =
         OkHttpClient.Builder()
             .addInterceptor(apiKeyInterceptor)
+            .addInterceptor(languageInterceptor)
             .addInterceptor(HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BASIC })
             .build()
 
