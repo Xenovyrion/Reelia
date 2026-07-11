@@ -17,6 +17,7 @@ data class UpcomingEpisodeItem(
     val showTitle: String,
     val episodeName: String,
     val networkNames: String?,
+    val posterUrl: String?,
     val airDate: String,
     val daysUntil: Long,
 )

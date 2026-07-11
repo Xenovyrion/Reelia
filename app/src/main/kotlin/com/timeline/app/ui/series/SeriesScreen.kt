@@ -1,5 +1,7 @@
 package com.timeline.app.ui.series
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -7,11 +9,13 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.GridView
@@ -32,10 +36,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.AsyncImage
 import com.timeline.app.R
 import com.timeline.app.domain.model.WatchStatus
 import com.timeline.app.domain.model.displayLabel
@@ -43,6 +52,7 @@ import com.timeline.app.ui.common.components.FilterBottomSheet
 import com.timeline.app.ui.common.components.MediaListRow
 import com.timeline.app.ui.common.components.PosterCard
 import com.timeline.app.ui.common.components.SectionHeader
+import com.timeline.app.ui.common.components.UpcomingCountdownBadge
 import com.timeline.app.ui.common.components.ViewMode
 import com.timeline.app.ui.theme.timeLineTopAppBarColors
 
@@ -157,34 +167,47 @@ fun SeriesScreen(
 
 @Composable
 private fun UpcomingEpisodeCard(episode: UpcomingEpisodeItem) {
-    Card(modifier = Modifier.width(200.dp)) {
-        Column(modifier = Modifier.padding(12.dp)) {
-            Text(episode.showTitle, style = MaterialTheme.typography.titleMedium, maxLines = 1)
-            if (episode.episodeName.isNotBlank()) {
-                Text(
-                    episode.episodeName,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 1,
-                )
-            }
-            episode.networkNames?.let {
-                Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            }
-            Text(
-                daysUntilLabel(episode.daysUntil),
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.padding(top = 6.dp),
+    Card(modifier = Modifier.width(240.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(12.dp)) {
+            AsyncImage(
+                model = episode.posterUrl,
+                contentDescription = episode.showTitle,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .width(56.dp)
+                    .height(84.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                    .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.4f), RoundedCornerShape(10.dp)),
             )
+            Column(modifier = Modifier.weight(1f).padding(start = 10.dp)) {
+                Text(
+                    episode.showTitle,
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                if (episode.episodeName.isNotBlank()) {
+                    Text(
+                        episode.episodeName,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
+                episode.networkNames?.let {
+                    Text(
+                        it,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
+            }
+            UpcomingCountdownBadge(episode.daysUntil, modifier = Modifier.padding(start = 8.dp))
         }
     }
-}
-
-@Composable
-private fun daysUntilLabel(days: Long): String = when {
-    days < 0 -> stringResource(R.string.days_until_aired)
-    days == 0L -> stringResource(R.string.days_until_today)
-    days == 1L -> stringResource(R.string.days_until_tomorrow)
-    else -> stringResource(R.string.days_until_in_days, days)
 }

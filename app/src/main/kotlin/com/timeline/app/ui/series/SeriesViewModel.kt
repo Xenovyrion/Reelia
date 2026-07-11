@@ -89,6 +89,7 @@ class SeriesViewModel @Inject constructor(
                     showTitle = show.name,
                     episodeName = show.nextEpisodeToAirName.orEmpty(),
                     networkNames = show.networkNames,
+                    posterUrl = imageUrlBuilder.posterUrl(show.posterPath),
                     airDate = airDateStr,
                     daysUntil = ChronoUnit.DAYS.between(today, airDate),
                 )
