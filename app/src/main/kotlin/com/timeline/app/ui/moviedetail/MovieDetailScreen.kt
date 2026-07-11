@@ -26,6 +26,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.timeline.app.R
 import com.timeline.app.ui.common.components.BackdropHeader
+import com.timeline.app.ui.common.format.toYearOrNull
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -60,7 +61,7 @@ fun MovieDetailScreen(
                 Spacer(Modifier.padding(top = 8.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     val metadata = listOfNotNull(
-                        uiState.releaseDate,
+                        uiState.releaseDate.toYearOrNull(),
                         uiState.runtimeMinutes?.let { stringResource(R.string.movie_detail_runtime_minutes_format, it) },
                     ).joinToString(" • ")
                     Text(

@@ -31,6 +31,7 @@ import com.timeline.app.ui.common.components.BackdropHeader
 import com.timeline.app.ui.common.components.CastRow
 import com.timeline.app.ui.common.components.SectionHeader
 import com.timeline.app.ui.common.components.WatchProvidersRow
+import com.timeline.app.ui.common.format.toYearOrNull
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,7 +64,7 @@ fun ShowPreviewScreen(
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                     val metadata = listOfNotNull(
                         uiState.numberOfSeasons?.let { stringResource(R.string.season_count_format, it) },
-                        uiState.firstAirDate,
+                        uiState.firstAirDate.toYearOrNull(),
                         uiState.genreNames.takeIf { it.isNotEmpty() }?.joinToString(", "),
                     ).joinToString(" • ")
                     Text(

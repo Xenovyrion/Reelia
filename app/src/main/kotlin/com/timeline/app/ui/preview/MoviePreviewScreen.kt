@@ -31,6 +31,7 @@ import com.timeline.app.ui.common.components.BackdropHeader
 import com.timeline.app.ui.common.components.CastRow
 import com.timeline.app.ui.common.components.SectionHeader
 import com.timeline.app.ui.common.components.WatchProvidersRow
+import com.timeline.app.ui.common.format.toYearOrNull
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -62,7 +63,7 @@ fun MoviePreviewScreen(
                 Spacer(Modifier.padding(top = 8.dp))
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                     val metadata = listOfNotNull(
-                        uiState.releaseDate,
+                        uiState.releaseDate.toYearOrNull(),
                         uiState.runtimeMinutes?.let { stringResource(R.string.movie_detail_runtime_minutes_format, it) },
                         uiState.genreNames.takeIf { it.isNotEmpty() }?.joinToString(", "),
                     ).joinToString(" • ")

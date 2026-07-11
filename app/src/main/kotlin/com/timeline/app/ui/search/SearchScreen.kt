@@ -36,6 +36,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.timeline.app.R
 import com.timeline.app.domain.model.MediaType
+import com.timeline.app.ui.common.format.toYearOrNull
 import com.timeline.app.ui.theme.timeLineTopAppBarColors
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -88,7 +89,7 @@ fun SearchScreen(
                     items(uiState.displayedItems, key = { "${it.mediaType}_${it.id}" }) { item ->
                         ListItem(
                             headlineContent = { Text(item.title) },
-                            supportingContent = { Text(item.date.orEmpty()) },
+                            supportingContent = { Text(item.date.toYearOrNull().orEmpty()) },
                             leadingContent = {
                                 AsyncImage(
                                     model = item.posterUrl,
