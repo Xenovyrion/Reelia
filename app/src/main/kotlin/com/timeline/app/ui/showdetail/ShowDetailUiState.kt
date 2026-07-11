@@ -1,6 +1,7 @@
 package com.timeline.app.ui.showdetail
 
 import com.timeline.app.domain.model.WatchStatus
+import com.timeline.app.ui.common.components.WatchProviderRowItem
 
 data class EpisodeUi(
     val episodeNumber: Int,
@@ -38,4 +39,7 @@ data class ShowDetailUiState(
     val totalEpisodeCount: Int = 0,
     val seasons: List<SeasonUi> = emptyList(),
     val nextUnwatchedEpisode: NextEpisodeUi? = null,
+    val watchProvidersFlatrate: List<WatchProviderRowItem> = emptyList(),
+    val watchProvidersRent: List<WatchProviderRowItem> = emptyList(),
+    val watchProvidersBuy: List<WatchProviderRowItem> = emptyList(),
 )

@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
@@ -36,6 +37,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -46,6 +48,7 @@ import com.timeline.app.R
 import com.timeline.app.domain.model.displayLabel
 import com.timeline.app.ui.common.components.BackdropHeader
 import com.timeline.app.ui.common.components.SectionHeader
+import com.timeline.app.ui.common.components.WatchProvidersRow
 import com.timeline.app.ui.common.components.WatchedToggleButton
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -130,6 +133,14 @@ fun ShowDetailScreen(
                         SectionHeader(stringResource(R.string.show_detail_about_section_title))
                         Spacer(Modifier.padding(top = 12.dp))
                         Text(uiState.overview, style = MaterialTheme.typography.bodyMedium)
+                        Spacer(Modifier.padding(top = 24.dp))
+                        SectionHeader(stringResource(R.string.preview_watch_providers_section_title))
+                        Spacer(Modifier.padding(top = 12.dp))
+                        WatchProvidersRow(
+                            flatrate = uiState.watchProvidersFlatrate,
+                            rent = uiState.watchProvidersRent,
+                            buy = uiState.watchProvidersBuy,
+                        )
                     }
                 }
             } else {
@@ -149,6 +160,7 @@ fun ShowDetailScreen(
                     item(key = "season_header_${season.seasonNumber}") {
                         SeasonHeader(
                             season = season,
+                            isExpanded = isExpanded,
                             onToggle = {
                                 expandedSeasons = if (isExpanded) {
                                     expandedSeasons - season.seasonNumber
@@ -255,7 +267,7 @@ private fun RatingBadge(rating: Float) {
 }
 
 @Composable
-private fun SeasonHeader(season: SeasonUi, onToggle: () -> Unit, onMarkAllWatched: () -> Unit) {
+private fun SeasonHeader(season: SeasonUi, isExpanded: Boolean, onToggle: () -> Unit, onMarkAllWatched: () -> Unit) {
     val watchedCount = season.episodes.count { it.watched }
     val allWatched = season.episodeCount > 0 && watchedCount == season.episodeCount
 
@@ -267,6 +279,13 @@ private fun SeasonHeader(season: SeasonUi, onToggle: () -> Unit, onMarkAllWatche
     ) {
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
             SectionHeader(season.name, modifier = Modifier.weight(1f))
+            Icon(
+                Icons.Filled.ExpandMore,
+                contentDescription = null,
+                modifier = Modifier
+                    .padding(start = 8.dp)
+                    .rotate(if (isExpanded) 180f else 0f),
+            )
             WatchedToggleButton(
                 checked = allWatched,
                 onCheckedChange = { onMarkAllWatched() },
