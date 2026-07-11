@@ -122,8 +122,9 @@ fun SeriesScreen(
                         items(sectionItems, key = { "list_${it.id}" }) { item ->
                             MediaListRow(
                                 title = item.title,
-                                subtitle = null,
+                                subtitle = item.nextEpisodeName,
                                 posterUrl = item.posterUrl,
+                                episodeCode = item.nextEpisodeCode,
                                 onClick = { onShowClick(item.id) },
                             )
                         }

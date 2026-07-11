@@ -10,6 +10,8 @@ data class SeriesListItem(
     val posterUrl: String?,
     val progress: Float?,
     val status: WatchStatus,
+    val nextEpisodeCode: String? = null,
+    val nextEpisodeName: String? = null,
 )
 
 data class UpcomingEpisodeItem(

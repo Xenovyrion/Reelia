@@ -35,6 +35,11 @@ interface EpisodeDao {
     @Query("SELECT showId, COUNT(*) AS total, SUM(watched) AS watchedCount FROM episodes GROUP BY showId")
     fun getEpisodeProgressByShow(): Flow<List<ShowEpisodeProgress>>
 
+    /** Ordered so the first row per showId (grouped in-memory) is that show's next
+     * unwatched episode — libraries here are small, no need for fancier per-group SQL. */
+    @Query("SELECT * FROM episodes WHERE watched = 0 ORDER BY showId, seasonNumber, episodeNumber")
+    fun getAllUnwatchedEpisodesOrdered(): Flow<List<EpisodeEntity>>
+
     @Query(
         "SELECT * FROM episodes WHERE showId = :showId AND seasonNumber = :seasonNumber AND watched = 0",
     )

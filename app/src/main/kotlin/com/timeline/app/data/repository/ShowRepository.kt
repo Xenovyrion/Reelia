@@ -5,6 +5,7 @@ import com.timeline.app.data.local.dao.GenreDao
 import com.timeline.app.data.local.dao.SeasonDao
 import com.timeline.app.data.local.dao.ShowDao
 import com.timeline.app.data.local.dao.ShowEpisodeProgress
+import com.timeline.app.data.local.entity.EpisodeEntity
 import com.timeline.app.data.local.entity.GenreEntity
 import com.timeline.app.data.local.entity.ShowGenreCrossRef
 import com.timeline.app.data.local.entity.ShowWithDetails
@@ -33,6 +34,8 @@ class ShowRepository @Inject constructor(
     fun getShowWithDetails(showId: Int): Flow<ShowWithDetails?> = showDao.getShowWithDetails(showId)
 
     fun getEpisodeProgressByShow(): Flow<List<ShowEpisodeProgress>> = episodeDao.getEpisodeProgressByShow()
+
+    fun getAllUnwatchedEpisodesOrdered(): Flow<List<EpisodeEntity>> = episodeDao.getAllUnwatchedEpisodesOrdered()
 
     fun getGenresForTrackedShows(): Flow<List<GenreEntity>> = genreDao.getGenresForTrackedShows()
 

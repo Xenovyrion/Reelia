@@ -3,6 +3,7 @@ package com.timeline.app.ui.series
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.timeline.app.data.local.dao.ShowEpisodeProgress
+import com.timeline.app.data.local.entity.EpisodeEntity
 import com.timeline.app.data.local.entity.GenreEntity
 import com.timeline.app.data.local.entity.ShowGenreCrossRef
 import com.timeline.app.data.local.entity.TrackedShowEntity
@@ -27,6 +28,7 @@ private data class RawSeriesData(
     val progress: List<ShowEpisodeProgress>,
     val genres: List<GenreEntity>,
     val crossRefs: List<ShowGenreCrossRef>,
+    val unwatchedEpisodes: List<EpisodeEntity>,
 )
 
 private data class FilterState(
@@ -48,11 +50,15 @@ class SeriesViewModel @Inject constructor(
         showRepository.getEpisodeProgressByShow(),
         showRepository.getGenresForTrackedShows(),
         showRepository.getShowGenreCrossRefs(),
-    ) { shows, progress, genres, crossRefs -> RawSeriesData(shows, progress, genres, crossRefs) }
+        showRepository.getAllUnwatchedEpisodesOrdered(),
+    ) { shows, progress, genres, crossRefs, unwatchedEpisodes ->
+        RawSeriesData(shows, progress, genres, crossRefs, unwatchedEpisodes)
+    }
 
     val uiState: StateFlow<SeriesUiState> = combine(rawData, filterState) { raw, filter ->
         val progressByShowId = raw.progress.associateBy { it.showId }
         val genreIdsByShowId = raw.crossRefs.groupBy({ it.showId }, { it.genreId })
+        val nextEpisodeByShowId = raw.unwatchedEpisodes.groupBy { it.showId }.mapValues { it.value.first() }
 
         val filteredShows = raw.shows.filter { show ->
             val matchesStatus = filter.selectedStatuses.isEmpty() || show.status in filter.selectedStatuses
@@ -67,6 +73,7 @@ class SeriesViewModel @Inject constructor(
             .mapValues { (_, shows) ->
                 shows.map { show ->
                     val showProgress = progressByShowId[show.tmdbId]
+                    val nextEpisode = nextEpisodeByShowId[show.tmdbId]
                     SeriesListItem(
                         id = show.tmdbId,
                         title = show.name,
@@ -75,6 +82,8 @@ class SeriesViewModel @Inject constructor(
                             if (it.total == 0) 0f else it.watchedCount.toFloat() / it.total
                         },
                         status = show.status,
+                        nextEpisodeCode = nextEpisode?.let { "S${it.seasonNumber} · E${it.episodeNumber}" },
+                        nextEpisodeName = nextEpisode?.name,
                     )
                 }
             }
