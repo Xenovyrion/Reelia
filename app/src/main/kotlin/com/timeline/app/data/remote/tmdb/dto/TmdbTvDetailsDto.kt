@@ -17,6 +17,7 @@ data class TmdbTvDetailsDto(
     val seasons: List<TmdbSeasonSummaryDto> = emptyList(),
     @SerialName("next_episode_to_air") val nextEpisodeToAir: TmdbEpisodeSummaryDto? = null,
     val networks: List<TmdbNetworkDto> = emptyList(),
+    @SerialName("vote_average") val voteAverage: Float? = null,
 )
 
 @Serializable

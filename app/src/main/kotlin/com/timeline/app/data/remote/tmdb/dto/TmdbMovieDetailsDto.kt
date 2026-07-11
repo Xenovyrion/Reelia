@@ -12,4 +12,5 @@ data class TmdbMovieDetailsDto(
     @SerialName("release_date") val releaseDate: String? = null,
     val runtime: Int? = null,
     val genres: List<TmdbGenreDto> = emptyList(),
+    @SerialName("vote_average") val voteAverage: Float? = null,
 )
