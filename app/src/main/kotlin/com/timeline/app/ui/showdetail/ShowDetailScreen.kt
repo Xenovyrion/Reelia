@@ -35,7 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.timeline.app.domain.model.WatchStatus
+import com.timeline.app.domain.model.displayLabel
 import com.timeline.app.ui.common.components.BackdropHeader
 import com.timeline.app.ui.common.components.SectionHeader
 
@@ -75,7 +75,7 @@ fun ShowDetailScreen(
                         modifier = Modifier.fillMaxWidth(),
                     ) {
                         Text(
-                            "${uiState.seasonCount} saisons • ${uiState.status.label()}",
+                            "${uiState.seasonCount} saisons • ${uiState.status.displayLabel()}",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.weight(1f),
@@ -179,14 +179,6 @@ private fun RatingBadge(rating: Float) {
             )
         }
     }
-}
-
-private fun WatchStatus.label(): String = when (this) {
-    WatchStatus.WATCHING -> "En cours"
-    WatchStatus.PLAN_TO_WATCH -> "À voir"
-    WatchStatus.COMPLETED -> "Terminée"
-    WatchStatus.DROPPED -> "Abandonnée"
-    WatchStatus.ON_HOLD -> "En pause"
 }
 
 @Composable

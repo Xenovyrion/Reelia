@@ -34,6 +34,10 @@ class ShowRepository @Inject constructor(
 
     fun getEpisodeProgressByShow(): Flow<List<ShowEpisodeProgress>> = episodeDao.getEpisodeProgressByShow()
 
+    fun getGenresForTrackedShows(): Flow<List<GenreEntity>> = genreDao.getGenresForTrackedShows()
+
+    fun getShowGenreCrossRefs(): Flow<List<ShowGenreCrossRef>> = genreDao.getAllShowGenreCrossRefs()
+
     /** Fetches full show + season 1 metadata from TMDB and persists it as a new tracked show. */
     suspend fun addShowFromTmdb(tmdbId: Int) {
         val details = tmdbApi.getTvDetails(tmdbId)
