@@ -28,6 +28,8 @@ class MovieRepository @Inject constructor(
 
     fun getMovieGenreCrossRefs(): Flow<List<MovieGenreCrossRef>> = genreDao.getAllMovieGenreCrossRefs()
 
+    fun getGenresForMovie(movieId: Int): Flow<List<GenreEntity>> = genreDao.getGenresForMovie(movieId)
+
     suspend fun addMovieFromTmdb(tmdbId: Int) {
         val details = tmdbApi.getMovieDetails(tmdbId)
         movieDao.upsertMovie(details.toEntity(status = WatchStatus.PLAN_TO_WATCH, addedAt = Instant.now()))
