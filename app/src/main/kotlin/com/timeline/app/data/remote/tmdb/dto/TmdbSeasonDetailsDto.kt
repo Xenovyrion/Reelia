@@ -20,4 +20,5 @@ data class TmdbEpisodeDto(
     @SerialName("vote_average") val voteAverage: Float? = null,
     @SerialName("air_date") val airDate: String? = null,
     val runtime: Int? = null,
+    @SerialName("still_path") val stillPath: String? = null,
 )

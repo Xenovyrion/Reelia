@@ -61,6 +61,7 @@ fun TmdbSeasonDetailsDto.toEpisodeEntities(showId: Int, defaultRuntimeMinutes: I
             voteAverage = episode.voteAverage,
             airDate = episode.airDate,
             runtimeMinutes = episode.runtime ?: defaultRuntimeMinutes,
+            stillPath = episode.stillPath,
         )
     }
 

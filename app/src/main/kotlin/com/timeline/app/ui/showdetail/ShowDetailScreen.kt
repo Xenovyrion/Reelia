@@ -1,5 +1,6 @@
 package com.timeline.app.ui.showdetail
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,8 +10,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Checkbox
@@ -32,10 +35,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.AsyncImage
 import com.timeline.app.R
 import com.timeline.app.domain.model.displayLabel
 import com.timeline.app.ui.common.components.BackdropHeader
@@ -168,7 +174,20 @@ fun ShowDetailScreen(
                                             viewModel.onEpisodeToggled(season.seasonNumber, episode.episodeNumber, it)
                                         },
                                     )
-                                    Text("${episode.episodeNumber}. ${episode.name}")
+                                    AsyncImage(
+                                        model = episode.stillUrl,
+                                        contentDescription = episode.name,
+                                        contentScale = ContentScale.Crop,
+                                        modifier = Modifier
+                                            .width(96.dp)
+                                            .height(54.dp)
+                                            .clip(RoundedCornerShape(6.dp))
+                                            .background(MaterialTheme.colorScheme.surfaceVariant),
+                                    )
+                                    Text(
+                                        "${episode.episodeNumber}. ${episode.name}",
+                                        modifier = Modifier.padding(start = 12.dp),
+                                    )
                                 }
                                 if (isEpisodeExpanded) {
                                     Column(modifier = Modifier.padding(start = 48.dp, end = 16.dp, bottom = 12.dp)) {

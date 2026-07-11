@@ -8,6 +8,7 @@ data class EpisodeUi(
     val watched: Boolean,
     val overview: String? = null,
     val voteAverage: Float? = null,
+    val stillUrl: String? = null,
 )
 
 data class SeasonUi(

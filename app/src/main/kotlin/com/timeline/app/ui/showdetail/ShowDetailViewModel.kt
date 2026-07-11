@@ -39,7 +39,16 @@ class ShowDetailViewModel @Inject constructor(
                         episodes = episodesBySeason[season.seasonNumber]
                             .orEmpty()
                             .sortedBy { it.episodeNumber }
-                            .map { EpisodeUi(it.episodeNumber, it.name, it.watched, it.overview, it.voteAverage) },
+                            .map {
+                                EpisodeUi(
+                                    it.episodeNumber,
+                                    it.name,
+                                    it.watched,
+                                    it.overview,
+                                    it.voteAverage,
+                                    imageUrlBuilder.stillUrl(it.stillPath),
+                                )
+                            },
                     )
                 }
             ShowDetailUiState(

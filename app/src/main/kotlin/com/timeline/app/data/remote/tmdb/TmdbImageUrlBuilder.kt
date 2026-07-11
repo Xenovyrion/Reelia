@@ -12,6 +12,7 @@ class TmdbImageUrlBuilder @Inject constructor(
     private companion object {
         const val POSTER_SIZE = "w342"
         const val BACKDROP_SIZE = "w780"
+        const val STILL_SIZE = "w300"
         const val FALLBACK_BASE_URL = "https://image.tmdb.org/t/p/"
     }
 
@@ -36,4 +37,7 @@ class TmdbImageUrlBuilder @Inject constructor(
         if (backdropPath == null) return null
         return "${baseUrl()}$BACKDROP_SIZE$backdropPath"
     }
+
+    /** Episode-list thumbnail. */
+    suspend fun stillUrl(stillPath: String?): String? = posterUrl(stillPath, size = STILL_SIZE)
 }

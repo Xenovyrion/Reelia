@@ -27,6 +27,7 @@ data class EpisodeEntity(
     val voteAverage: Float? = null,
     val airDate: String?,
     val runtimeMinutes: Int?,
+    val stillPath: String? = null,
     val watched: Boolean = false,
     val watchedAt: Instant? = null,
 )
