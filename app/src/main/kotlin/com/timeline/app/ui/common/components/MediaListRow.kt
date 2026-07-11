@@ -1,6 +1,7 @@
 package com.timeline.app.ui.common.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,7 +22,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 
-/** List-mode row for Séries/Films tabs — poster thumbnail, title, subtitle, progress strip. */
+private val PosterWidth = 64.dp
+private val PosterHeight = 96.dp
+
+/** List-mode row for Séries/Films tabs — poster thumbnail (with its own progress strip
+ * directly underneath, matching the poster's width), title, subtitle. */
 @Composable
 fun MediaListRow(
     title: String,
@@ -38,16 +43,37 @@ fun MediaListRow(
             .clickable(onClick = onClick)
             .padding(vertical = 8.dp, horizontal = 16.dp),
     ) {
-        AsyncImage(
-            model = posterUrl,
-            contentDescription = title,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .width(56.dp)
-                .height(84.dp)
-                .clip(RoundedCornerShape(6.dp))
-                .background(MaterialTheme.colorScheme.surfaceVariant),
-        )
+        Column(modifier = Modifier.width(PosterWidth)) {
+            AsyncImage(
+                model = posterUrl,
+                contentDescription = title,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .width(PosterWidth)
+                    .height(PosterHeight)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                    .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.4f), RoundedCornerShape(10.dp)),
+            )
+            if (progress != null) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 6.dp)
+                        .height(4.dp)
+                        .clip(RoundedCornerShape(2.dp))
+                        .background(MaterialTheme.colorScheme.surfaceVariant),
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth(progress.coerceIn(0f, 1f))
+                            .height(4.dp)
+                            .clip(RoundedCornerShape(2.dp))
+                            .background(MaterialTheme.colorScheme.primary),
+                    )
+                }
+            }
+        }
         Column(modifier = Modifier.padding(start = 12.dp).fillMaxWidth()) {
             Text(
                 text = title,
@@ -62,24 +88,6 @@ fun MediaListRow(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(top = 2.dp),
                 )
-            }
-            if (progress != null) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 8.dp)
-                        .height(3.dp)
-                        .clip(RoundedCornerShape(2.dp))
-                        .background(MaterialTheme.colorScheme.surfaceVariant),
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth(progress.coerceIn(0f, 1f))
-                            .height(3.dp)
-                            .clip(RoundedCornerShape(2.dp))
-                            .background(MaterialTheme.colorScheme.primary),
-                    )
-                }
             }
         }
     }

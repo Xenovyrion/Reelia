@@ -1,6 +1,7 @@
 package com.timeline.app.ui.common.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -42,8 +43,9 @@ fun PosterCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(2f / 3f)
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(MaterialTheme.colorScheme.surfaceVariant),
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                    .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.4f), RoundedCornerShape(12.dp)),
             )
             if (isCompleted) {
                 Surface(
@@ -66,15 +68,15 @@ fun PosterCard(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 4.dp)
-                    .height(3.dp)
+                    .padding(top = 6.dp)
+                    .height(4.dp)
                     .clip(RoundedCornerShape(2.dp))
                     .background(MaterialTheme.colorScheme.surfaceVariant),
             ) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth(progress.coerceIn(0f, 1f))
-                        .height(3.dp)
+                        .height(4.dp)
                         .clip(RoundedCornerShape(2.dp))
                         .background(MaterialTheme.colorScheme.primary),
                 )
