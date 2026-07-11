@@ -129,14 +129,15 @@ fun FilmsScreen(
                         }
                     } else {
                         items(sectionItems.chunked(3), key = { row -> "grid_${row.first().id}" }) { row ->
-                            Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp)) {
+                            Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 4.dp)) {
                                 row.forEach { item ->
                                     PosterCard(
                                         title = item.title,
                                         posterUrl = item.posterUrl,
+                                        status = item.status,
                                         progress = item.progress,
                                         onClick = { onMovieClick(item.id) },
-                                        modifier = Modifier.weight(1f).padding(end = 6.dp),
+                                        modifier = Modifier.weight(1f).padding(end = 4.dp),
                                     )
                                 }
                                 repeat(3 - row.size) {
