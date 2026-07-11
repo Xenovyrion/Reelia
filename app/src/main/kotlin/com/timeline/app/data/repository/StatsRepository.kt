@@ -1,6 +1,8 @@
 package com.timeline.app.data.repository
 
+import com.timeline.app.data.local.dao.TimeBucketStat
 import com.timeline.app.data.local.dao.WatchLogDao
+import com.timeline.app.domain.model.MediaType
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.flow.Flow
@@ -15,8 +17,14 @@ data class BasicStats(
 class StatsRepository @Inject constructor(
     private val watchLogDao: WatchLogDao,
 ) {
-    fun getBasicStats(): Flow<BasicStats> =
-        combine(watchLogDao.totalMinutesWatched(), watchLogDao.countEntries()) { minutes, count ->
+    fun getBasicStats(mediaType: MediaType? = null): Flow<BasicStats> =
+        combine(watchLogDao.totalMinutesWatched(mediaType), watchLogDao.countEntries(mediaType)) { minutes, count ->
             BasicStats(totalMinutesWatched = minutes, totalWatchedCount = count)
         }
+
+    fun getWeeklyBreakdown(mediaType: MediaType? = null, limit: Int = 12): Flow<List<TimeBucketStat>> =
+        watchLogDao.getWeeklyBreakdown(mediaType, limit)
+
+    fun getMonthlyBreakdown(mediaType: MediaType? = null, limit: Int = 12): Flow<List<TimeBucketStat>> =
+        watchLogDao.getMonthlyBreakdown(mediaType, limit)
 }

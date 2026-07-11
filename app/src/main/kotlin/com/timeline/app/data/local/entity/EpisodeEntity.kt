@@ -23,6 +23,8 @@ data class EpisodeEntity(
     val episodeNumber: Int,
     val tmdbEpisodeId: Int,
     val name: String,
+    val overview: String? = null,
+    val voteAverage: Float? = null,
     val airDate: String?,
     val runtimeMinutes: Int?,
     val watched: Boolean = false,

@@ -23,4 +23,5 @@ data class TrackedShowEntity(
     val nextEpisodeSeasonNumber: Int?,
     val nextEpisodeNumber: Int?,
     val averageEpisodeRuntimeMinutes: Int?,
+    val networkNames: String? = null,
 )
