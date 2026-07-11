@@ -6,6 +6,8 @@ data class EpisodeUi(
     val episodeNumber: Int,
     val name: String,
     val watched: Boolean,
+    val overview: String? = null,
+    val voteAverage: Float? = null,
 )
 
 data class SeasonUi(

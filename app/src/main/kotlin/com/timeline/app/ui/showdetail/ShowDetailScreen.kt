@@ -47,6 +47,7 @@ fun ShowDetailScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var expandedSeasons by remember { mutableStateOf(setOf<Int>()) }
+    var expandedEpisodes by remember { mutableStateOf(setOf<String>()) }
     var selectedTab by remember { mutableIntStateOf(0) }
 
     Scaffold { padding ->
@@ -131,22 +132,50 @@ fun ShowDetailScreen(
                     }
                     if (isExpanded) {
                         items(season.episodes, key = { "ep_${season.seasonNumber}_${it.episodeNumber}" }) { episode ->
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
+                            val episodeKey = "${season.seasonNumber}_${episode.episodeNumber}"
+                            val isEpisodeExpanded = expandedEpisodes.contains(episodeKey)
+                            Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(horizontal = 16.dp, vertical = 4.dp)
                                     .clickable {
-                                        viewModel.onEpisodeToggled(season.seasonNumber, episode.episodeNumber, !episode.watched)
+                                        expandedEpisodes = if (isEpisodeExpanded) {
+                                            expandedEpisodes - episodeKey
+                                        } else {
+                                            expandedEpisodes + episodeKey
+                                        }
                                     },
                             ) {
-                                Checkbox(
-                                    checked = episode.watched,
-                                    onCheckedChange = {
-                                        viewModel.onEpisodeToggled(season.seasonNumber, episode.episodeNumber, it)
-                                    },
-                                )
-                                Text("${episode.episodeNumber}. ${episode.name}")
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 16.dp, vertical = 4.dp),
+                                ) {
+                                    Checkbox(
+                                        checked = episode.watched,
+                                        onCheckedChange = {
+                                            viewModel.onEpisodeToggled(season.seasonNumber, episode.episodeNumber, it)
+                                        },
+                                    )
+                                    Text("${episode.episodeNumber}. ${episode.name}")
+                                }
+                                if (isEpisodeExpanded) {
+                                    Column(modifier = Modifier.padding(start = 48.dp, end = 16.dp, bottom = 12.dp)) {
+                                        episode.voteAverage?.let { rating ->
+                                            Text(
+                                                "Note : ${"%.1f".format(rating)}/10",
+                                                style = MaterialTheme.typography.labelMedium,
+                                                color = MaterialTheme.colorScheme.tertiary,
+                                            )
+                                        }
+                                        Text(
+                                            episode.overview?.takeIf { it.isNotBlank() } ?: "Pas de résumé disponible.",
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                            modifier = Modifier.padding(top = 4.dp),
+                                        )
+                                    }
+                                }
                             }
                         }
                     }
