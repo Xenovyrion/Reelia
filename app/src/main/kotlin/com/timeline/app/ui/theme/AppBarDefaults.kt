@@ -6,7 +6,7 @@ import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 
-/** Keeps every screen's top bar flush with the near-black background instead of M3's default tonal scroll tint. */
+/** Keeps every screen's top bar flush with the app background instead of M3's default tonal scroll tint. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun timeLineTopAppBarColors(): TopAppBarColors = TopAppBarDefaults.topAppBarColors(
