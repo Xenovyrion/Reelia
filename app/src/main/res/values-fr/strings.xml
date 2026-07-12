@@ -16,6 +16,13 @@
     <string name="watch_status_dropped">Abandonnée</string>
     <string name="watch_status_on_hold">En pause</string>
 
+    <!-- ShowBroadcastStatus display labels -->
+    <string name="show_broadcast_status_returning">En diffusion</string>
+    <string name="show_broadcast_status_ended">Terminée</string>
+    <string name="show_broadcast_status_canceled">Annulée</string>
+    <string name="show_broadcast_status_in_production">En production</string>
+    <string name="show_broadcast_status_unknown">Inconnu</string>
+
     <!-- PosterCard -->
     <string name="poster_completed_badge">TERMINÉ</string>
 

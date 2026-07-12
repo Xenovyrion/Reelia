@@ -52,4 +52,14 @@ interface GenreDao {
         """,
     )
     fun getGenresForMovie(movieId: Int): Flow<List<GenreEntity>>
+
+    @Query(
+        """
+        SELECT g.* FROM genres g
+        JOIN show_genre_cross_ref sg ON g.tmdbId = sg.genreId
+        WHERE sg.showId = :showId
+        ORDER BY g.name
+        """,
+    )
+    fun getGenresForShow(showId: Int): Flow<List<GenreEntity>>
 }

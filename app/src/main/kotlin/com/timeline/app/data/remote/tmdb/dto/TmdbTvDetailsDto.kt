@@ -18,6 +18,16 @@ data class TmdbTvDetailsDto(
     @SerialName("next_episode_to_air") val nextEpisodeToAir: TmdbEpisodeSummaryDto? = null,
     val networks: List<TmdbNetworkDto> = emptyList(),
     @SerialName("vote_average") val voteAverage: Float? = null,
+    val status: String = "",
+    @SerialName("last_air_date") val lastAirDate: String? = null,
+    @SerialName("created_by") val createdBy: List<TmdbCreatorDto> = emptyList(),
+)
+
+@Serializable
+data class TmdbCreatorDto(
+    val id: Int,
+    val name: String,
+    @SerialName("profile_path") val profilePath: String? = null,
 )
 
 @Serializable

@@ -16,6 +16,13 @@
     <string name="watch_status_dropped">Dropped</string>
     <string name="watch_status_on_hold">On Hold</string>
 
+    <!-- ShowBroadcastStatus display labels -->
+    <string name="show_broadcast_status_returning">Ongoing</string>
+    <string name="show_broadcast_status_ended">Ended</string>
+    <string name="show_broadcast_status_canceled">Canceled</string>
+    <string name="show_broadcast_status_in_production">In Production</string>
+    <string name="show_broadcast_status_unknown">Unknown</string>
+
     <!-- PosterCard -->
     <string name="poster_completed_badge">DONE</string>
 
