@@ -170,7 +170,10 @@ class FirestoreSyncRepository @Inject constructor(
         deleteAllDocuments("users/$uid/movies")
         deleteAllDocuments("users/$uid/watchLog")
         firestore.collection("users").document(uid).delete().await()
-        appDatabase.clearAllTables()
+        // clearAllTables() is a blocking call, not a suspend fun — this whole function runs on
+        // viewModelScope's Main dispatcher by default, so without this it hits Room's main-thread
+        // guard ("Cannot access database on the main thread").
+        withContext(Dispatchers.IO) { appDatabase.clearAllTables() }
         firebaseAuth.currentUser?.delete()?.await()
     }
 
