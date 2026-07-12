@@ -30,7 +30,7 @@ fun TmdbTvDetailsDto.toEntity(status: WatchStatus, addedAt: Instant): TrackedSho
         nextEpisodeNumber = nextEpisodeToAir?.episodeNumber,
         averageEpisodeRuntimeMinutes = episodeRunTime.firstOrNull(),
         networkNames = networks.map { it.name }.takeIf { it.isNotEmpty() }?.joinToString(", "),
-        broadcastStatus = status,
+        broadcastStatus = this.status,
         lastAirDate = lastAirDate,
         creatorNames = createdBy.map { it.name }.takeIf { it.isNotEmpty() }?.joinToString(", "),
     )
