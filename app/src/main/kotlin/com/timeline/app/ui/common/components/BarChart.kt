@@ -40,12 +40,13 @@ fun BarChart(
         return
     }
     val maxValue = entries.maxOf { it.value }
+    val maxEntryIndex = entries.indexOfFirst { it.value == maxValue }
     Row(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalAlignment = Alignment.Bottom,
     ) {
-        entries.forEach { entry ->
+        entries.forEachIndexed { index, entry ->
             val heightFraction = if (maxValue <= 0f) 0f else (entry.value / maxValue).coerceIn(0f, 1f)
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -57,7 +58,13 @@ fun BarChart(
                         .height(maxBarHeight * heightFraction)
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp))
-                        .background(MaterialTheme.colorScheme.primary),
+                        .background(
+                            if (index == maxEntryIndex) {
+                                MaterialTheme.colorScheme.primary
+                            } else {
+                                MaterialTheme.colorScheme.surfaceContainerHigh
+                            },
+                        ),
                 )
                 Text(
                     entry.label,

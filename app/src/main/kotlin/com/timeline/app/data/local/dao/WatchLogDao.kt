@@ -43,4 +43,26 @@ interface WatchLogDao {
         """,
     )
     fun getMonthlyBreakdown(mediaType: MediaType?, limit: Int = 12): Flow<List<TimeBucketStat>>
+
+    @Query(
+        """
+        SELECT genreName, COALESCE(SUM(runtimeMinutes), 0) AS totalMinutes FROM (
+            SELECT wl.runtimeMinutes AS runtimeMinutes, g.name AS genreName
+            FROM watch_log wl
+            JOIN show_genre_cross_ref sg ON sg.showId = wl.tmdbId
+            JOIN genres g ON g.tmdbId = sg.genreId
+            WHERE wl.mediaType = 'TV' AND (:mediaType IS NULL OR wl.mediaType = :mediaType)
+            UNION ALL
+            SELECT wl.runtimeMinutes AS runtimeMinutes, g.name AS genreName
+            FROM watch_log wl
+            JOIN movie_genre_cross_ref mg ON mg.movieId = wl.tmdbId
+            JOIN genres g ON g.tmdbId = mg.genreId
+            WHERE wl.mediaType = 'MOVIE' AND (:mediaType IS NULL OR wl.mediaType = :mediaType)
+        )
+        GROUP BY genreName
+        ORDER BY totalMinutes DESC
+        LIMIT :limit
+        """,
+    )
+    fun getGenreBreakdown(mediaType: MediaType? = null, limit: Int = 5): Flow<List<GenreStat>>
 }
