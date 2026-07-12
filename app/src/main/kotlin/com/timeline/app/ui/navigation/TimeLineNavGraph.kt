@@ -18,10 +18,9 @@ import com.timeline.app.ui.moviedetail.MovieDetailScreen
 import com.timeline.app.ui.persondetail.PersonDetailScreen
 import com.timeline.app.ui.preview.MoviePreviewScreen
 import com.timeline.app.ui.preview.ShowPreviewScreen
+import com.timeline.app.ui.profile.ProfileScreen
 import com.timeline.app.ui.search.SearchScreen
-import com.timeline.app.ui.settings.SettingsScreen
 import com.timeline.app.ui.showdetail.ShowDetailScreen
-import com.timeline.app.ui.stats.StatsScreen
 
 private fun navigateToItem(navController: NavHostController, mediaType: MediaType, id: Int) {
     when (mediaType) {
@@ -63,8 +62,7 @@ fun TimeLineNavGraph(navController: NavHostController, modifier: Modifier = Modi
                 },
             )
         }
-        composable(Routes.STATS) { StatsScreen() }
-        composable(Routes.SETTINGS) { SettingsScreen() }
+        composable(Routes.PROFILE) { ProfileScreen() }
 
         composable(
             route = Routes.SHOW_DETAIL,

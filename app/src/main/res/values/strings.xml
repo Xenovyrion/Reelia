@@ -6,8 +6,7 @@
     <string name="nav_series">Series</string>
     <string name="nav_films">Movies</string>
     <string name="nav_search">Search</string>
-    <string name="nav_stats">Stats</string>
-    <string name="nav_settings">Settings</string>
+    <string name="nav_profile">Profile</string>
 
     <!-- WatchStatus display labels -->
     <string name="watch_status_watching">Watching</string>
@@ -166,7 +165,6 @@
     <string name="person_detail_no_biography">No biography available.</string>
 
     <!-- Settings -->
-    <string name="settings_title">Settings</string>
     <string name="settings_language_section_title">Content language</string>
     <string name="settings_language_field_label">Language</string>
     <string name="settings_provider_section_title">Data source</string>
@@ -180,6 +178,12 @@
     <string name="settings_last_synced_format">Last synced %1$s</string>
     <string name="settings_last_synced_never">Not synced yet</string>
     <string name="settings_sign_out_button">Sign out</string>
+    <string name="profile_delete_account_button">Delete account</string>
+    <string name="profile_delete_account_dialog_title">Delete your account?</string>
+    <string name="profile_delete_account_dialog_message">This permanently deletes your account and all synced data (library, watch history, settings). This can\'t be undone.</string>
+    <string name="profile_delete_account_dialog_confirm">Delete</string>
+    <string name="profile_delete_account_dialog_cancel">Cancel</string>
+    <string name="profile_delete_account_recent_login_error">For security, please sign out, sign back in, then try deleting your account again.</string>
 
     <!-- App updates (self-hosted, GitHub Releases based) -->
     <string name="update_banner_title">Update available</string>

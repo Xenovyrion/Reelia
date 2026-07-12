@@ -5,12 +5,16 @@ import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.SetOptions
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.os.LocaleListCompat
+import com.timeline.app.data.local.AppDatabase
 import com.timeline.app.data.local.dao.EpisodeDao
 import com.timeline.app.data.local.dao.MovieDao
 import com.timeline.app.data.local.dao.ShowDao
 import com.timeline.app.data.local.dao.SyncOutboxDao
 import com.timeline.app.data.local.dao.WatchLogDao
 import com.timeline.app.data.local.entity.WatchLogEntryEntity
+import com.timeline.app.data.local.prefs.LanguagePreferenceStore
 import com.timeline.app.data.local.prefs.TmdbApiKeyStore
 import com.timeline.app.data.repository.MovieRepository
 import com.timeline.app.data.repository.ShowRepository
@@ -27,6 +31,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 
 /**
  * Cross-device sync over Firestore: pushes/pulls each show/movie's existence, `isFavorite`
@@ -51,6 +56,8 @@ class FirestoreSyncRepository @Inject constructor(
     private val episodeDao: EpisodeDao,
     private val watchLogDao: WatchLogDao,
     private val tmdbApiKeyStore: TmdbApiKeyStore,
+    private val languagePreferenceStore: LanguagePreferenceStore,
+    private val appDatabase: AppDatabase,
     private val showRepository: Lazy<ShowRepository>,
     private val movieRepository: Lazy<MovieRepository>,
 ) {
@@ -133,6 +140,42 @@ class FirestoreSyncRepository @Inject constructor(
         firestore.collection("users").document(uid)
             .set(mapOf("tmdbApiKey" to key), SetOptions.merge())
             .await()
+    }
+
+    /** Pushes the language/content-locale preference the same way as the API key — merged into
+     * the user's own document, imported by the other device via the same listener. */
+    suspend fun pushLanguage(language: String) {
+        val uid = firebaseAuth.currentUser?.uid ?: return
+        firestore.collection("users").document(uid)
+            .set(mapOf("language" to language), SetOptions.merge())
+            .await()
+    }
+
+    /**
+     * Permanently deletes this account's Firestore data and the Firebase Auth user itself.
+     *
+     * Order matters: Firestore data must be wiped *before* the Auth user is deleted, since these
+     * deletes are gated by a security rule requiring `request.auth.uid == userId` — once the user
+     * is deleted that session is invalidated and nothing could authorize cleanup afterward (this
+     * project has no server-side Cloud Functions to do it with admin rights; that requires the
+     * paid Blaze plan, deliberately avoided for a personal Spark-plan app). If the final Auth
+     * delete call fails because Firebase requires a recent sign-in, the Firestore data is already
+     * gone but the Auth account survives — the caller should ask the user to sign out, sign back
+     * in, and retry, which resets Firebase's "recent login" clock.
+     */
+    suspend fun deleteAccountAndAllData() {
+        val uid = firebaseAuth.currentUser?.uid ?: return
+        stopListening()
+        deleteAllDocuments("users/$uid/shows")
+        deleteAllDocuments("users/$uid/movies")
+        deleteAllDocuments("users/$uid/watchLog")
+        firestore.collection("users").document(uid).delete().await()
+        appDatabase.clearAllTables()
+        firebaseAuth.currentUser?.delete()?.await()
+    }
+
+    private suspend fun deleteAllDocuments(collectionPath: String) {
+        firestore.collection(collectionPath).get().await().documents.forEach { it.reference.delete().await() }
     }
 
     fun startListening() {
@@ -232,16 +275,35 @@ class FirestoreSyncRepository @Inject constructor(
             }
         }
         userDocListener = firestore.collection("users").document(uid).addSnapshotListener { snapshot, _ ->
-            val remoteKey = snapshot?.getString("tmdbApiKey") ?: return@addSnapshotListener
-            if (remoteKey.isBlank() || remoteKey == tmdbApiKeyStore.currentKey) return@addSnapshotListener
-            syncScope.launch {
-                try {
-                    // Import the key from the other device, then restart listening so any
-                    // show/movie hydration that previously failed for lack of a key retries now.
-                    tmdbApiKeyStore.setApiKey(remoteKey)
-                    startListening()
-                } catch (e: Exception) {
-                    // Live sync only — see the shows listener's comment above.
+            if (snapshot == null) return@addSnapshotListener
+
+            val remoteKey = snapshot.getString("tmdbApiKey")
+            if (!remoteKey.isNullOrBlank() && remoteKey != tmdbApiKeyStore.currentKey) {
+                syncScope.launch {
+                    try {
+                        // Import the key from the other device, then restart listening so any
+                        // show/movie hydration that previously failed for lack of a key retries now.
+                        tmdbApiKeyStore.setApiKey(remoteKey)
+                        startListening()
+                    } catch (e: Exception) {
+                        // Live sync only — see the shows listener's comment above.
+                    }
+                }
+            }
+
+            val remoteLanguage = snapshot.getString("language")
+            if (!remoteLanguage.isNullOrBlank() && remoteLanguage != languagePreferenceStore.currentLanguage) {
+                syncScope.launch {
+                    try {
+                        languagePreferenceStore.setLanguage(remoteLanguage)
+                        withContext(Dispatchers.Main) {
+                            AppCompatDelegate.setApplicationLocales(
+                                LocaleListCompat.forLanguageTags(LanguagePreferenceStore.uiLocaleTagFor(remoteLanguage)),
+                            )
+                        }
+                    } catch (e: Exception) {
+                        // Live sync only — see the shows listener's comment above.
+                    }
                 }
             }
         }

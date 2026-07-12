@@ -6,8 +6,7 @@
     <string name="nav_series">Séries</string>
     <string name="nav_films">Films</string>
     <string name="nav_search">Rechercher</string>
-    <string name="nav_stats">Stats</string>
-    <string name="nav_settings">Réglages</string>
+    <string name="nav_profile">Profil</string>
 
     <!-- WatchStatus display labels -->
     <string name="watch_status_watching">En cours</string>
@@ -161,7 +160,6 @@
     <string name="person_detail_no_biography">Aucune biographie disponible.</string>
 
     <!-- Settings -->
-    <string name="settings_title">Réglages</string>
     <string name="settings_language_section_title">Langue du contenu</string>
     <string name="settings_language_field_label">Langue</string>
     <string name="settings_provider_section_title">Source des données</string>
@@ -175,6 +173,12 @@
     <string name="settings_last_synced_format">Dernière synchro %1$s</string>
     <string name="settings_last_synced_never">Pas encore synchronisé</string>
     <string name="settings_sign_out_button">Se déconnecter</string>
+    <string name="profile_delete_account_button">Supprimer le compte</string>
+    <string name="profile_delete_account_dialog_title">Supprimer ton compte ?</string>
+    <string name="profile_delete_account_dialog_message">Ceci supprime définitivement ton compte et toutes tes données synchronisées (bibliothèque, historique, réglages). Action irréversible.</string>
+    <string name="profile_delete_account_dialog_confirm">Supprimer</string>
+    <string name="profile_delete_account_dialog_cancel">Annuler</string>
+    <string name="profile_delete_account_recent_login_error">Pour des raisons de sécurité, déconnecte-toi puis reconnecte-toi avant de réessayer de supprimer ton compte.</string>
 
     <!-- Mises à jour de l'app (auto-hébergées, via GitHub Releases) -->
     <string name="update_banner_title">Mise à jour disponible</string>
