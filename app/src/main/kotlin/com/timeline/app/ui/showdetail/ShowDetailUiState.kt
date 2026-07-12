@@ -1,5 +1,6 @@
 package com.timeline.app.ui.showdetail
 
+import com.timeline.app.domain.model.ShowBroadcastStatus
 import com.timeline.app.domain.model.WatchStatus
 import com.timeline.app.ui.common.components.CastRowItem
 import com.timeline.app.ui.common.components.WatchProviderRowItem
@@ -45,4 +46,8 @@ data class ShowDetailUiState(
     val watchProvidersBuy: List<WatchProviderRowItem> = emptyList(),
     val trailerYoutubeKey: String? = null,
     val cast: List<CastRowItem> = emptyList(),
+    val broadcastStatus: ShowBroadcastStatus = ShowBroadcastStatus.UNKNOWN,
+    val networkNames: String? = null,
+    val yearRange: String? = null,
+    val genreNames: List<String> = emptyList(),
 )

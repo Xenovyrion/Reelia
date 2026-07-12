@@ -6,11 +6,14 @@ import androidx.lifecycle.viewModelScope
 import com.timeline.app.data.metadata.MetadataProviderRegistry
 import com.timeline.app.data.remote.tmdb.TmdbImageUrlBuilder
 import com.timeline.app.data.repository.ShowRepository
+import com.timeline.app.domain.model.ShowBroadcastStatus
 import com.timeline.app.domain.model.WatchProviderOption
+import com.timeline.app.domain.model.parseShowBroadcastStatus
 import com.timeline.app.domain.usecase.MarkEpisodeWatchedUseCase
 import com.timeline.app.domain.usecase.MarkSeasonWatchedUseCase
 import com.timeline.app.ui.common.components.CastRowItem
 import com.timeline.app.ui.common.components.WatchProviderRowItem
+import com.timeline.app.ui.common.format.toYearOrNull
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -73,7 +76,8 @@ class ShowDetailViewModel @Inject constructor(
     val uiState: StateFlow<ShowDetailUiState> = combine(
         showRepository.getShowWithDetails(showId).filterNotNull(),
         extras,
-    ) { details, extra ->
+        showRepository.getGenresForShow(showId),
+    ) { details, extra, genres ->
         val episodesBySeason = details.episodes.groupBy { it.seasonNumber }
         val seasons = details.seasons
             .sortedBy { it.seasonNumber }
@@ -103,6 +107,16 @@ class ShowDetailViewModel @Inject constructor(
             ?.let { (seasonNumber, episode) ->
                 NextEpisodeUi(seasonNumber, episode.episodeNumber, episode.name, episode.stillUrl)
             }
+        val broadcastStatus = parseShowBroadcastStatus(details.show.broadcastStatus)
+        val firstYear = details.show.firstAirDate.toYearOrNull()
+        val lastYear = details.show.lastAirDate.toYearOrNull()
+        val yearRange = when {
+            firstYear == null -> null
+            broadcastStatus == ShowBroadcastStatus.RETURNING || broadcastStatus == ShowBroadcastStatus.IN_PRODUCTION ->
+                "$firstYear –"
+            lastYear == null || lastYear == firstYear -> firstYear
+            else -> "$firstYear – $lastYear"
+        }
         ShowDetailUiState(
             isLoading = false,
             title = details.show.name,
@@ -121,6 +135,10 @@ class ShowDetailViewModel @Inject constructor(
             watchProvidersBuy = extra.watchProvidersBuy,
             trailerYoutubeKey = extra.trailerYoutubeKey,
             cast = extra.cast,
+            broadcastStatus = broadcastStatus,
+            networkNames = details.show.networkNames,
+            yearRange = yearRange,
+            genreNames = genres.map { it.name },
         )
     }.stateIn(
         scope = viewModelScope,

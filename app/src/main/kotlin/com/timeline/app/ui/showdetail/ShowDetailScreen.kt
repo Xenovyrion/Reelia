@@ -45,6 +45,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.timeline.app.R
+import com.timeline.app.domain.model.ShowBroadcastStatus
 import com.timeline.app.domain.model.displayLabel
 import com.timeline.app.ui.common.components.BackdropHeader
 import com.timeline.app.ui.common.components.CastRow
@@ -90,8 +91,10 @@ fun ShowDetailScreen(
                         modifier = Modifier.fillMaxWidth(),
                     ) {
                         Text(
-                            stringResource(R.string.season_count_format, uiState.seasonCount) +
-                                " • ${uiState.status.displayLabel()}",
+                            listOfNotNull(
+                                stringResource(R.string.season_count_format, uiState.seasonCount),
+                                uiState.networkNames,
+                            ).joinToString(" • "),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.weight(1f),
@@ -100,16 +103,48 @@ fun ShowDetailScreen(
                             RatingBadge(rating)
                         }
                     }
+                    Spacer(Modifier.padding(top = 8.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        BroadcastStatusPill(uiState.broadcastStatus)
+                        Text(
+                            uiState.status.displayLabel(),
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(start = 8.dp),
+                        )
+                    }
+                    if (uiState.yearRange != null || uiState.genreNames.isNotEmpty()) {
+                        Text(
+                            listOfNotNull(
+                                uiState.yearRange,
+                                uiState.genreNames.takeIf { it.isNotEmpty() }?.joinToString(", "),
+                            ).joinToString(" • "),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(top = 6.dp),
+                        )
+                    }
                     Spacer(Modifier.padding(top = 12.dp))
                     val progress = if (uiState.totalEpisodeCount == 0) {
                         0f
                     } else {
                         uiState.watchedEpisodeCount.toFloat() / uiState.totalEpisodeCount
                     }
-                    LinearProgressIndicator(
-                        progress = { progress },
-                        modifier = Modifier.fillMaxWidth(),
-                    )
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(10.dp)
+                            .clip(RoundedCornerShape(5.dp))
+                            .background(MaterialTheme.colorScheme.surfaceVariant),
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth(progress.coerceIn(0f, 1f))
+                                .height(10.dp)
+                                .clip(RoundedCornerShape(5.dp))
+                                .background(MaterialTheme.colorScheme.primary),
+                        )
+                    }
                     Spacer(Modifier.padding(top = 16.dp))
                 }
             }
@@ -273,6 +308,21 @@ private fun RatingBadge(rating: Float) {
                 modifier = Modifier.padding(start = 4.dp),
             )
         }
+    }
+}
+
+@Composable
+private fun BroadcastStatusPill(status: ShowBroadcastStatus) {
+    Surface(
+        shape = RoundedCornerShape(6.dp),
+        color = MaterialTheme.colorScheme.surfaceContainerHigh,
+    ) {
+        Text(
+            status.displayLabel().uppercase(),
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
+        )
     }
 }
 
