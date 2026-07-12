@@ -13,7 +13,7 @@ android {
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.timeline.app"
+        applicationId = "com.reelia.app"
         minSdk = 26
         targetSdk = 35
         versionCode = 1
