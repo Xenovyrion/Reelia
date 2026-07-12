@@ -105,6 +105,7 @@ class LibraryViewModel @Inject constructor(
                         progress = showProgress?.let { if (it.total == 0) 0f else it.watchedCount.toFloat() / it.total },
                         status = show.status,
                         isFavorite = show.isFavorite,
+                        addedAt = show.addedAt,
                         nextEpisodeCode = nextEpisode?.let { "S${it.seasonNumber} · E${it.episodeNumber}" },
                         nextEpisodeName = nextEpisode?.name,
                     )
@@ -130,6 +131,7 @@ class LibraryViewModel @Inject constructor(
                         progress = if (movie.watched) 1f else null,
                         status = movie.status,
                         isFavorite = movie.isFavorite,
+                        addedAt = movie.addedAt,
                         runtimeMinutes = movie.runtimeMinutes,
                         genreNames = genreIdsByMovieId[movie.tmdbId].orEmpty().mapNotNull { movieGenreNameById[it]?.name },
                     )

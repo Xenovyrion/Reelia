@@ -4,6 +4,7 @@ import com.timeline.app.domain.model.MediaType
 import com.timeline.app.domain.model.WatchStatus
 import com.timeline.app.ui.common.components.GenreOption
 import com.timeline.app.ui.common.components.ViewMode
+import java.time.Instant
 
 enum class LibraryTypeFilter { ALL, SERIES, FILMS }
 
@@ -15,6 +16,7 @@ data class LibraryItem(
     val progress: Float?,
     val status: WatchStatus,
     val isFavorite: Boolean,
+    val addedAt: Instant,
     val nextEpisodeCode: String? = null,
     val nextEpisodeName: String? = null,
     val runtimeMinutes: Int? = null,
