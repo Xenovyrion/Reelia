@@ -3,7 +3,10 @@ package com.timeline.app
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -13,13 +16,18 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.graphics.Color
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.timeline.app.ui.auth.AuthGateViewModel
+import com.timeline.app.ui.auth.LoginScreen
 import com.timeline.app.ui.navigation.BottomNavItem
 import com.timeline.app.ui.navigation.TimeLineNavGraph
 import com.timeline.app.ui.theme.TimeLineTheme
@@ -40,6 +48,20 @@ class MainActivity : AppCompatActivity() {
 
 @Composable
 private fun TimeLineApp() {
+    val authGateViewModel: AuthGateViewModel = hiltViewModel()
+    val isSignedIn by authGateViewModel.isSignedIn.collectAsStateWithLifecycle()
+
+    when (isSignedIn) {
+        null -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
+        }
+        false -> LoginScreen()
+        true -> TimeLineAppContent()
+    }
+}
+
+@Composable
+private fun TimeLineAppContent() {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination

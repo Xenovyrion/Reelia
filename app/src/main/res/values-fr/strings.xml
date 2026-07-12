@@ -141,6 +141,17 @@
     <string name="preview_error_add_show">Impossible d\'ajouter cette série.</string>
     <string name="preview_error_add_movie">Impossible d\'ajouter ce film.</string>
 
+    <!-- Login / Auth -->
+    <string name="login_title">Reelia</string>
+    <string name="login_subtitle_sign_in">Connecte-toi pour synchroniser ta bibliothèque entre tes appareils</string>
+    <string name="login_subtitle_sign_up">Crée un compte pour synchroniser ta bibliothèque entre tes appareils</string>
+    <string name="login_email_label">Email</string>
+    <string name="login_password_label">Mot de passe</string>
+    <string name="login_sign_in_button">Se connecter</string>
+    <string name="login_sign_up_button">Créer un compte</string>
+    <string name="login_toggle_to_sign_up">Pas encore de compte ? Créer un compte</string>
+    <string name="login_toggle_to_sign_in">Déjà un compte ? Se connecter</string>
+
     <!-- Person Detail -->
     <string name="person_detail_error_load">Impossible de charger les informations de cette personne.</string>
     <string name="person_detail_born_format">Né(e) le %1$s</string>

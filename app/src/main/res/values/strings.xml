@@ -141,6 +141,17 @@
     <string name="preview_error_add_show">Couldn\'t add this show.</string>
     <string name="preview_error_add_movie">Couldn\'t add this movie.</string>
 
+    <!-- Login / Auth -->
+    <string name="login_title">Reelia</string>
+    <string name="login_subtitle_sign_in">Sign in to sync your library across devices</string>
+    <string name="login_subtitle_sign_up">Create an account to sync your library across devices</string>
+    <string name="login_email_label">Email</string>
+    <string name="login_password_label">Password</string>
+    <string name="login_sign_in_button">Sign in</string>
+    <string name="login_sign_up_button">Create account</string>
+    <string name="login_toggle_to_sign_up">No account yet? Create one</string>
+    <string name="login_toggle_to_sign_in">Already have an account? Sign in</string>
+
     <!-- Person Detail -->
     <string name="person_detail_error_load">Couldn\'t load this person\'s info.</string>
     <string name="person_detail_born_format">Born %1$s</string>
