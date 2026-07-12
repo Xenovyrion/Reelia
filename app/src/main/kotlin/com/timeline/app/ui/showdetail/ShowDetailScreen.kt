@@ -17,7 +17,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.PlayArrow
@@ -27,7 +26,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -44,7 +42,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -57,6 +54,9 @@ import com.timeline.app.domain.model.ShowBroadcastStatus
 import com.timeline.app.domain.model.displayLabel
 import com.timeline.app.ui.common.components.BackdropHeader
 import com.timeline.app.ui.common.components.CastRow
+import com.timeline.app.ui.common.components.EpisodeCodeBadge
+import com.timeline.app.ui.common.components.SeasonPillItem
+import com.timeline.app.ui.common.components.SeasonPillTabs
 import com.timeline.app.ui.common.components.SectionHeader
 import com.timeline.app.ui.common.components.WatchProvidersRow
 import com.timeline.app.ui.common.components.WatchedToggleButton
@@ -73,7 +73,7 @@ fun ShowDetailScreen(
     viewModel: ShowDetailViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    var expandedSeasons by remember { mutableStateOf(setOf<Int>()) }
+    var selectedSeasonNumber by remember { mutableStateOf<Int?>(null) }
     var expandedEpisodes by remember { mutableStateOf(setOf<String>()) }
     var selectedTab by remember { mutableIntStateOf(0) }
 
@@ -264,31 +264,33 @@ fun ShowDetailScreen(
                     item(key = "continue_watching") {
                         ContinueWatchingCard(
                             episode = nextEpisode,
-                            onClick = {
-                                expandedSeasons = expandedSeasons + nextEpisode.seasonNumber
-                                viewModel.onSeasonExpanded(nextEpisode.seasonNumber)
-                            },
+                            onClick = { selectedSeasonNumber = nextEpisode.seasonNumber },
                         )
                     }
                 }
-                uiState.seasons.forEach { season ->
-                    val isExpanded = expandedSeasons.contains(season.seasonNumber)
-                    item(key = "season_header_${season.seasonNumber}") {
-                        SeasonHeader(
-                            season = season,
-                            isExpanded = isExpanded,
-                            onToggle = {
-                                expandedSeasons = if (isExpanded) {
-                                    expandedSeasons - season.seasonNumber
-                                } else {
-                                    viewModel.onSeasonExpanded(season.seasonNumber)
-                                    expandedSeasons + season.seasonNumber
-                                }
-                            },
-                            onMarkAllWatched = { viewModel.onSeasonMarkAllWatched(season.seasonNumber) },
+
+                val effectiveSeasonNumber = selectedSeasonNumber
+                    ?: uiState.nextUnwatchedEpisode?.seasonNumber
+                    ?: uiState.seasons.firstOrNull()?.seasonNumber
+
+                if (uiState.seasons.isNotEmpty() && effectiveSeasonNumber != null) {
+                    item(key = "season_pills") {
+                        SeasonPillTabs(
+                            seasons = uiState.seasons.map { SeasonPillItem(it.seasonNumber, it.name) },
+                            selectedSeasonNumber = effectiveSeasonNumber,
+                            onSeasonSelected = { selectedSeasonNumber = it },
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
                         )
                     }
-                    if (isExpanded) {
+
+                    val currentSeason = uiState.seasons.find { it.seasonNumber == effectiveSeasonNumber }
+                    currentSeason?.let { season ->
+                        item(key = "season_summary_${season.seasonNumber}") {
+                            SeasonSummaryRow(
+                                season = season,
+                                onMarkAllWatched = { viewModel.onSeasonMarkAllWatched(season.seasonNumber) },
+                            )
+                        }
                         items(season.episodes, key = { "ep_${season.seasonNumber}_${it.episodeNumber}" }) { episode ->
                             val episodeKey = "${season.seasonNumber}_${episode.episodeNumber}"
                             val isEpisodeExpanded = expandedEpisodes.contains(episodeKey)
@@ -325,10 +327,13 @@ fun ShowDetailScreen(
                                             .clip(RoundedCornerShape(6.dp))
                                             .background(MaterialTheme.colorScheme.surfaceVariant),
                                     )
-                                    Text(
-                                        "${episode.episodeNumber}. ${episode.name}",
-                                        modifier = Modifier.padding(start = 12.dp),
-                                    )
+                                    Column(modifier = Modifier.padding(start = 12.dp)) {
+                                        EpisodeCodeBadge(
+                                            seasonNumber = season.seasonNumber,
+                                            episodeNumber = episode.episodeNumber,
+                                        )
+                                        Text(episode.name, modifier = Modifier.padding(top = 2.dp))
+                                    }
                                 }
                                 if (isEpisodeExpanded) {
                                     Column(modifier = Modifier.padding(start = 48.dp, end = 16.dp, bottom = 12.dp)) {
@@ -406,24 +411,17 @@ private fun BroadcastStatusPill(status: ShowBroadcastStatus) {
 }
 
 @Composable
-private fun SeasonHeader(season: SeasonUi, isExpanded: Boolean, onToggle: () -> Unit, onMarkAllWatched: () -> Unit) {
+private fun SeasonSummaryRow(season: SeasonUi, onMarkAllWatched: () -> Unit) {
     val watchedCount = season.episodes.count { it.watched }
     val allWatched = season.episodeCount > 0 && watchedCount == season.episodeCount
 
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-            .clickable(onClick = onToggle),
-    ) {
+    Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-            SectionHeader(season.name, modifier = Modifier.weight(1f))
-            Icon(
-                Icons.Filled.ExpandMore,
-                contentDescription = null,
-                modifier = Modifier
-                    .padding(start = 8.dp)
-                    .rotate(if (isExpanded) 180f else 0f),
+            Text(
+                stringResource(R.string.show_detail_season_progress_format, watchedCount, season.episodeCount),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.weight(1f),
             )
             WatchedToggleButton(
                 checked = allWatched,
@@ -432,16 +430,6 @@ private fun SeasonHeader(season: SeasonUi, isExpanded: Boolean, onToggle: () -> 
                 contentDescription = stringResource(R.string.show_detail_mark_season_watched_content_description),
             )
         }
-        Spacer(Modifier.padding(top = 8.dp))
-        LinearProgressIndicator(
-            progress = { if (season.episodeCount == 0) 0f else watchedCount.toFloat() / season.episodeCount },
-            modifier = Modifier.fillMaxWidth(),
-        )
-        Text(
-            stringResource(R.string.show_detail_season_progress_format, watchedCount, season.episodeCount),
-            style = MaterialTheme.typography.bodySmall,
-            modifier = Modifier.padding(top = 4.dp),
-        )
     }
 }
 

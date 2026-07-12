@@ -165,15 +165,6 @@ class ShowDetailViewModel @Inject constructor(
         }
     }
 
-    fun onSeasonExpanded(seasonNumber: Int) {
-        viewModelScope.launch {
-            val season = uiState.value.seasons.find { it.seasonNumber == seasonNumber }
-            if (season != null && season.episodes.size < season.episodeCount) {
-                showRepository.ensureSeasonEpisodesLoaded(showId, seasonNumber, defaultRuntimeMinutes = null)
-            }
-        }
-    }
-
     fun onFavoriteToggled(isFavorite: Boolean) {
         viewModelScope.launch {
             showRepository.setFavorite(showId, isFavorite)
