@@ -36,6 +36,20 @@ android {
         buildConfigField("String", "GIT_SHA", "\"${gitCommitSha()}\"")
     }
 
+    signingConfigs {
+        // Checked-in so every CI build (fresh VM, no persisted ~/.android/debug.keystore) is
+        // signed with the SAME key — a fresh random debug key on every run would give each
+        // build a different SHA-1, which breaks Google Sign-In (its Android OAuth client is
+        // tied to one fixed fingerprint). Debug keystores aren't secrets; committing one is
+        // standard practice for exactly this reason.
+        named("debug") {
+            storeFile = rootProject.file("debug.keystore")
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
