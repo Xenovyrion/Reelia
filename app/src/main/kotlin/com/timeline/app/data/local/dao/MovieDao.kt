@@ -22,6 +22,9 @@ interface MovieDao {
     @Query("UPDATE tracked_movies SET watched = :watched, watchedAt = :watchedAt WHERE tmdbId = :movieId")
     suspend fun setMovieWatched(movieId: Int, watched: Boolean, watchedAt: Instant?)
 
+    @Query("UPDATE tracked_movies SET isFavorite = :isFavorite WHERE tmdbId = :movieId")
+    suspend fun setMovieFavorite(movieId: Int, isFavorite: Boolean)
+
     @Delete
     suspend fun deleteMovie(movie: TrackedMovieEntity)
 }

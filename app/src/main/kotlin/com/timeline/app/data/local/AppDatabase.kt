@@ -29,7 +29,7 @@ import com.timeline.app.data.local.entity.WatchLogEntryEntity
         MovieGenreCrossRef::class,
         WatchLogEntryEntity::class,
     ],
-    version = 4,
+    version = 5,
     exportSchema = false,
 )
 @TypeConverters(Converters::class)

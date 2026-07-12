@@ -18,4 +18,5 @@ data class TrackedMovieEntity(
     val addedAt: Instant,
     val watched: Boolean = false,
     val watchedAt: Instant? = null,
+    val isFavorite: Boolean = false,
 )

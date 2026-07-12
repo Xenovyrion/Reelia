@@ -27,4 +27,5 @@ data class TrackedShowEntity(
     val broadcastStatus: String? = null,
     val lastAirDate: String? = null,
     val creatorNames: String? = null,
+    val isFavorite: Boolean = false,
 )

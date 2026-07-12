@@ -30,6 +30,8 @@ class MovieRepository @Inject constructor(
 
     fun getGenresForMovie(movieId: Int): Flow<List<GenreEntity>> = genreDao.getGenresForMovie(movieId)
 
+    suspend fun setFavorite(movieId: Int, isFavorite: Boolean) = movieDao.setMovieFavorite(movieId, isFavorite)
+
     suspend fun addMovieFromTmdb(tmdbId: Int) {
         val details = tmdbApi.getMovieDetails(tmdbId)
         movieDao.upsertMovie(details.toEntity(status = WatchStatus.PLAN_TO_WATCH, addedAt = Instant.now()))

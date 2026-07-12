@@ -46,6 +46,8 @@ class ShowRepository @Inject constructor(
 
     fun getShowGenreCrossRefs(): Flow<List<ShowGenreCrossRef>> = genreDao.getAllShowGenreCrossRefs()
 
+    suspend fun setFavorite(showId: Int, isFavorite: Boolean) = showDao.setShowFavorite(showId, isFavorite)
+
     /** Fetches full show + every season's episodes from TMDB and persists it as a new tracked
      * show. All seasons are fetched concurrently so progress tracking is correct from the start
      * — a show is never left with only some seasons' episodes locally cached. */
