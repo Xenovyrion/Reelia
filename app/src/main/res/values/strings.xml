@@ -157,8 +157,8 @@
     <!-- Update after enabling Google Sign-In in the Firebase console (Authentication > Sign-in
          method > Google) — the Web client ID is shown right there, no need to redownload
          google-services.json. -->
-    <string name="google_web_client_id" translatable="false">REPLACE_WITH_YOUR_FIREBASE_WEB_CLIENT_ID</string>
-    <string name="login_learn_more_url" translatable="false">https://github.com/Xenovyrion/TimeLine/blob/claude/timeline-redesign/docs/GUIDE.md</string>
+    <string name="google_web_client_id" translatable="false">217482013121-rufgbqk389i5kfmjm5on47ir41q4ldkb.apps.googleusercontent.com</string>
+    <string name="login_learn_more_url" translatable="false">https://github.com/Xenovyrion/TimeLine/blob/main/docs/GUIDE.md</string>
 
     <!-- Person Detail -->
     <string name="person_detail_error_load">Couldn\'t load this person\'s info.</string>
