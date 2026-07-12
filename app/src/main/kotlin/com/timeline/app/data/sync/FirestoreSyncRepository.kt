@@ -4,12 +4,14 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
+import com.google.firebase.firestore.SetOptions
 import com.timeline.app.data.local.dao.EpisodeDao
 import com.timeline.app.data.local.dao.MovieDao
 import com.timeline.app.data.local.dao.ShowDao
 import com.timeline.app.data.local.dao.SyncOutboxDao
 import com.timeline.app.data.local.dao.WatchLogDao
 import com.timeline.app.data.local.entity.WatchLogEntryEntity
+import com.timeline.app.data.local.prefs.TmdbApiKeyStore
 import com.timeline.app.data.repository.MovieRepository
 import com.timeline.app.data.repository.ShowRepository
 import com.timeline.app.domain.model.MediaType
@@ -48,6 +50,7 @@ class FirestoreSyncRepository @Inject constructor(
     private val movieDao: MovieDao,
     private val episodeDao: EpisodeDao,
     private val watchLogDao: WatchLogDao,
+    private val tmdbApiKeyStore: TmdbApiKeyStore,
     private val showRepository: Lazy<ShowRepository>,
     private val movieRepository: Lazy<MovieRepository>,
 ) {
@@ -55,6 +58,7 @@ class FirestoreSyncRepository @Inject constructor(
     private var showsListener: ListenerRegistration? = null
     private var moviesListener: ListenerRegistration? = null
     private var watchLogListener: ListenerRegistration? = null
+    private var userDocListener: ListenerRegistration? = null
 
     private val _lastSyncedAt = MutableStateFlow<Instant?>(null)
     val lastSyncedAt: StateFlow<Instant?> = _lastSyncedAt.asStateFlow()
@@ -118,6 +122,17 @@ class FirestoreSyncRepository @Inject constructor(
                     "watchedAt" to entry.watchedAt.toEpochMilli(),
                 ),
             ).await()
+    }
+
+    /** Pushes the TMDB API key to the user's own Firestore document (merged, not overwritten)
+     * so the other device can import it automatically instead of requiring it to be re-typed
+     * after every reinstall. Protected by the same per-user Firestore rule as everything else
+     * — only this account's authenticated UID can read or write it. */
+    suspend fun pushApiKey(key: String) {
+        val uid = firebaseAuth.currentUser?.uid ?: return
+        firestore.collection("users").document(uid)
+            .set(mapOf("tmdbApiKey" to key), SetOptions.merge())
+            .await()
     }
 
     fun startListening() {
@@ -216,14 +231,30 @@ class FirestoreSyncRepository @Inject constructor(
                 }
             }
         }
+        userDocListener = firestore.collection("users").document(uid).addSnapshotListener { snapshot, _ ->
+            val remoteKey = snapshot?.getString("tmdbApiKey") ?: return@addSnapshotListener
+            if (remoteKey.isBlank() || remoteKey == tmdbApiKeyStore.currentKey) return@addSnapshotListener
+            syncScope.launch {
+                try {
+                    // Import the key from the other device, then restart listening so any
+                    // show/movie hydration that previously failed for lack of a key retries now.
+                    tmdbApiKeyStore.setApiKey(remoteKey)
+                    startListening()
+                } catch (e: Exception) {
+                    // Live sync only — see the shows listener's comment above.
+                }
+            }
+        }
     }
 
     fun stopListening() {
         showsListener?.remove()
         moviesListener?.remove()
         watchLogListener?.remove()
+        userDocListener?.remove()
         showsListener = null
         moviesListener = null
         watchLogListener = null
+        userDocListener = null
     }
 }

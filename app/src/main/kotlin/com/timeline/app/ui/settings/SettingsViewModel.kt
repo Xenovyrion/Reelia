@@ -69,8 +69,12 @@ class SettingsViewModel @Inject constructor(
 
     fun onApiKeySubmitted(key: String) {
         viewModelScope.launch {
-            settingsRepository.setApiKey(key.trim())
+            val trimmedKey = key.trim()
+            settingsRepository.setApiKey(trimmedKey)
             saveEventChannel.send(Unit)
+            // Push so the other device can import this key automatically instead of requiring
+            // it to be re-typed after every reinstall.
+            firestoreSyncRepository.pushApiKey(trimmedKey)
             // Retry sync hydration: on a fresh install, remote shows/movies can only be fetched
             // from TMDB once a key is set here, so any hydration that failed for lack of a key
             // needs a fresh listener snapshot to retry now that one exists.
