@@ -16,14 +16,17 @@ interface MovieDao {
     @Query("SELECT * FROM tracked_movies WHERE tmdbId = :movieId")
     fun getMovie(movieId: Int): Flow<TrackedMovieEntity?>
 
+    @Query("SELECT * FROM tracked_movies WHERE tmdbId = :movieId")
+    suspend fun getMovieOnce(movieId: Int): TrackedMovieEntity?
+
     @Upsert
     suspend fun upsertMovie(movie: TrackedMovieEntity)
 
     @Query("UPDATE tracked_movies SET watched = :watched, watchedAt = :watchedAt WHERE tmdbId = :movieId")
     suspend fun setMovieWatched(movieId: Int, watched: Boolean, watchedAt: Instant?)
 
-    @Query("UPDATE tracked_movies SET isFavorite = :isFavorite WHERE tmdbId = :movieId")
-    suspend fun setMovieFavorite(movieId: Int, isFavorite: Boolean)
+    @Query("UPDATE tracked_movies SET isFavorite = :isFavorite, lastModifiedAt = :lastModifiedAt WHERE tmdbId = :movieId")
+    suspend fun setMovieFavorite(movieId: Int, isFavorite: Boolean, lastModifiedAt: Instant)
 
     @Delete
     suspend fun deleteMovie(movie: TrackedMovieEntity)

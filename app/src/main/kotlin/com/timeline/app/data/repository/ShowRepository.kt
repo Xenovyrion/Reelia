@@ -5,16 +5,20 @@ import com.timeline.app.data.local.dao.GenreDao
 import com.timeline.app.data.local.dao.SeasonDao
 import com.timeline.app.data.local.dao.ShowDao
 import com.timeline.app.data.local.dao.ShowEpisodeProgress
+import com.timeline.app.data.local.dao.SyncOutboxDao
 import com.timeline.app.data.local.entity.EpisodeEntity
 import com.timeline.app.data.local.entity.GenreEntity
 import com.timeline.app.data.local.entity.ShowGenreCrossRef
 import com.timeline.app.data.local.entity.ShowWithDetails
+import com.timeline.app.data.local.entity.SyncOutboxEntity
 import com.timeline.app.data.local.entity.TrackedShowEntity
 import com.timeline.app.data.remote.tmdb.TmdbApi
 import com.timeline.app.data.remote.tmdb.mappers.toEntity
 import com.timeline.app.data.remote.tmdb.mappers.toEpisodeEntities
 import com.timeline.app.data.remote.tmdb.mappers.toGenreEntities
 import com.timeline.app.data.remote.tmdb.mappers.toSeasonEntities
+import com.timeline.app.data.sync.FirestoreSyncRepository
+import com.timeline.app.domain.model.MediaType
 import com.timeline.app.domain.model.WatchStatus
 import java.time.Instant
 import javax.inject.Inject
@@ -31,6 +35,8 @@ class ShowRepository @Inject constructor(
     private val seasonDao: SeasonDao,
     private val episodeDao: EpisodeDao,
     private val genreDao: GenreDao,
+    private val syncOutboxDao: SyncOutboxDao,
+    private val firestoreSyncRepository: FirestoreSyncRepository,
 ) {
     fun getAllShows(): Flow<List<TrackedShowEntity>> = showDao.getAllShows()
 
@@ -46,7 +52,12 @@ class ShowRepository @Inject constructor(
 
     fun getShowGenreCrossRefs(): Flow<List<ShowGenreCrossRef>> = genreDao.getAllShowGenreCrossRefs()
 
-    suspend fun setFavorite(showId: Int, isFavorite: Boolean) = showDao.setShowFavorite(showId, isFavorite)
+    suspend fun setFavorite(showId: Int, isFavorite: Boolean) {
+        val now = Instant.now()
+        showDao.setShowFavorite(showId, isFavorite, now)
+        syncOutboxDao.markPending(SyncOutboxEntity(showId, MediaType.TV, now))
+        firestoreSyncRepository.pushPendingChanges()
+    }
 
     /** Fetches full show + every season's episodes from TMDB and persists it as a new tracked
      * show. All seasons are fetched concurrently so progress tracking is correct from the start

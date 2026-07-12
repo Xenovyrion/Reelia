@@ -28,4 +28,5 @@ data class TrackedShowEntity(
     val lastAirDate: String? = null,
     val creatorNames: String? = null,
     val isFavorite: Boolean = false,
+    val lastModifiedAt: Instant = Instant.now(),
 )

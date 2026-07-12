@@ -6,11 +6,14 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.room.Room
 import com.timeline.app.data.local.AppDatabase
+import com.timeline.app.data.local.MIGRATION_4_5
+import com.timeline.app.data.local.MIGRATION_5_6
 import com.timeline.app.data.local.dao.EpisodeDao
 import com.timeline.app.data.local.dao.GenreDao
 import com.timeline.app.data.local.dao.MovieDao
 import com.timeline.app.data.local.dao.SeasonDao
 import com.timeline.app.data.local.dao.ShowDao
+import com.timeline.app.data.local.dao.SyncOutboxDao
 import com.timeline.app.data.local.dao.WatchLogDao
 import dagger.Module
 import dagger.Provides
@@ -29,6 +32,7 @@ object DatabaseModule {
     @Singleton
     fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase =
         Room.databaseBuilder(context, AppDatabase::class.java, AppDatabase.DATABASE_NAME)
+            .addMigrations(MIGRATION_4_5, MIGRATION_5_6)
             .fallbackToDestructiveMigration()
             .build()
 
@@ -49,6 +53,9 @@ object DatabaseModule {
 
     @Provides
     fun provideWatchLogDao(db: AppDatabase): WatchLogDao = db.watchLogDao()
+
+    @Provides
+    fun provideSyncOutboxDao(db: AppDatabase): SyncOutboxDao = db.syncOutboxDao()
 
     @Provides
     @Singleton

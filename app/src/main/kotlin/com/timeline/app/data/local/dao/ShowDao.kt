@@ -7,12 +7,16 @@ import androidx.room.Transaction
 import androidx.room.Upsert
 import com.timeline.app.data.local.entity.ShowWithDetails
 import com.timeline.app.data.local.entity.TrackedShowEntity
+import java.time.Instant
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ShowDao {
     @Query("SELECT * FROM tracked_shows ORDER BY addedAt DESC")
     fun getAllShows(): Flow<List<TrackedShowEntity>>
+
+    @Query("SELECT * FROM tracked_shows WHERE tmdbId = :showId")
+    suspend fun getShowOnce(showId: Int): TrackedShowEntity?
 
     @Transaction
     @Query("SELECT * FROM tracked_shows WHERE tmdbId = :showId")
@@ -21,8 +25,8 @@ interface ShowDao {
     @Upsert
     suspend fun upsertShow(show: TrackedShowEntity)
 
-    @Query("UPDATE tracked_shows SET isFavorite = :isFavorite WHERE tmdbId = :showId")
-    suspend fun setShowFavorite(showId: Int, isFavorite: Boolean)
+    @Query("UPDATE tracked_shows SET isFavorite = :isFavorite, lastModifiedAt = :lastModifiedAt WHERE tmdbId = :showId")
+    suspend fun setShowFavorite(showId: Int, isFavorite: Boolean, lastModifiedAt: Instant)
 
     @Delete
     suspend fun deleteShow(show: TrackedShowEntity)
