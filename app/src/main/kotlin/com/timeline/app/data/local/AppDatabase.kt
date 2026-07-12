@@ -32,7 +32,7 @@ import com.timeline.app.data.local.entity.WatchLogEntryEntity
         WatchLogEntryEntity::class,
         SyncOutboxEntity::class,
     ],
-    version = 6,
+    version = 7,
     exportSchema = false,
 )
 @TypeConverters(Converters::class)

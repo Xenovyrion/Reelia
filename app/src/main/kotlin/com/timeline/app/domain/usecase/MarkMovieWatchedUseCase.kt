@@ -23,14 +23,14 @@ class MarkMovieWatchedUseCase @Inject constructor(
 
         if (watched) {
             val movie = movieDao.getMovie(movieId).first() ?: return
-            watchLogDao.insert(
-                WatchLogEntryEntity(
-                    mediaType = MediaType.MOVIE,
-                    tmdbId = movieId,
-                    runtimeMinutes = movie.runtimeMinutes ?: 0,
-                    watchedAt = watchedAt,
-                ),
+            val entry = WatchLogEntryEntity(
+                mediaType = MediaType.MOVIE,
+                tmdbId = movieId,
+                runtimeMinutes = movie.runtimeMinutes ?: 0,
+                watchedAt = watchedAt,
             )
+            watchLogDao.insert(entry)
+            firestoreSyncRepository.pushWatchLogEntry(entry)
         }
 
         syncOutboxDao.markPending(SyncOutboxEntity(movieId, MediaType.MOVIE, now))

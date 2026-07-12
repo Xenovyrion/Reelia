@@ -32,16 +32,16 @@ class MarkSeasonWatchedUseCase @Inject constructor(
         episodeDao.setSeasonWatched(showId, seasonNumber, watched = true, watchedAt = watchedAt)
 
         unwatchedEpisodes.forEach { episode ->
-            watchLogDao.insert(
-                WatchLogEntryEntity(
-                    mediaType = MediaType.TV,
-                    tmdbId = showId,
-                    seasonNumber = seasonNumber,
-                    episodeNumber = episode.episodeNumber,
-                    runtimeMinutes = episode.runtimeMinutes ?: 0,
-                    watchedAt = watchedAt,
-                ),
+            val entry = WatchLogEntryEntity(
+                mediaType = MediaType.TV,
+                tmdbId = showId,
+                seasonNumber = seasonNumber,
+                episodeNumber = episode.episodeNumber,
+                runtimeMinutes = episode.runtimeMinutes ?: 0,
+                watchedAt = watchedAt,
             )
+            watchLogDao.insert(entry)
+            firestoreSyncRepository.pushWatchLogEntry(entry)
         }
 
         showDao.touchLastModified(showId, watchedAt)

@@ -12,6 +12,9 @@ interface WatchLogDao {
     @Insert
     suspend fun insert(entry: WatchLogEntryEntity)
 
+    @Query("SELECT COUNT(*) FROM watch_log WHERE syncId = :syncId")
+    suspend fun countBySyncId(syncId: String): Int
+
     @Query("SELECT COUNT(*) FROM watch_log WHERE (:mediaType IS NULL OR mediaType = :mediaType)")
     fun countEntries(mediaType: MediaType? = null): Flow<Int>
 

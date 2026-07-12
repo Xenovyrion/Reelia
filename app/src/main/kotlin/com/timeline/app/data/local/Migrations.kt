@@ -28,3 +28,12 @@ val MIGRATION_5_6 = object : Migration(5, 6) {
         )
     }
 }
+
+/** Adds syncId (client UUID) to watch_log for cross-device sync + remote-listener dedup.
+ * Pre-existing rows get a blank syncId and are never retroactively synced — only entries
+ * logged after this migration are pushed to Firestore. */
+val MIGRATION_6_7 = object : Migration(6, 7) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE watch_log ADD COLUMN syncId TEXT NOT NULL DEFAULT ''")
+    }
+}

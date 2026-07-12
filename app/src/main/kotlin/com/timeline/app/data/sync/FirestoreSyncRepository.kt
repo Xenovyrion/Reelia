@@ -1,12 +1,15 @@
 package com.timeline.app.data.sync
 
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.timeline.app.data.local.dao.EpisodeDao
 import com.timeline.app.data.local.dao.MovieDao
 import com.timeline.app.data.local.dao.ShowDao
 import com.timeline.app.data.local.dao.SyncOutboxDao
+import com.timeline.app.data.local.dao.WatchLogDao
+import com.timeline.app.data.local.entity.WatchLogEntryEntity
 import com.timeline.app.data.repository.MovieRepository
 import com.timeline.app.data.repository.ShowRepository
 import com.timeline.app.domain.model.MediaType
@@ -44,12 +47,14 @@ class FirestoreSyncRepository @Inject constructor(
     private val showDao: ShowDao,
     private val movieDao: MovieDao,
     private val episodeDao: EpisodeDao,
+    private val watchLogDao: WatchLogDao,
     private val showRepository: Lazy<ShowRepository>,
     private val movieRepository: Lazy<MovieRepository>,
 ) {
     private val syncScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private var showsListener: ListenerRegistration? = null
     private var moviesListener: ListenerRegistration? = null
+    private var watchLogListener: ListenerRegistration? = null
 
     private val _lastSyncedAt = MutableStateFlow<Instant?>(null)
     val lastSyncedAt: StateFlow<Instant?> = _lastSyncedAt.asStateFlow()
@@ -94,6 +99,23 @@ class FirestoreSyncRepository @Inject constructor(
                     "watched" to movie.watched,
                     "watchedAt" to movie.watchedAt?.toEpochMilli(),
                     "lastModifiedAt" to movie.lastModifiedAt.toEpochMilli(),
+                ),
+            ).await()
+    }
+
+    /** Pushes one watch-log entry to Firestore right away — the watch log is append-only, so
+     * unlike shows/movies it doesn't go through the outbox, it's fire-and-forget per insert. */
+    suspend fun pushWatchLogEntry(entry: WatchLogEntryEntity) {
+        val uid = firebaseAuth.currentUser?.uid ?: return
+        firestore.collection("users/$uid/watchLog").document(entry.syncId)
+            .set(
+                mapOf(
+                    "mediaType" to entry.mediaType.name,
+                    "tmdbId" to entry.tmdbId,
+                    "seasonNumber" to entry.seasonNumber,
+                    "episodeNumber" to entry.episodeNumber,
+                    "runtimeMinutes" to entry.runtimeMinutes,
+                    "watchedAt" to entry.watchedAt.toEpochMilli(),
                 ),
             ).await()
     }
@@ -160,12 +182,48 @@ class FirestoreSyncRepository @Inject constructor(
                 }
             }
         }
+        watchLogListener = firestore.collection("users/$uid/watchLog").addSnapshotListener { snapshot, _ ->
+            snapshot?.documentChanges?.forEach { change ->
+                if (change.type != DocumentChange.Type.ADDED) return@forEach
+                val syncId = change.document.id
+                val mediaType = change.document.getString("mediaType")?.let {
+                    runCatching { MediaType.valueOf(it) }.getOrNull()
+                } ?: return@forEach
+                val tmdbId = change.document.getLong("tmdbId")?.toInt() ?: return@forEach
+                val seasonNumber = change.document.getLong("seasonNumber")?.toInt()
+                val episodeNumber = change.document.getLong("episodeNumber")?.toInt()
+                val runtimeMinutes = change.document.getLong("runtimeMinutes")?.toInt() ?: 0
+                val watchedAt = change.document.getLong("watchedAt")?.let(Instant::ofEpochMilli) ?: return@forEach
+                syncScope.launch {
+                    try {
+                        if (watchLogDao.countBySyncId(syncId) == 0) {
+                            watchLogDao.insert(
+                                WatchLogEntryEntity(
+                                    syncId = syncId,
+                                    mediaType = mediaType,
+                                    tmdbId = tmdbId,
+                                    seasonNumber = seasonNumber,
+                                    episodeNumber = episodeNumber,
+                                    runtimeMinutes = runtimeMinutes,
+                                    watchedAt = watchedAt,
+                                ),
+                            )
+                        }
+                        _lastSyncedAt.value = Instant.now()
+                    } catch (e: Exception) {
+                        // Live sync only — see the shows listener's comment above.
+                    }
+                }
+            }
+        }
     }
 
     fun stopListening() {
         showsListener?.remove()
         moviesListener?.remove()
+        watchLogListener?.remove()
         showsListener = null
         moviesListener = null
+        watchLogListener = null
     }
 }

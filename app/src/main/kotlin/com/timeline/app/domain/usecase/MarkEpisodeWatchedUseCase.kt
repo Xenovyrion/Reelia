@@ -31,16 +31,16 @@ class MarkEpisodeWatchedUseCase @Inject constructor(
 
         if (watched) {
             val episode = episodeDao.getEpisode(showId, seasonNumber, episodeNumber) ?: return
-            watchLogDao.insert(
-                WatchLogEntryEntity(
-                    mediaType = MediaType.TV,
-                    tmdbId = showId,
-                    seasonNumber = seasonNumber,
-                    episodeNumber = episodeNumber,
-                    runtimeMinutes = episode.runtimeMinutes ?: 0,
-                    watchedAt = watchedAt ?: Instant.now(),
-                ),
+            val entry = WatchLogEntryEntity(
+                mediaType = MediaType.TV,
+                tmdbId = showId,
+                seasonNumber = seasonNumber,
+                episodeNumber = episodeNumber,
+                runtimeMinutes = episode.runtimeMinutes ?: 0,
+                watchedAt = watchedAt ?: Instant.now(),
             )
+            watchLogDao.insert(entry)
+            firestoreSyncRepository.pushWatchLogEntry(entry)
         }
 
         val now = Instant.now()
