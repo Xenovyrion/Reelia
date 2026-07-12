@@ -142,6 +142,7 @@ class ShowDetailViewModel @Inject constructor(
             nextEpisodeAirDate = details.show.nextEpisodeToAirDate,
             averageEpisodeRuntimeMinutes = details.show.averageEpisodeRuntimeMinutes,
             creatorNames = details.show.creatorNames,
+            isFavorite = details.show.isFavorite,
         )
     }.stateIn(
         scope = viewModelScope,
@@ -170,6 +171,12 @@ class ShowDetailViewModel @Inject constructor(
             if (season != null && season.episodes.size < season.episodeCount) {
                 showRepository.ensureSeasonEpisodesLoaded(showId, seasonNumber, defaultRuntimeMinutes = null)
             }
+        }
+    }
+
+    fun onFavoriteToggled(isFavorite: Boolean) {
+        viewModelScope.launch {
+            showRepository.setFavorite(showId, isFavorite)
         }
     }
 }

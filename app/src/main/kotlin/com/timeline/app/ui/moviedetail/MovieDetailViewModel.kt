@@ -96,6 +96,7 @@ class MovieDetailViewModel @Inject constructor(
             watchProvidersBuy = extra.watchProvidersBuy,
             trailerYoutubeKey = extra.trailerYoutubeKey,
             directorNames = extra.directorNames,
+            isFavorite = movie.isFavorite,
         )
     }.stateIn(
         scope = viewModelScope,
@@ -106,6 +107,12 @@ class MovieDetailViewModel @Inject constructor(
     fun onWatchedToggled(watched: Boolean) {
         viewModelScope.launch {
             markMovieWatchedUseCase(movieId, watched)
+        }
+    }
+
+    fun onFavoriteToggled(isFavorite: Boolean) {
+        viewModelScope.launch {
+            movieRepository.setFavorite(movieId, isFavorite)
         }
     }
 

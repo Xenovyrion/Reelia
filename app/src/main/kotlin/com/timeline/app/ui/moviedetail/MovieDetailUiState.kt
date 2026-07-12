@@ -22,4 +22,5 @@ data class MovieDetailUiState(
     val watchProvidersBuy: List<WatchProviderRowItem> = emptyList(),
     val trailerYoutubeKey: String? = null,
     val directorNames: String? = null,
+    val isFavorite: Boolean = false,
 )
