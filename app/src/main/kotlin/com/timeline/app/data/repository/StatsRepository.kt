@@ -1,0 +1,34 @@
+package com.timeline.app.data.repository
+
+import com.timeline.app.data.local.dao.GenreStat
+import com.timeline.app.data.local.dao.TimeBucketStat
+import com.timeline.app.data.local.dao.WatchLogDao
+import com.timeline.app.domain.model.MediaType
+import javax.inject.Inject
+import javax.inject.Singleton
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
+
+data class BasicStats(
+    val totalMinutesWatched: Int,
+    val totalWatchedCount: Int,
+)
+
+@Singleton
+class StatsRepository @Inject constructor(
+    private val watchLogDao: WatchLogDao,
+) {
+    fun getBasicStats(mediaType: MediaType? = null): Flow<BasicStats> =
+        combine(watchLogDao.totalMinutesWatched(mediaType), watchLogDao.countEntries(mediaType)) { minutes, count ->
+            BasicStats(totalMinutesWatched = minutes, totalWatchedCount = count)
+        }
+
+    fun getWeeklyBreakdown(mediaType: MediaType? = null, limit: Int = 12): Flow<List<TimeBucketStat>> =
+        watchLogDao.getWeeklyBreakdown(mediaType, limit)
+
+    fun getMonthlyBreakdown(mediaType: MediaType? = null, limit: Int = 12): Flow<List<TimeBucketStat>> =
+        watchLogDao.getMonthlyBreakdown(mediaType, limit)
+
+    fun getGenreBreakdown(mediaType: MediaType? = null, limit: Int = 5): Flow<List<GenreStat>> =
+        watchLogDao.getGenreBreakdown(mediaType, limit)
+}

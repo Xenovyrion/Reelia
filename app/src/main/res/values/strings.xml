@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Reelia</string>
+
+    <!-- Bottom navigation -->
+    <string name="nav_series">Series</string>
+    <string name="nav_films">Movies</string>
+    <string name="nav_search">Search</string>
+    <string name="nav_stats">Stats</string>
+    <string name="nav_settings">Settings</string>
+
+    <!-- WatchStatus display labels -->
+    <string name="watch_status_watching">Watching</string>
+    <string name="watch_status_plan_to_watch">Plan to Watch</string>
+    <string name="watch_status_completed">Completed</string>
+    <string name="watch_status_dropped">Dropped</string>
+    <string name="watch_status_on_hold">On Hold</string>
+
+    <!-- ShowBroadcastStatus display labels -->
+    <string name="show_broadcast_status_returning">Ongoing</string>
+    <string name="show_broadcast_status_ended">Ended</string>
+    <string name="show_broadcast_status_canceled">Canceled</string>
+    <string name="show_broadcast_status_in_production">In Production</string>
+    <string name="show_broadcast_status_unknown">Unknown</string>
+
+    <!-- PosterCard -->
+    <string name="poster_completed_badge">DONE</string>
+
+    <!-- BackdropHeader -->
+    <string name="backdrop_back_content_description">Back</string>
+
+    <!-- FilterBottomSheet -->
+    <string name="filter_status_label">Status</string>
+    <string name="filter_genre_label">Genre</string>
+    <string name="filter_reset_button">Reset</string>
+    <string name="filter_apply_button">Apply</string>
+
+    <!-- WatchProvidersRow -->
+    <string name="watch_providers_empty">No streaming platforms found for your region.</string>
+    <string name="watch_providers_streaming">Streaming</string>
+    <string name="watch_providers_rent">Rent</string>
+    <string name="watch_providers_buy">Buy</string>
+
+    <!-- Shared: Séries/Films tabs -->
+    <string name="action_filter_content_description">Filter</string>
+    <string name="action_toggle_view_content_description">Toggle view</string>
+    <string name="section_upcoming">Upcoming</string>
+    <string name="days_until_aired">Aired</string>
+    <string name="days_until_today">Today</string>
+    <string name="days_until_tomorrow">Tomorrow</string>
+    <string name="days_until_in_days">In %1$d days</string>
+    <string name="days_until_unit_label">DAYS</string>
+
+    <!-- Séries tab -->
+    <string name="series_title">Series</string>
+    <string name="series_empty_state">Add a show from the Search tab.</string>
+
+    <!-- Films tab -->
+    <string name="films_title">Movies</string>
+    <string name="films_empty_state">Add a movie from the Search tab.</string>
+
+    <!-- Library tab (merged Séries + Films) -->
+    <string name="library_title">Library</string>
+    <string name="library_type_filter_all">All</string>
+    <string name="library_type_filter_series">Series</string>
+    <string name="library_type_filter_films">Movies</string>
+    <string name="library_empty_state">Add a show or movie from Search.</string>
+    <string name="library_search_content_description">Search</string>
+
+    <!-- Home tab -->
+    <string name="home_title">Home</string>
+    <string name="home_greeting">Hello</string>
+    <string name="home_continue_watching_title">Continue Watching</string>
+    <string name="home_library_section_title">Your Library</string>
+    <string name="home_empty_state">Add a show or movie from Search to get started.</string>
+
+    <!-- Search tab -->
+    <string name="search_title">Search</string>
+    <string name="search_field_label">Show or movie title</string>
+    <string name="search_missing_api_key_message">Add your TMDB API key in Settings first to search for a show or movie.</string>
+    <string name="search_error_feed">Couldn\'t load the latest releases.</string>
+    <string name="search_error_query">Search failed. Check your connection.</string>
+    <string name="search_add_content_description">Add</string>
+    <string name="search_add_confirmation">\"%1$s\" added to your library</string>
+    <string name="search_error_add">Couldn\'t add this title. Try again.</string>
+
+    <!-- Stats tab -->
+    <string name="stats_title">Stats</string>
+    <string name="stats_scope_all">All</string>
+    <string name="stats_scope_series">Series</string>
+    <string name="stats_scope_films">Movies</string>
+    <string name="stats_hours_unit_label">HOURS</string>
+    <string name="stats_hours_caption">Total time watched</string>
+    <string name="stats_titles_unit_label">TITLES</string>
+    <string name="stats_titles_caption">Episodes and movies watched</string>
+    <string name="stats_weekly_section_title">By week</string>
+    <string name="stats_weekly_caption">Hours watched, last 12 weeks</string>
+    <string name="stats_monthly_section_title">By month</string>
+    <string name="stats_monthly_caption">Hours watched, last 12 months</string>
+    <string name="stats_completed_unit_label">DONE</string>
+    <string name="stats_completed_caption">Completed</string>
+    <string name="stats_completion_ring_caption">of your library completed</string>
+    <string name="stats_genre_section_title">Favorite genres</string>
+    <string name="chart_no_data">No data yet.</string>
+
+    <!-- Shared: show/movie detail + preview -->
+    <string name="season_count_format">%1$d seasons</string>
+    <string name="preview_cast_section_title">Cast</string>
+    <string name="preview_watch_providers_section_title">Where to Watch</string>
+    <string name="preview_add_button">Add to my library</string>
+    <string name="preview_added_button">Added ✓</string>
+
+    <!-- Show Detail -->
+    <string name="show_detail_tab_about">ABOUT</string>
+    <string name="show_detail_tab_episodes">EPISODES</string>
+    <string name="show_detail_about_section_title">About this show</string>
+    <string name="show_detail_my_rating_format">My rating: %1$s/10</string>
+    <string name="episode_rating_format">Rating: %1$s/10</string>
+    <string name="episode_no_overview">No summary available.</string>
+    <string name="show_detail_season_progress_format">%1$d / %2$d episodes watched</string>
+    <string name="show_detail_continue_watching_title">Continue Watching</string>
+    <string name="show_detail_mark_season_watched_content_description">Mark whole season as watched</string>
+    <string name="detail_favorite_toggle_content_description">Toggle favorite</string>
+    <string name="show_detail_trailer_button">Watch Trailer</string>
+    <string name="show_detail_diffusion_section_title">Schedule</string>
+    <string name="show_detail_next_episode_air_format">Next episode airs %1$s</string>
+    <string name="show_detail_episode_runtime_format">~%1$d min per episode</string>
+    <string name="show_detail_creators_format">Created by %1$s</string>
+
+    <!-- Movie Detail -->
+    <string name="movie_detail_runtime_minutes_format">%1$d min</string>
+    <string name="movie_detail_watched_badge">Watched</string>
+    <string name="movie_detail_plan_to_watch_badge">To Watch</string>
+    <string name="movie_detail_mark_watched_button">Mark as watched</string>
+    <string name="movie_detail_watched_button">Watched ✓</string>
+    <string name="movie_detail_director_format">Directed by %1$s</string>
+
+    <!-- Preview screens -->
+    <string name="preview_error_load_show">Couldn\'t load this show\'s info.</string>
+    <string name="preview_error_load_movie">Couldn\'t load this movie\'s info.</string>
+    <string name="preview_error_add_show">Couldn\'t add this show.</string>
+    <string name="preview_error_add_movie">Couldn\'t add this movie.</string>
+
+    <!-- Login / Auth -->
+    <string name="login_title">Reelia</string>
+    <string name="login_subtitle_sign_in">Sign in to sync your library across devices</string>
+    <string name="login_subtitle_sign_up">Create an account to sync your library across devices</string>
+    <string name="login_email_label">Email</string>
+    <string name="login_password_label">Password</string>
+    <string name="login_sign_in_button">Sign in</string>
+    <string name="login_sign_up_button">Create account</string>
+    <string name="login_toggle_to_sign_up">No account yet? Create one</string>
+    <string name="login_toggle_to_sign_in">Already have an account? Sign in</string>
+    <string name="login_or_divider">or</string>
+    <string name="login_google_button">Continue with Google</string>
+    <string name="login_learn_more_button">Learn more</string>
+    <!-- Update after enabling Google Sign-In in the Firebase console (Authentication > Sign-in
+         method > Google) — the Web client ID is shown right there, no need to redownload
+         google-services.json. -->
+    <string name="google_web_client_id" translatable="false">REPLACE_WITH_YOUR_FIREBASE_WEB_CLIENT_ID</string>
+    <string name="login_learn_more_url" translatable="false">https://github.com/Xenovyrion/TimeLine/blob/claude/timeline-redesign/docs/GUIDE.md</string>
+
+    <!-- Person Detail -->
+    <string name="person_detail_error_load">Couldn\'t load this person\'s info.</string>
+    <string name="person_detail_born_format">Born %1$s</string>
+    <string name="person_detail_no_biography">No biography available.</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_language_section_title">Content language</string>
+    <string name="settings_language_field_label">Language</string>
+    <string name="settings_provider_section_title">Data source</string>
+    <string name="settings_provider_more_soon">More sources coming soon.</string>
+    <string name="settings_api_key_section_title">TMDB API Key</string>
+    <string name="settings_api_key_explanation">Reelia uses TMDB (The Movie Database) to fetch show and movie info. Create a free account at themoviedb.org, generate an API key (v3 auth) in your account settings, then paste it below.</string>
+    <string name="settings_api_key_field_label">TMDB API Key</string>
+    <string name="settings_save_button">Save</string>
+    <string name="settings_save_confirmation">API key saved</string>
+    <string name="settings_account_section_title">Account</string>
+    <string name="settings_last_synced_format">Last synced %1$s</string>
+    <string name="settings_last_synced_never">Not synced yet</string>
+    <string name="settings_sign_out_button">Sign out</string>
+
+    <!-- Language display names (shown in the language picker; must reflect the CURRENT ui locale) -->
+    <string name="lang_name_fr">French</string>
+    <string name="lang_name_en_us">English (US)</string>
+    <string name="lang_name_en_gb">English (UK)</string>
+    <string name="lang_name_es">Spanish</string>
+    <string name="lang_name_de">German</string>
+    <string name="lang_name_it">Italian</string>
+    <string name="lang_name_ja">Japanese</string>
+</resources>

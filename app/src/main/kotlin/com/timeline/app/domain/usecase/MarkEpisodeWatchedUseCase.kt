@@ -1,0 +1,51 @@
+package com.timeline.app.domain.usecase
+
+import com.timeline.app.data.local.dao.EpisodeDao
+import com.timeline.app.data.local.dao.ShowDao
+import com.timeline.app.data.local.dao.SyncOutboxDao
+import com.timeline.app.data.local.dao.WatchLogDao
+import com.timeline.app.data.local.entity.SyncOutboxEntity
+import com.timeline.app.data.local.entity.WatchLogEntryEntity
+import com.timeline.app.data.sync.FirestoreSyncRepository
+import com.timeline.app.domain.model.MediaType
+import java.time.Instant
+import javax.inject.Inject
+
+/**
+ * Marks an episode watched/unwatched. Writes both the episode's `watched` flag (for the
+ * progress UI) and an append-only [WatchLogEntryEntity] (for stats), since the two are
+ * intentionally decoupled — see WatchLogEntryEntity's kdoc. Also bumps the parent show's
+ * `lastModifiedAt` and pushes it, since per-episode watched-state syncs as part of the
+ * show's own Firestore document (see FirestoreSyncRepository).
+ */
+class MarkEpisodeWatchedUseCase @Inject constructor(
+    private val episodeDao: EpisodeDao,
+    private val watchLogDao: WatchLogDao,
+    private val showDao: ShowDao,
+    private val syncOutboxDao: SyncOutboxDao,
+    private val firestoreSyncRepository: FirestoreSyncRepository,
+) {
+    suspend operator fun invoke(showId: Int, seasonNumber: Int, episodeNumber: Int, watched: Boolean) {
+        val watchedAt = if (watched) Instant.now() else null
+        episodeDao.setEpisodeWatched(showId, seasonNumber, episodeNumber, watched, watchedAt)
+
+        if (watched) {
+            val episode = episodeDao.getEpisode(showId, seasonNumber, episodeNumber) ?: return
+            val entry = WatchLogEntryEntity(
+                mediaType = MediaType.TV,
+                tmdbId = showId,
+                seasonNumber = seasonNumber,
+                episodeNumber = episodeNumber,
+                runtimeMinutes = episode.runtimeMinutes ?: 0,
+                watchedAt = watchedAt ?: Instant.now(),
+            )
+            watchLogDao.insert(entry)
+            firestoreSyncRepository.pushWatchLogEntry(entry)
+        }
+
+        val now = Instant.now()
+        showDao.touchLastModified(showId, now)
+        syncOutboxDao.markPending(SyncOutboxEntity(showId, MediaType.TV, now))
+        firestoreSyncRepository.pushPendingChanges()
+    }
+}

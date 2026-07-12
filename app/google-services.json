@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "217482013121",
+    "project_id": "reelia-d92b4",
+    "storage_bucket": "reelia-d92b4.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:217482013121:android:1b00cc7d1c203c3f10a740",
+        "android_client_info": {
+          "package_name": "com.reelia.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDWOUrgZHCNrqtcIBVWD4EV9FGmtFTxkSQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
