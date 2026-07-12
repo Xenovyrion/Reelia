@@ -21,4 +21,5 @@ data class MovieDetailUiState(
     val watchProvidersRent: List<WatchProviderRowItem> = emptyList(),
     val watchProvidersBuy: List<WatchProviderRowItem> = emptyList(),
     val trailerYoutubeKey: String? = null,
+    val directorNames: String? = null,
 )

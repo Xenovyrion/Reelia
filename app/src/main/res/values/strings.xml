@@ -113,6 +113,7 @@
     <string name="movie_detail_plan_to_watch_badge">To Watch</string>
     <string name="movie_detail_mark_watched_button">Mark as watched</string>
     <string name="movie_detail_watched_button">Watched ✓</string>
+    <string name="movie_detail_director_format">Directed by %1$s</string>
 
     <!-- Preview screens -->
     <string name="preview_error_load_show">Couldn\'t load this show\'s info.</string>

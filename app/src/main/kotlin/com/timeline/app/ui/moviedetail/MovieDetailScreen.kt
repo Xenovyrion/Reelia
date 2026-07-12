@@ -1,5 +1,7 @@
 package com.timeline.app.ui.moviedetail
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -17,6 +20,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -24,6 +28,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -101,11 +106,38 @@ fun MovieDetailScreen(
                 Spacer(Modifier.padding(top = 16.dp))
                 Text(uiState.overview, style = MaterialTheme.typography.bodyMedium)
 
-                if (uiState.cast.isNotEmpty()) {
+                uiState.trailerYoutubeKey?.let { key ->
+                    Spacer(Modifier.padding(top = 16.dp))
+                    val context = LocalContext.current
+                    OutlinedButton(
+                        onClick = {
+                            context.startActivity(
+                                Intent(Intent.ACTION_VIEW, Uri.parse("https://www.youtube.com/watch?v=$key")),
+                            )
+                        },
+                    ) {
+                        Icon(Icons.Filled.PlayArrow, contentDescription = null)
+                        Text(
+                            stringResource(R.string.show_detail_trailer_button),
+                            modifier = Modifier.padding(start = 8.dp),
+                        )
+                    }
+                }
+
+                if (uiState.cast.isNotEmpty() || uiState.directorNames != null) {
                     Spacer(Modifier.padding(top = 24.dp))
                     SectionHeader(stringResource(R.string.preview_cast_section_title))
                     Spacer(Modifier.padding(top = 12.dp))
-                    CastRow(uiState.cast, onPersonClick = onPersonClick)
+                    uiState.directorNames?.let {
+                        Text(
+                            stringResource(R.string.movie_detail_director_format, it),
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.padding(bottom = 12.dp),
+                        )
+                    }
+                    if (uiState.cast.isNotEmpty()) {
+                        CastRow(uiState.cast, onPersonClick = onPersonClick)
+                    }
                 }
 
                 Spacer(Modifier.padding(top = 24.dp))
