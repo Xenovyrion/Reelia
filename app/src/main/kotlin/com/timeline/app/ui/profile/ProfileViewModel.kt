@@ -11,6 +11,7 @@ import com.timeline.app.data.auth.AuthRepository
 import com.timeline.app.data.local.prefs.LanguagePreferenceStore
 import com.timeline.app.data.metadata.MetadataProvider
 import com.timeline.app.data.metadata.MetadataProviderRegistry
+import com.timeline.app.data.remote.tmdb.TmdbImageUrlBuilder
 import com.timeline.app.data.repository.MovieRepository
 import com.timeline.app.data.repository.SettingsRepository
 import com.timeline.app.data.repository.ShowRepository
@@ -28,6 +29,9 @@ import com.timeline.app.ui.theme.StatusWatchingCompleted
 import com.timeline.app.ui.update.UpdateUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.Instant
+import java.time.YearMonth
+import java.time.format.TextStyle
+import java.util.Locale
 import javax.inject.Inject
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -37,6 +41,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -51,6 +56,18 @@ private fun StatsScope.toMediaType(): MediaType? = when (this) {
 }
 
 private data class CompletionData(val totalCount: Int, val completedCount: Int)
+
+/** Turns a raw "YYYY-MM" bucket label into a locale-aware short month name + 2-digit year,
+ * e.g. "Janv. 27" (FR) / "Jan 27" (EN) — matches this app's per-user language preference rather
+ * than the device locale. */
+private fun formatMonthLabel(rawLabel: String): String {
+    val yearMonth = YearMonth.parse(rawLabel)
+    val locale = Locale.getDefault()
+    val monthName = yearMonth.month.getDisplayName(TextStyle.SHORT, locale)
+        .replaceFirstChar { it.titlecase(locale) }
+    val shortYear = (yearMonth.year % 100).toString().padStart(2, '0')
+    return "$monthName $shortYear"
+}
 
 private val GenrePalette = listOf(StatusWatchingCompleted, StatusWantToWatch, StatusPlanned, StatusFavorite)
 
@@ -77,6 +94,8 @@ data class ProfileStatsUiState(
 
 private data class StatsQuery(val scope: StatsScope, val weeklyOffset: Int, val monthlyOffset: Int)
 
+data class GenreLibraryItem(val id: Int, val mediaType: MediaType, val title: String, val posterUrl: String?)
+
 data class DeleteAccountUiState(
     val isDeleting: Boolean = false,
     val errorMessage: String? = null,
@@ -92,6 +111,7 @@ class ProfileViewModel @Inject constructor(
     private val statsRepository: StatsRepository,
     private val showRepository: ShowRepository,
     private val movieRepository: MovieRepository,
+    private val imageUrlBuilder: TmdbImageUrlBuilder,
     metadataProviderRegistry: MetadataProviderRegistry,
 ) : ViewModel() {
 
@@ -153,7 +173,7 @@ class ProfileViewModel @Inject constructor(
                 totalWatchedCount = basic.totalWatchedCount,
                 weeklyChart = weekly.map { BarChartEntry(it.label, it.minutesWatched / 60f) },
                 weeklyOffset = query.weeklyOffset,
-                monthlyChart = monthly.map { BarChartEntry(it.label, it.minutesWatched / 60f) },
+                monthlyChart = monthly.map { BarChartEntry(formatMonthLabel(it.label), it.minutesWatched / 60f) },
                 monthlyOffset = query.monthlyOffset,
                 genreBreakdown = genres.mapIndexed { index, genre ->
                     GenreProgressItem(
@@ -177,7 +197,7 @@ class ProfileViewModel @Inject constructor(
         scopeState.value = scope
     }
 
-    // Chart paging — shifts the visible 12-period window one step at a time rather than by a
+    // Chart paging — shifts the visible period window one step at a time rather than by a
     // full page, so it reads as scrolling smoothly back through time. "Next" is clamped at 0
     // (the present) since there's nothing to show beyond it.
     fun onWeeklyChartPrevious() {
@@ -194,6 +214,41 @@ class ProfileViewModel @Inject constructor(
 
     fun onMonthlyChartNext() {
         monthlyOffsetState.update { (it - 1).coerceAtLeast(0) }
+    }
+
+    // Genre drill-down bottom sheet: shows/movies matching whichever genre was tapped in the
+    // breakdown list, shown as a ModalBottomSheet overlay rather than a full navigation screen.
+    private val selectedGenreIdState = MutableStateFlow<Int?>(null)
+
+    val genreLibraryItems: StateFlow<List<GenreLibraryItem>> = selectedGenreIdState.flatMapLatest { genreId ->
+        if (genreId == null) {
+            flowOf(emptyList())
+        } else {
+            combine(
+                showRepository.getAllShows(),
+                showRepository.getShowGenreCrossRefs(),
+                movieRepository.getAllMovies(),
+                movieRepository.getMovieGenreCrossRefs(),
+            ) { shows, showCrossRefs, movies, movieCrossRefs ->
+                val showIds = showCrossRefs.filter { it.genreId == genreId }.map { it.showId }.toSet()
+                val movieIds = movieCrossRefs.filter { it.genreId == genreId }.map { it.movieId }.toSet()
+                val showItems = shows.filter { it.tmdbId in showIds }.map {
+                    GenreLibraryItem(it.tmdbId, MediaType.TV, it.name, imageUrlBuilder.posterUrl(it.posterPath))
+                }
+                val movieItems = movies.filter { it.tmdbId in movieIds }.map {
+                    GenreLibraryItem(it.tmdbId, MediaType.MOVIE, it.title, imageUrlBuilder.posterUrl(it.posterPath))
+                }
+                showItems + movieItems
+            }
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = emptyList(),
+    )
+
+    fun onGenreSelected(genreId: Int?) {
+        selectedGenreIdState.value = genreId
     }
 
     fun onSignOut() {

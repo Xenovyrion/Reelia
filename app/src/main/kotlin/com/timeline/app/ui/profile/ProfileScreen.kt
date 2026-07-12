@@ -26,6 +26,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
@@ -53,9 +54,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.timeline.app.R
 import com.timeline.app.data.local.prefs.LanguagePreferenceStore
+import com.timeline.app.domain.model.MediaType
 import com.timeline.app.ui.common.components.BarChart
 import com.timeline.app.ui.common.components.CircularProgressRing
 import com.timeline.app.ui.common.components.GenreProgressBar
+import com.timeline.app.ui.common.components.GenreProgressItem
+import com.timeline.app.ui.common.components.MediaListRow
 import com.timeline.app.ui.common.components.SectionHeader
 import com.timeline.app.ui.common.components.StatCard
 import com.timeline.app.ui.settings.LANGUAGE_DISPLAY_NAME_RES
@@ -83,16 +87,23 @@ private fun StatsScope.label(): String = stringResource(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen(onGenreClick: (Int) -> Unit = {}, viewModel: ProfileViewModel = hiltViewModel()) {
+fun ProfileScreen(onItemClick: (MediaType, Int) -> Unit = { _, _ -> }, viewModel: ProfileViewModel = hiltViewModel()) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val statsUiState by viewModel.statsUiState.collectAsStateWithLifecycle()
     val updateUiState by viewModel.updateUiState.collectAsStateWithLifecycle()
     val deleteAccountUiState by viewModel.deleteAccountUiState.collectAsStateWithLifecycle()
+    val genreLibraryItems by viewModel.genreLibraryItems.collectAsStateWithLifecycle()
 
     var apiKeyInput by remember { mutableStateOf("") }
     var showDeleteConfirmation by remember { mutableStateOf(false) }
+    var selectedGenre by remember { mutableStateOf<GenreProgressItem?>(null) }
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
+
+    fun dismissGenreSheet() {
+        selectedGenre = null
+        viewModel.onGenreSelected(null)
+    }
 
     LaunchedEffect(uiState.apiKey) {
         uiState.apiKey?.let { apiKeyInput = it }
@@ -265,7 +276,10 @@ fun ProfileScreen(onGenreClick: (Int) -> Unit = {}, viewModel: ProfileViewModel 
                         statsUiState.genreBreakdown.forEach { genre ->
                             GenreProgressBar(
                                 item = genre,
-                                onClick = { onGenreClick(genre.genreId) },
+                                onClick = {
+                                    selectedGenre = genre
+                                    viewModel.onGenreSelected(genre.genreId)
+                                },
                                 modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp),
                             )
                         }
@@ -430,6 +444,39 @@ fun ProfileScreen(onGenreClick: (Int) -> Unit = {}, viewModel: ProfileViewModel 
                 } else {
                     Button(onClick = viewModel::onCheckForUpdateClicked, enabled = !updateUiState.isChecking) {
                         Text(stringResource(R.string.settings_update_check_button))
+                    }
+                }
+            }
+        }
+    }
+
+    selectedGenre?.let { genre ->
+        ModalBottomSheet(onDismissRequest = { dismissGenreSheet() }) {
+            Column(modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)) {
+                Text(
+                    genre.name,
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(horizontal = 16.dp, bottom = 8.dp),
+                )
+                if (genreLibraryItems.isEmpty()) {
+                    Text(
+                        stringResource(R.string.chart_no_data),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                    )
+                } else {
+                    genreLibraryItems.forEach { item ->
+                        MediaListRow(
+                            title = item.title,
+                            subtitle = null,
+                            posterUrl = item.posterUrl,
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                            onClick = {
+                                onItemClick(item.mediaType, item.id)
+                                dismissGenreSheet()
+                            },
+                        )
                     }
                 }
             }

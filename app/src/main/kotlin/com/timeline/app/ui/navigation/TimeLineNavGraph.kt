@@ -52,16 +52,6 @@ fun TimeLineNavGraph(navController: NavHostController, modifier: Modifier = Modi
                 onSearchClick = { navController.navigate(Routes.SEARCH) },
             )
         }
-        composable(
-            route = Routes.LIBRARY_GENRE,
-            arguments = listOf(navArgument("genreId") { type = NavType.IntType }),
-        ) {
-            LibraryScreen(
-                onItemClick = { mediaType, id -> navigateToItem(navController, mediaType, id) },
-                onSearchClick = { navController.navigate(Routes.SEARCH) },
-                onBack = { navController.popBackStack() },
-            )
-        }
         composable(Routes.SEARCH) {
             SearchScreen(
                 onItemClick = { mediaType, id ->
@@ -73,7 +63,7 @@ fun TimeLineNavGraph(navController: NavHostController, modifier: Modifier = Modi
             )
         }
         composable(Routes.PROFILE) {
-            ProfileScreen(onGenreClick = { genreId -> navController.navigate(Routes.libraryGenre(genreId)) })
+            ProfileScreen(onItemClick = { mediaType, id -> navigateToItem(navController, mediaType, id) })
         }
 
         composable(

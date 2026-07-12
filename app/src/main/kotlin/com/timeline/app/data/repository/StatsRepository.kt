@@ -38,7 +38,7 @@ class StatsRepository @Inject constructor(
     /** [periodsAgo] shifts the visible window back by that many weeks — 0 shows the most recent
      * [count] weeks (oldest first, ending with the current week); 1 shifts the whole window back
      * one week, etc. */
-    fun getWeeklyBreakdown(mediaType: MediaType? = null, periodsAgo: Int = 0, count: Int = 12): Flow<List<TimeBucketEntry>> =
+    fun getWeeklyBreakdown(mediaType: MediaType? = null, periodsAgo: Int = 0, count: Int = 6): Flow<List<TimeBucketEntry>> =
         watchLogDao.getAllEntriesForBreakdown(mediaType).map { entries ->
             val zone = ZoneId.systemDefault()
             val weekFields = WeekFields.ISO
@@ -56,8 +56,11 @@ class StatsRepository @Inject constructor(
             }
         }
 
-    /** Same idea as [getWeeklyBreakdown] but bucketed by calendar month. */
-    fun getMonthlyBreakdown(mediaType: MediaType? = null, periodsAgo: Int = 0, count: Int = 12): Flow<List<TimeBucketEntry>> =
+    /** Same idea as [getWeeklyBreakdown] but bucketed by calendar month. [TimeBucketEntry.label]
+     * is a raw "YYYY-MM" key here — the UI layer reformats it into a locale-aware short month
+     * name (e.g. "Jan 27"), matching this codebase's existing pattern of doing locale-aware
+     * formatting at the ViewModel/UI layer rather than in the repository. */
+    fun getMonthlyBreakdown(mediaType: MediaType? = null, periodsAgo: Int = 0, count: Int = 6): Flow<List<TimeBucketEntry>> =
         watchLogDao.getAllEntriesForBreakdown(mediaType).map { entries ->
             val zone = ZoneId.systemDefault()
             val minutesByMonth = entries
@@ -68,7 +71,7 @@ class StatsRepository @Inject constructor(
                 val date = today.minusMonths((periodsAgo + stepsBack).toLong())
                 val key = date.year * 12 + date.monthValue
                 TimeBucketEntry(
-                    label = date.monthValue.toString().padStart(2, '0') + "/" + (date.year % 100).toString().padStart(2, '0'),
+                    label = "${date.year}-" + date.monthValue.toString().padStart(2, '0'),
                     minutesWatched = minutesByMonth[key] ?: 0,
                 )
             }

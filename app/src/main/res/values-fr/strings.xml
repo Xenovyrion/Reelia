@@ -93,9 +93,9 @@
     <string name="stats_titles_unit_label">TITRES</string>
     <string name="stats_titles_caption">Épisodes et films vus</string>
     <string name="stats_weekly_section_title">Par semaine</string>
-    <string name="stats_weekly_caption">Heures regardées, 12 dernières semaines</string>
+    <string name="stats_weekly_caption">Heures regardées, 6 dernières semaines</string>
     <string name="stats_monthly_section_title">Par mois</string>
-    <string name="stats_monthly_caption">Heures regardées, 12 derniers mois</string>
+    <string name="stats_monthly_caption">Heures regardées, 6 derniers mois</string>
     <string name="stats_completed_unit_label">TERMINÉ</string>
     <string name="stats_completed_caption">Terminées</string>
     <string name="stats_completion_ring_caption">de ta bibliothèque terminée</string>

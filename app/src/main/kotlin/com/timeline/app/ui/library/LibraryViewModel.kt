@@ -1,6 +1,5 @@
 package com.timeline.app.ui.library
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.timeline.app.data.local.dao.ShowEpisodeProgress
@@ -51,19 +50,12 @@ private data class LibraryFilterState(
 
 @HiltViewModel
 class LibraryViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
     private val showRepository: ShowRepository,
     private val movieRepository: MovieRepository,
     private val imageUrlBuilder: TmdbImageUrlBuilder,
 ) : ViewModel() {
 
-    // Set only when reached via the "browse this genre" route from Profile's genre breakdown —
-    // the plain bottom-nav Library tab has no genreId arg, so this is null there.
-    private val initialGenreId: Int? = savedStateHandle.get<Int>("genreId")
-
-    private val filterState = MutableStateFlow(
-        LibraryFilterState(selectedGenreIds = initialGenreId?.let { setOf(it) } ?: emptySet()),
-    )
+    private val filterState = MutableStateFlow(LibraryFilterState())
 
     private val rawShowData = combine(
         showRepository.getAllShows(),
