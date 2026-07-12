@@ -71,6 +71,10 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             settingsRepository.setApiKey(key.trim())
             saveEventChannel.send(Unit)
+            // Retry sync hydration: on a fresh install, remote shows/movies can only be fetched
+            // from TMDB once a key is set here, so any hydration that failed for lack of a key
+            // needs a fresh listener snapshot to retry now that one exists.
+            firestoreSyncRepository.startListening()
         }
     }
 
