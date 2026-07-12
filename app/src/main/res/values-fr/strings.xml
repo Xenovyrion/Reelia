@@ -97,6 +97,10 @@
     <string name="stats_weekly_caption">Heures regardées, 12 dernières semaines</string>
     <string name="stats_monthly_section_title">Par mois</string>
     <string name="stats_monthly_caption">Heures regardées, 12 derniers mois</string>
+    <string name="stats_completed_unit_label">TERMINÉ</string>
+    <string name="stats_completed_caption">Terminées</string>
+    <string name="stats_completion_ring_caption">de ta bibliothèque terminée</string>
+    <string name="stats_genre_section_title">Genres préférés</string>
     <string name="chart_no_data">Pas encore de données.</string>
 
     <!-- Shared: show/movie detail + preview -->

@@ -97,6 +97,10 @@
     <string name="stats_weekly_caption">Hours watched, last 12 weeks</string>
     <string name="stats_monthly_section_title">By month</string>
     <string name="stats_monthly_caption">Hours watched, last 12 months</string>
+    <string name="stats_completed_unit_label">DONE</string>
+    <string name="stats_completed_caption">Completed</string>
+    <string name="stats_completion_ring_caption">of your library completed</string>
+    <string name="stats_genre_section_title">Favorite genres</string>
     <string name="chart_no_data">No data yet.</string>
 
     <!-- Shared: show/movie detail + preview -->
