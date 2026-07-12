@@ -45,13 +45,19 @@ fun TimeLineNavGraph(navController: NavHostController, modifier: Modifier = Modi
             route = Routes.SHOW_DETAIL,
             arguments = listOf(navArgument("showId") { type = NavType.IntType }),
         ) {
-            ShowDetailScreen(onBack = { navController.popBackStack() })
+            ShowDetailScreen(
+                onBack = { navController.popBackStack() },
+                onPersonClick = { navController.navigate(Routes.personDetail(it)) },
+            )
         }
         composable(
             route = Routes.MOVIE_DETAIL,
             arguments = listOf(navArgument("movieId") { type = NavType.IntType }),
         ) {
-            MovieDetailScreen(onBack = { navController.popBackStack() })
+            MovieDetailScreen(
+                onBack = { navController.popBackStack() },
+                onPersonClick = { navController.navigate(Routes.personDetail(it)) },
+            )
         }
         composable(
             route = Routes.SHOW_PREVIEW,

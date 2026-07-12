@@ -47,6 +47,7 @@ import coil.compose.AsyncImage
 import com.timeline.app.R
 import com.timeline.app.domain.model.displayLabel
 import com.timeline.app.ui.common.components.BackdropHeader
+import com.timeline.app.ui.common.components.CastRow
 import com.timeline.app.ui.common.components.SectionHeader
 import com.timeline.app.ui.common.components.WatchProvidersRow
 import com.timeline.app.ui.common.components.WatchedToggleButton
@@ -55,6 +56,7 @@ import com.timeline.app.ui.common.components.WatchedToggleButton
 @Composable
 fun ShowDetailScreen(
     onBack: () -> Unit,
+    onPersonClick: (Int) -> Unit,
     viewModel: ShowDetailViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -133,6 +135,14 @@ fun ShowDetailScreen(
                         SectionHeader(stringResource(R.string.show_detail_about_section_title))
                         Spacer(Modifier.padding(top = 12.dp))
                         Text(uiState.overview, style = MaterialTheme.typography.bodyMedium)
+
+                        if (uiState.cast.isNotEmpty()) {
+                            Spacer(Modifier.padding(top = 24.dp))
+                            SectionHeader(stringResource(R.string.preview_cast_section_title))
+                            Spacer(Modifier.padding(top = 12.dp))
+                            CastRow(uiState.cast, onPersonClick = onPersonClick)
+                        }
+
                         Spacer(Modifier.padding(top = 24.dp))
                         SectionHeader(stringResource(R.string.preview_watch_providers_section_title))
                         Spacer(Modifier.padding(top = 12.dp))

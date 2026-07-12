@@ -39,6 +39,7 @@ import com.timeline.app.ui.common.format.toYearOrNull
 @Composable
 fun MovieDetailScreen(
     onBack: () -> Unit,
+    onPersonClick: (Int) -> Unit,
     viewModel: MovieDetailViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -104,7 +105,7 @@ fun MovieDetailScreen(
                     Spacer(Modifier.padding(top = 24.dp))
                     SectionHeader(stringResource(R.string.preview_cast_section_title))
                     Spacer(Modifier.padding(top = 12.dp))
-                    CastRow(uiState.cast)
+                    CastRow(uiState.cast, onPersonClick = onPersonClick)
                 }
 
                 Spacer(Modifier.padding(top = 24.dp))

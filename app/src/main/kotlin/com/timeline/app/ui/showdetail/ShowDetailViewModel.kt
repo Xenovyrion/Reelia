@@ -9,6 +9,7 @@ import com.timeline.app.data.repository.ShowRepository
 import com.timeline.app.domain.model.WatchProviderOption
 import com.timeline.app.domain.usecase.MarkEpisodeWatchedUseCase
 import com.timeline.app.domain.usecase.MarkSeasonWatchedUseCase
+import com.timeline.app.ui.common.components.CastRowItem
 import com.timeline.app.ui.common.components.WatchProviderRowItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -26,6 +27,7 @@ private data class ShowDetailExtras(
     val watchProvidersRent: List<WatchProviderRowItem> = emptyList(),
     val watchProvidersBuy: List<WatchProviderRowItem> = emptyList(),
     val trailerYoutubeKey: String? = null,
+    val cast: List<CastRowItem> = emptyList(),
 )
 
 @HiltViewModel
@@ -52,6 +54,14 @@ class ShowDetailViewModel @Inject constructor(
                     watchProvidersRent = preview.watchProviders?.rent.orEmpty().toRowItems(),
                     watchProvidersBuy = preview.watchProviders?.buy.orEmpty().toRowItems(),
                     trailerYoutubeKey = preview.trailerYoutubeKey,
+                    cast = preview.cast.map {
+                        CastRowItem(
+                            personId = it.id,
+                            name = it.name,
+                            character = it.character,
+                            photoUrl = imageUrlBuilder.posterUrl(it.profilePath, size = "w185"),
+                        )
+                    },
                 )
             } catch (e: Exception) {
                 // Live enrichment only — a network failure here must never block the
@@ -110,6 +120,7 @@ class ShowDetailViewModel @Inject constructor(
             watchProvidersRent = extra.watchProvidersRent,
             watchProvidersBuy = extra.watchProvidersBuy,
             trailerYoutubeKey = extra.trailerYoutubeKey,
+            cast = extra.cast,
         )
     }.stateIn(
         scope = viewModelScope,

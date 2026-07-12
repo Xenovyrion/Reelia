@@ -73,6 +73,7 @@ class MoviePreviewViewModel @Inject constructor(
         genreNames = genreNames,
         cast = cast.map {
             CastRowItem(
+                personId = it.id,
                 name = it.name,
                 character = it.character,
                 photoUrl = imageUrlBuilder.posterUrl(it.profilePath, size = "w185"),

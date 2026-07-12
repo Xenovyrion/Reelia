@@ -50,6 +50,7 @@ class MovieDetailViewModel @Inject constructor(
                 extras.value = MovieDetailExtras(
                     cast = preview.cast.map {
                         CastRowItem(
+                            personId = it.id,
                             name = it.name,
                             character = it.character,
                             photoUrl = imageUrlBuilder.posterUrl(it.profilePath, size = "w185"),

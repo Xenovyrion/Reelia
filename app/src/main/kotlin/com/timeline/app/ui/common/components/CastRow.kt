@@ -1,6 +1,7 @@
 package com.timeline.app.ui.common.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -18,13 +19,18 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 
-data class CastRowItem(val name: String, val character: String, val photoUrl: String?)
+data class CastRowItem(val personId: Int, val name: String, val character: String, val photoUrl: String?)
 
 @Composable
-fun CastRow(cast: List<CastRowItem>) {
+fun CastRow(cast: List<CastRowItem>, onPersonClick: (Int) -> Unit = {}) {
     LazyRow {
         items(cast) { member ->
-            Column(modifier = Modifier.width(84.dp).padding(end = 12.dp)) {
+            Column(
+                modifier = Modifier
+                    .width(84.dp)
+                    .padding(end = 12.dp)
+                    .clickable { onPersonClick(member.personId) },
+            ) {
                 AsyncImage(
                     model = member.photoUrl,
                     contentDescription = member.name,
