@@ -42,4 +42,5 @@ data class ShowDetailUiState(
     val watchProvidersFlatrate: List<WatchProviderRowItem> = emptyList(),
     val watchProvidersRent: List<WatchProviderRowItem> = emptyList(),
     val watchProvidersBuy: List<WatchProviderRowItem> = emptyList(),
+    val trailerYoutubeKey: String? = null,
 )

@@ -27,4 +27,5 @@ data class MediaPreview(
     val cast: List<CastMember> = emptyList(),
     val crew: List<CrewMember> = emptyList(),
     val watchProviders: WatchProviders? = null,
+    val trailerYoutubeKey: String? = null,
 )

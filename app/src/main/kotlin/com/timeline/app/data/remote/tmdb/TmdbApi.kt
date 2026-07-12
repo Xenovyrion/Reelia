@@ -8,6 +8,7 @@ import com.timeline.app.data.remote.tmdb.dto.TmdbSearchResponseDto
 import com.timeline.app.data.remote.tmdb.dto.TmdbSeasonDetailsDto
 import com.timeline.app.data.remote.tmdb.dto.TmdbTrendingItemDto
 import com.timeline.app.data.remote.tmdb.dto.TmdbTvDetailsDto
+import com.timeline.app.data.remote.tmdb.dto.TmdbVideosDto
 import com.timeline.app.data.remote.tmdb.dto.TmdbWatchProvidersResponseDto
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -48,6 +49,9 @@ interface TmdbApi {
     @GET("tv/{id}/credits")
     suspend fun getTvCredits(@Path("id") id: Int): TmdbCreditsDto
 
+    @GET("tv/{id}/videos")
+    suspend fun getTvVideos(@Path("id") id: Int): TmdbVideosDto
+
     @GET("movie/{id}")
     suspend fun getMovieDetails(@Path("id") id: Int): TmdbMovieDetailsDto
 
@@ -56,6 +60,9 @@ interface TmdbApi {
 
     @GET("movie/{id}/credits")
     suspend fun getMovieCredits(@Path("id") id: Int): TmdbCreditsDto
+
+    @GET("movie/{id}/videos")
+    suspend fun getMovieVideos(@Path("id") id: Int): TmdbVideosDto
 
     companion object {
         const val BASE_URL = "https://api.themoviedb.org/3/"

@@ -4,6 +4,7 @@ import com.timeline.app.data.metadata.MetadataProvider
 import com.timeline.app.data.remote.tmdb.TmdbApi
 import com.timeline.app.data.remote.tmdb.dto.TmdbCreditsDto
 import com.timeline.app.data.remote.tmdb.dto.TmdbTrendingItemDto
+import com.timeline.app.data.remote.tmdb.dto.TmdbVideosDto
 import com.timeline.app.data.remote.tmdb.dto.TmdbWatchProviderDto
 import com.timeline.app.data.remote.tmdb.dto.TmdbWatchProvidersResponseDto
 import com.timeline.app.data.repository.SearchRepository
@@ -40,9 +41,11 @@ class TmdbMetadataProvider @Inject constructor(
         val detailsDeferred = async { tmdbApi.getTvDetails(tmdbId) }
         val creditsDeferred = async { tmdbApi.getTvCredits(tmdbId) }
         val watchProvidersDeferred = async { tmdbApi.getTvWatchProviders(tmdbId) }
+        val videosDeferred = async { tmdbApi.getTvVideos(tmdbId) }
         val details = detailsDeferred.await()
         val credits = creditsDeferred.await()
         val watchProviders = watchProvidersDeferred.await()
+        val videos = videosDeferred.await()
 
         MediaPreview(
             tmdbId = details.id,
@@ -59,6 +62,7 @@ class TmdbMetadataProvider @Inject constructor(
             cast = credits.toCastMembers(),
             crew = credits.toCrewMembers(),
             watchProviders = watchProviders.toWatchProviders(),
+            trailerYoutubeKey = videos.trailerYoutubeKey(),
         )
     }
 
@@ -66,9 +70,11 @@ class TmdbMetadataProvider @Inject constructor(
         val detailsDeferred = async { tmdbApi.getMovieDetails(tmdbId) }
         val creditsDeferred = async { tmdbApi.getMovieCredits(tmdbId) }
         val watchProvidersDeferred = async { tmdbApi.getMovieWatchProviders(tmdbId) }
+        val videosDeferred = async { tmdbApi.getMovieVideos(tmdbId) }
         val details = detailsDeferred.await()
         val credits = creditsDeferred.await()
         val watchProviders = watchProvidersDeferred.await()
+        val videos = videosDeferred.await()
 
         MediaPreview(
             tmdbId = details.id,
@@ -84,6 +90,7 @@ class TmdbMetadataProvider @Inject constructor(
             cast = credits.toCastMembers(),
             crew = credits.toCrewMembers(),
             watchProviders = watchProviders.toWatchProviders(),
+            trailerYoutubeKey = videos.trailerYoutubeKey(),
         )
     }
 }
@@ -116,6 +123,13 @@ private fun TmdbCreditsDto.toCrewMembers(): List<CrewMember> =
     crew.filter { it.job == "Director" || it.job == "Creator" }.map {
         CrewMember(id = it.id, name = it.name, job = it.job, profilePath = it.profilePath)
     }
+
+private fun TmdbVideosDto.trailerYoutubeKey(): String? =
+    results
+        .filter { it.site == "YouTube" && it.type == "Trailer" }
+        .sortedByDescending { it.official }
+        .firstOrNull()
+        ?.key
 
 private fun TmdbWatchProvidersResponseDto.toWatchProviders(): WatchProviders? {
     val country = results[WATCH_PROVIDERS_REGION] ?: return null

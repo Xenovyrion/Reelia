@@ -26,6 +26,7 @@ private data class MovieDetailExtras(
     val watchProvidersFlatrate: List<WatchProviderRowItem> = emptyList(),
     val watchProvidersRent: List<WatchProviderRowItem> = emptyList(),
     val watchProvidersBuy: List<WatchProviderRowItem> = emptyList(),
+    val trailerYoutubeKey: String? = null,
 )
 
 @HiltViewModel
@@ -57,6 +58,7 @@ class MovieDetailViewModel @Inject constructor(
                     watchProvidersFlatrate = preview.watchProviders?.flatrate.orEmpty().toRowItems(),
                     watchProvidersRent = preview.watchProviders?.rent.orEmpty().toRowItems(),
                     watchProvidersBuy = preview.watchProviders?.buy.orEmpty().toRowItems(),
+                    trailerYoutubeKey = preview.trailerYoutubeKey,
                 )
             } catch (e: Exception) {
                 // Live enrichment only — a network failure here must never block the
@@ -85,6 +87,7 @@ class MovieDetailViewModel @Inject constructor(
             watchProvidersFlatrate = extra.watchProvidersFlatrate,
             watchProvidersRent = extra.watchProvidersRent,
             watchProvidersBuy = extra.watchProvidersBuy,
+            trailerYoutubeKey = extra.trailerYoutubeKey,
         )
     }.stateIn(
         scope = viewModelScope,
