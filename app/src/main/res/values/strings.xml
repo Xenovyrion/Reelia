@@ -168,6 +168,10 @@
     <string name="settings_api_key_field_label">TMDB API Key</string>
     <string name="settings_save_button">Save</string>
     <string name="settings_save_confirmation">API key saved</string>
+    <string name="settings_account_section_title">Account</string>
+    <string name="settings_last_synced_format">Last synced %1$s</string>
+    <string name="settings_last_synced_never">Not synced yet</string>
+    <string name="settings_sign_out_button">Sign out</string>
 
     <!-- Language display names (shown in the language picker; must reflect the CURRENT ui locale) -->
     <string name="lang_name_fr">French</string>

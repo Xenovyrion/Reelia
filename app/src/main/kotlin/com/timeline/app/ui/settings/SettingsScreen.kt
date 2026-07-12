@@ -37,6 +37,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.timeline.app.R
 import com.timeline.app.data.local.prefs.LanguagePreferenceStore
 import com.timeline.app.ui.theme.timeLineTopAppBarColors
+import java.text.DateFormat
+import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -138,6 +140,25 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
             Spacer(Modifier.height(12.dp))
             Button(onClick = { viewModel.onApiKeySubmitted(apiKeyInput) }) {
                 Text(stringResource(R.string.settings_save_button))
+            }
+
+            Spacer(Modifier.height(24.dp))
+            Text(stringResource(R.string.settings_account_section_title), style = MaterialTheme.typography.titleMedium)
+            Spacer(Modifier.height(8.dp))
+            uiState.accountEmail?.let {
+                Text(it, style = MaterialTheme.typography.bodyMedium)
+            }
+            Text(
+                uiState.lastSyncedAt?.let {
+                    stringResource(R.string.settings_last_synced_format, DateFormat.getDateTimeInstance().format(Date.from(it)))
+                } ?: stringResource(R.string.settings_last_synced_never),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = 4.dp),
+            )
+            Spacer(Modifier.height(12.dp))
+            Button(onClick = viewModel::onSignOut) {
+                Text(stringResource(R.string.settings_sign_out_button))
             }
         }
     }

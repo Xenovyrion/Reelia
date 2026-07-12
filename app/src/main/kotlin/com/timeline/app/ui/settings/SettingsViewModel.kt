@@ -4,11 +4,14 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.timeline.app.data.auth.AuthRepository
 import com.timeline.app.data.local.prefs.LanguagePreferenceStore
 import com.timeline.app.data.metadata.MetadataProvider
 import com.timeline.app.data.metadata.MetadataProviderRegistry
 import com.timeline.app.data.repository.SettingsRepository
+import com.timeline.app.data.sync.FirestoreSyncRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.time.Instant
 import javax.inject.Inject
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -23,11 +26,15 @@ data class SettingsUiState(
     val apiKey: String? = null,
     val language: String = LanguagePreferenceStore.FALLBACK_LANGUAGE,
     val selectedProviderId: String = "tmdb",
+    val accountEmail: String? = null,
+    val lastSyncedAt: Instant? = null,
 )
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository,
+    private val authRepository: AuthRepository,
+    private val firestoreSyncRepository: FirestoreSyncRepository,
     metadataProviderRegistry: MetadataProviderRegistry,
 ) : ViewModel() {
 
@@ -37,13 +44,25 @@ class SettingsViewModel @Inject constructor(
         settingsRepository.apiKey,
         settingsRepository.language,
         settingsRepository.selectedProviderId,
-    ) { apiKey, language, providerId ->
-        SettingsUiState(apiKey = apiKey, language = language, selectedProviderId = providerId)
+        authRepository.currentUser,
+        firestoreSyncRepository.lastSyncedAt,
+    ) { apiKey, language, providerId, user, lastSyncedAt ->
+        SettingsUiState(
+            apiKey = apiKey,
+            language = language,
+            selectedProviderId = providerId,
+            accountEmail = user?.email,
+            lastSyncedAt = lastSyncedAt,
+        )
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = SettingsUiState(),
     )
+
+    fun onSignOut() {
+        authRepository.signOut()
+    }
 
     private val saveEventChannel = Channel<Unit>(Channel.BUFFERED)
     val saveEvent: Flow<Unit> = saveEventChannel.receiveAsFlow()

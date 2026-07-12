@@ -13,6 +13,9 @@ import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
@@ -36,6 +39,9 @@ class FirestoreSyncRepository @Inject constructor(
     private val syncScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private var showsListener: ListenerRegistration? = null
     private var moviesListener: ListenerRegistration? = null
+
+    private val _lastSyncedAt = MutableStateFlow<Instant?>(null)
+    val lastSyncedAt: StateFlow<Instant?> = _lastSyncedAt.asStateFlow()
 
     suspend fun pushPendingChanges() {
         val uid = firebaseAuth.currentUser?.uid ?: return
@@ -64,6 +70,7 @@ class FirestoreSyncRepository @Inject constructor(
             }
             syncOutboxDao.clearPending(entry.tmdbId, entry.mediaType)
         }
+        _lastSyncedAt.value = Instant.now()
     }
 
     fun startListening() {
@@ -80,6 +87,7 @@ class FirestoreSyncRepository @Inject constructor(
                     if (remoteModifiedAt.isAfter(local.lastModifiedAt)) {
                         showDao.setShowFavorite(tmdbId, remoteFavorite, remoteModifiedAt)
                     }
+                    _lastSyncedAt.value = Instant.now()
                 }
             }
         }
@@ -93,6 +101,7 @@ class FirestoreSyncRepository @Inject constructor(
                     if (remoteModifiedAt.isAfter(local.lastModifiedAt)) {
                         movieDao.setMovieFavorite(tmdbId, remoteFavorite, remoteModifiedAt)
                     }
+                    _lastSyncedAt.value = Instant.now()
                 }
             }
         }

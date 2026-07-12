@@ -168,6 +168,10 @@
     <string name="settings_api_key_field_label">Clé API TMDB</string>
     <string name="settings_save_button">Enregistrer</string>
     <string name="settings_save_confirmation">Clé API enregistrée</string>
+    <string name="settings_account_section_title">Compte</string>
+    <string name="settings_last_synced_format">Dernière synchro %1$s</string>
+    <string name="settings_last_synced_never">Pas encore synchronisé</string>
+    <string name="settings_sign_out_button">Se déconnecter</string>
 
     <!-- Language display names (shown in the language picker; must reflect the CURRENT ui locale) -->
     <string name="lang_name_fr">Français</string>
