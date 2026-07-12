@@ -4,6 +4,7 @@ import com.timeline.app.data.remote.tmdb.dto.TmdbConfigurationDto
 import com.timeline.app.data.remote.tmdb.dto.TmdbCreditsDto
 import com.timeline.app.data.remote.tmdb.dto.TmdbMovieDetailsDto
 import com.timeline.app.data.remote.tmdb.dto.TmdbPagedResponseDto
+import com.timeline.app.data.remote.tmdb.dto.TmdbPersonDetailsDto
 import com.timeline.app.data.remote.tmdb.dto.TmdbSearchResponseDto
 import com.timeline.app.data.remote.tmdb.dto.TmdbSeasonDetailsDto
 import com.timeline.app.data.remote.tmdb.dto.TmdbTrendingItemDto
@@ -63,6 +64,9 @@ interface TmdbApi {
 
     @GET("movie/{id}/videos")
     suspend fun getMovieVideos(@Path("id") id: Int): TmdbVideosDto
+
+    @GET("person/{id}")
+    suspend fun getPersonDetails(@Path("id") id: Int): TmdbPersonDetailsDto
 
     companion object {
         const val BASE_URL = "https://api.themoviedb.org/3/"

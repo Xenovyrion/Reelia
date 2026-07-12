@@ -10,6 +10,7 @@ import androidx.navigation.navArgument
 import com.timeline.app.domain.model.MediaType
 import com.timeline.app.ui.films.FilmsScreen
 import com.timeline.app.ui.moviedetail.MovieDetailScreen
+import com.timeline.app.ui.persondetail.PersonDetailScreen
 import com.timeline.app.ui.preview.MoviePreviewScreen
 import com.timeline.app.ui.preview.ShowPreviewScreen
 import com.timeline.app.ui.search.SearchScreen
@@ -77,6 +78,12 @@ fun TimeLineNavGraph(navController: NavHostController, modifier: Modifier = Modi
                     navController.navigate(Routes.movieDetail(tmdbId))
                 },
             )
+        }
+        composable(
+            route = Routes.PERSON_DETAIL,
+            arguments = listOf(navArgument("personId") { type = NavType.IntType }),
+        ) {
+            PersonDetailScreen(onBack = { navController.popBackStack() })
         }
     }
 }
