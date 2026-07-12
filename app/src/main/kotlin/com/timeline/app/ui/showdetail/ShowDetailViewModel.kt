@@ -139,6 +139,9 @@ class ShowDetailViewModel @Inject constructor(
             networkNames = details.show.networkNames,
             yearRange = yearRange,
             genreNames = genres.map { it.name },
+            nextEpisodeAirDate = details.show.nextEpisodeToAirDate,
+            averageEpisodeRuntimeMinutes = details.show.averageEpisodeRuntimeMinutes,
+            creatorNames = details.show.creatorNames,
         )
     }.stateIn(
         scope = viewModelScope,

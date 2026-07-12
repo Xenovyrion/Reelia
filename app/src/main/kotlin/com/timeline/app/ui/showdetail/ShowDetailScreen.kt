@@ -1,5 +1,7 @@
 package com.timeline.app.ui.showdetail
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -16,6 +18,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
@@ -23,6 +26,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
@@ -39,6 +43,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -52,6 +57,9 @@ import com.timeline.app.ui.common.components.CastRow
 import com.timeline.app.ui.common.components.SectionHeader
 import com.timeline.app.ui.common.components.WatchProvidersRow
 import com.timeline.app.ui.common.components.WatchedToggleButton
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -171,11 +179,57 @@ fun ShowDetailScreen(
                         Spacer(Modifier.padding(top = 12.dp))
                         Text(uiState.overview, style = MaterialTheme.typography.bodyMedium)
 
-                        if (uiState.cast.isNotEmpty()) {
+                        uiState.trailerYoutubeKey?.let { key ->
+                            Spacer(Modifier.padding(top = 16.dp))
+                            val context = LocalContext.current
+                            OutlinedButton(
+                                onClick = {
+                                    context.startActivity(
+                                        Intent(Intent.ACTION_VIEW, Uri.parse("https://www.youtube.com/watch?v=$key")),
+                                    )
+                                },
+                            ) {
+                                Icon(Icons.Filled.PlayArrow, contentDescription = null)
+                                Text(
+                                    stringResource(R.string.show_detail_trailer_button),
+                                    modifier = Modifier.padding(start = 8.dp),
+                                )
+                            }
+                        }
+
+                        if (uiState.nextEpisodeAirDate != null || uiState.averageEpisodeRuntimeMinutes != null) {
+                            Spacer(Modifier.padding(top = 24.dp))
+                            SectionHeader(stringResource(R.string.show_detail_diffusion_section_title))
+                            Spacer(Modifier.padding(top = 12.dp))
+                            uiState.nextEpisodeAirDate?.let {
+                                Text(
+                                    stringResource(R.string.show_detail_next_episode_air_format, formatAirDate(it)),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                )
+                            }
+                            uiState.averageEpisodeRuntimeMinutes?.let {
+                                Text(
+                                    stringResource(R.string.show_detail_episode_runtime_format, it),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                            }
+                        }
+
+                        if (uiState.cast.isNotEmpty() || uiState.creatorNames != null) {
                             Spacer(Modifier.padding(top = 24.dp))
                             SectionHeader(stringResource(R.string.preview_cast_section_title))
                             Spacer(Modifier.padding(top = 12.dp))
-                            CastRow(uiState.cast, onPersonClick = onPersonClick)
+                            uiState.creatorNames?.let {
+                                Text(
+                                    stringResource(R.string.show_detail_creators_format, it),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    modifier = Modifier.padding(bottom = 12.dp),
+                                )
+                            }
+                            if (uiState.cast.isNotEmpty()) {
+                                CastRow(uiState.cast, onPersonClick = onPersonClick)
+                            }
                         }
 
                         Spacer(Modifier.padding(top = 24.dp))
@@ -309,6 +363,14 @@ private fun RatingBadge(rating: Float) {
             )
         }
     }
+}
+
+private fun formatAirDate(dateStr: String): String = try {
+    val date = LocalDate.parse(dateStr)
+    val formatter = DateTimeFormatter.ofPattern("EEEE d MMMM yyyy", Locale.getDefault())
+    date.format(formatter)
+} catch (e: Exception) {
+    dateStr
 }
 
 @Composable

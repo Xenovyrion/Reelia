@@ -50,4 +50,7 @@ data class ShowDetailUiState(
     val networkNames: String? = null,
     val yearRange: String? = null,
     val genreNames: List<String> = emptyList(),
+    val nextEpisodeAirDate: String? = null,
+    val averageEpisodeRuntimeMinutes: Int? = null,
+    val creatorNames: String? = null,
 )

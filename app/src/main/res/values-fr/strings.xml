@@ -101,6 +101,11 @@
     <string name="show_detail_season_progress_format">%1$d / %2$d épisodes vus</string>
     <string name="show_detail_continue_watching_title">Continuer le suivi</string>
     <string name="show_detail_mark_season_watched_content_description">Marquer toute la saison comme vue</string>
+    <string name="show_detail_trailer_button">Bande-annonce</string>
+    <string name="show_detail_diffusion_section_title">Diffusion</string>
+    <string name="show_detail_next_episode_air_format">Prochain épisode le %1$s</string>
+    <string name="show_detail_episode_runtime_format">~%1$d min par épisode</string>
+    <string name="show_detail_creators_format">Créée par %1$s</string>
 
     <!-- Movie Detail -->
     <string name="movie_detail_runtime_minutes_format">%1$d min</string>
