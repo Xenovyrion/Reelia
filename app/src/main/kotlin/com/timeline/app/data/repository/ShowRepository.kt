@@ -19,7 +19,10 @@ import com.timeline.app.domain.model.WatchStatus
 import java.time.Instant
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 
 @Singleton
 class ShowRepository @Inject constructor(
@@ -43,23 +46,24 @@ class ShowRepository @Inject constructor(
 
     fun getShowGenreCrossRefs(): Flow<List<ShowGenreCrossRef>> = genreDao.getAllShowGenreCrossRefs()
 
-    /** Fetches full show + season 1 metadata from TMDB and persists it as a new tracked show. */
-    suspend fun addShowFromTmdb(tmdbId: Int) {
+    /** Fetches full show + every season's episodes from TMDB and persists it as a new tracked
+     * show. All seasons are fetched concurrently so progress tracking is correct from the start
+     * — a show is never left with only some seasons' episodes locally cached. */
+    suspend fun addShowFromTmdb(tmdbId: Int): Unit = coroutineScope {
         val details = tmdbApi.getTvDetails(tmdbId)
         showDao.upsertShow(details.toEntity(status = WatchStatus.PLAN_TO_WATCH, addedAt = Instant.now()))
         seasonDao.upsertSeasons(details.toSeasonEntities())
         persistGenres(details.toGenreEntities(), tmdbId)
 
-        val firstSeasonNumber = details.seasons.firstOrNull { it.seasonNumber > 0 }?.seasonNumber
-        if (firstSeasonNumber != null) {
-            val seasonDetails = tmdbApi.getSeasonDetails(tmdbId, firstSeasonNumber)
-            episodeDao.upsertEpisodes(
-                seasonDetails.toEpisodeEntities(tmdbId, details.episodeRunTime.firstOrNull()),
-            )
-        }
+        val seasonNumbers = details.seasons.map { it.seasonNumber }.filter { it > 0 }
+        val defaultRuntimeMinutes = details.episodeRunTime.firstOrNull()
+        seasonNumbers
+            .map { seasonNumber -> async { ensureSeasonEpisodesLoaded(tmdbId, seasonNumber, defaultRuntimeMinutes) } }
+            .awaitAll()
     }
 
-    /** Fetches and caches the episode list for a season that hasn't been loaded yet. */
+    /** Fetches and caches a season's episode list. Safe to call even if it's already loaded —
+     * upsert is idempotent. */
     suspend fun ensureSeasonEpisodesLoaded(showId: Int, seasonNumber: Int, defaultRuntimeMinutes: Int?) {
         val seasonDetails = tmdbApi.getSeasonDetails(showId, seasonNumber)
         episodeDao.upsertEpisodes(seasonDetails.toEpisodeEntities(showId, defaultRuntimeMinutes))
