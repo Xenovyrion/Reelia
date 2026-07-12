@@ -28,7 +28,9 @@ class LoginViewModel @Inject constructor(
     }
 
     fun onToggleMode() {
-        _uiState.update { it.copy(isSignUpMode = !it.isSignUpMode, errorMessage = null) }
+        _uiState.update {
+            it.copy(isSignUpMode = !it.isSignUpMode, email = "", password = "", errorMessage = null)
+        }
     }
 
     fun onSubmit() {
