@@ -1,8 +1,8 @@
 package com.timeline.app.ui.navigation
 
 object Routes {
-    const val SERIES = "series"
-    const val FILMS = "films"
+    const val HOME = "home"
+    const val LIBRARY = "library"
     const val SEARCH = "search"
     const val STATS = "stats"
     const val SETTINGS = "settings"

@@ -1,5 +1,9 @@
 package com.timeline.app.ui.navigation
 
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -8,25 +12,46 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.timeline.app.domain.model.MediaType
-import com.timeline.app.ui.films.FilmsScreen
+import com.timeline.app.ui.home.HomeScreen
+import com.timeline.app.ui.library.LibraryScreen
 import com.timeline.app.ui.moviedetail.MovieDetailScreen
 import com.timeline.app.ui.persondetail.PersonDetailScreen
 import com.timeline.app.ui.preview.MoviePreviewScreen
 import com.timeline.app.ui.preview.ShowPreviewScreen
 import com.timeline.app.ui.search.SearchScreen
-import com.timeline.app.ui.series.SeriesScreen
 import com.timeline.app.ui.settings.SettingsScreen
 import com.timeline.app.ui.showdetail.ShowDetailScreen
 import com.timeline.app.ui.stats.StatsScreen
 
+private fun navigateToItem(navController: NavHostController, mediaType: MediaType, id: Int) {
+    when (mediaType) {
+        MediaType.TV -> navController.navigate(Routes.showDetail(id))
+        MediaType.MOVIE -> navController.navigate(Routes.movieDetail(id))
+    }
+}
+
 @Composable
 fun TimeLineNavGraph(navController: NavHostController, modifier: Modifier = Modifier) {
-    NavHost(navController = navController, startDestination = Routes.SERIES, modifier = modifier) {
-        composable(Routes.SERIES) {
-            SeriesScreen(onShowClick = { navController.navigate(Routes.showDetail(it)) })
+    NavHost(
+        navController = navController,
+        startDestination = Routes.HOME,
+        modifier = modifier,
+        enterTransition = { fadeIn() + slideInHorizontally(initialOffsetX = { it / 4 }) },
+        exitTransition = { fadeOut() },
+        popEnterTransition = { fadeIn() },
+        popExitTransition = { fadeOut() + slideOutHorizontally(targetOffsetX = { it / 4 }) },
+    ) {
+        composable(Routes.HOME) {
+            HomeScreen(
+                onShowClick = { navController.navigate(Routes.showDetail(it)) },
+                onItemClick = { mediaType, id -> navigateToItem(navController, mediaType, id) },
+            )
         }
-        composable(Routes.FILMS) {
-            FilmsScreen(onMovieClick = { navController.navigate(Routes.movieDetail(it)) })
+        composable(Routes.LIBRARY) {
+            LibraryScreen(
+                onItemClick = { mediaType, id -> navigateToItem(navController, mediaType, id) },
+                onSearchClick = { navController.navigate(Routes.SEARCH) },
+            )
         }
         composable(Routes.SEARCH) {
             SearchScreen(
