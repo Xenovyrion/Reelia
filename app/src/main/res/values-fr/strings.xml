@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">TimeLine</string>
+    <string name="app_name">Reelia</string>
 
     <!-- Bottom navigation -->
     <string name="nav_series">Séries</string>
@@ -153,7 +153,7 @@
     <string name="settings_provider_section_title">Source des données</string>
     <string name="settings_provider_more_soon">D\'autres sources arriveront bientôt.</string>
     <string name="settings_api_key_section_title">Clé API TMDB</string>
-    <string name="settings_api_key_explanation">TimeLine utilise TMDB (The Movie Database) pour récupérer les infos des séries et films. Crée un compte gratuit sur themoviedb.org, génère une clé API (v3 auth) dans les paramètres de ton compte, puis colle-la ci-dessous.</string>
+    <string name="settings_api_key_explanation">Reelia utilise TMDB (The Movie Database) pour récupérer les infos des séries et films. Crée un compte gratuit sur themoviedb.org, génère une clé API (v3 auth) dans les paramètres de ton compte, puis colle-la ci-dessous.</string>
     <string name="settings_api_key_field_label">Clé API TMDB</string>
     <string name="settings_save_button">Enregistrer</string>
     <string name="settings_save_confirmation">Clé API enregistrée</string>
