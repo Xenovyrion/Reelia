@@ -103,6 +103,17 @@
     <string name="stats_chart_previous">Previous period</string>
     <string name="stats_chart_next">Next period</string>
     <string name="chart_no_data">No data yet.</string>
+    <string name="stats_remaining_unit_label">LEFT</string>
+    <string name="stats_remaining_caption">Episodes and movies left to watch</string>
+    <string name="stats_remaining_hours_caption">Estimated time left</string>
+    <string name="stats_weekly_average_caption">Average per week</string>
+    <string name="stats_shows_added_unit_label">SHOWS</string>
+    <string name="stats_shows_added_caption">Shows added</string>
+    <string name="stats_shows_in_production_caption">In production</string>
+    <string name="stats_broadcast_status_section_title">Shows by status</string>
+    <string name="stats_network_section_title">By network</string>
+    <string name="stats_weekday_section_title">By day of week</string>
+    <string name="stats_weekday_caption">Hours watched by day of week</string>
 
     <!-- Shared: show/movie detail + preview -->
     <string name="season_count_format">%1$d seasons</string>

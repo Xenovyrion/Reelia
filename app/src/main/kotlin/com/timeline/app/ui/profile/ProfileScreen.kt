@@ -55,6 +55,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.timeline.app.R
 import com.timeline.app.data.local.prefs.LanguagePreferenceStore
 import com.timeline.app.domain.model.MediaType
+import com.timeline.app.domain.model.displayLabel
 import com.timeline.app.ui.common.components.BarChart
 import com.timeline.app.ui.common.components.CircularProgressRing
 import com.timeline.app.ui.common.components.GenreProgressBar
@@ -65,16 +66,24 @@ import com.timeline.app.ui.common.components.StatCard
 import com.timeline.app.ui.settings.LANGUAGE_DISPLAY_NAME_RES
 import com.timeline.app.ui.theme.StatusFavorite
 import com.timeline.app.ui.theme.StatusPlanned
+import com.timeline.app.ui.theme.StatusWantToWatch
 import com.timeline.app.ui.theme.StatusWatchingCompleted
 import com.timeline.app.ui.theme.timeLineTopAppBarColors
 import java.text.DateFormat
 import java.util.Date
 import java.util.Locale
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Autorenew
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.HourglassBottom
+import androidx.compose.material.icons.filled.Inventory2
+import androidx.compose.material.icons.filled.LiveTv
 import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material.icons.filled.TrendingUp
+
+private val StatusPalette = listOf(StatusWatchingCompleted, StatusWantToWatch, StatusPlanned, StatusFavorite)
 
 @Composable
 private fun StatsScope.label(): String = stringResource(
@@ -242,6 +251,35 @@ fun ProfileScreen(onItemClick: (MediaType, Int) -> Unit = { _, _ -> }, viewModel
                     modifier = Modifier.weight(1f).fillMaxHeight(),
                 )
             }
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(top = 12.dp).height(IntrinsicSize.Max),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                StatCard(
+                    icon = Icons.Filled.Inventory2,
+                    value = statsUiState.remainingCount.toString(),
+                    unitLabel = stringResource(R.string.stats_remaining_unit_label),
+                    caption = stringResource(R.string.stats_remaining_caption),
+                    accentColor = StatusWantToWatch,
+                    modifier = Modifier.weight(1f).fillMaxHeight(),
+                )
+                StatCard(
+                    icon = Icons.Filled.HourglassBottom,
+                    value = String.format(Locale.getDefault(), "%.1f", statsUiState.remainingHoursEstimate),
+                    unitLabel = stringResource(R.string.stats_hours_unit_label),
+                    caption = stringResource(R.string.stats_remaining_hours_caption),
+                    accentColor = StatusPlanned,
+                    modifier = Modifier.weight(1f).fillMaxHeight(),
+                )
+                StatCard(
+                    icon = Icons.Filled.TrendingUp,
+                    value = String.format(Locale.getDefault(), "%.1f", statsUiState.averageHoursPerWeek),
+                    unitLabel = stringResource(R.string.stats_hours_unit_label),
+                    caption = stringResource(R.string.stats_weekly_average_caption),
+                    accentColor = StatusWatchingCompleted,
+                    modifier = Modifier.weight(1f).fillMaxHeight(),
+                )
+            }
 
             Card(modifier = Modifier.fillMaxWidth().padding(top = 20.dp)) {
                 Row(
@@ -287,6 +325,66 @@ fun ProfileScreen(onItemClick: (MediaType, Int) -> Unit = { _, _ -> }, viewModel
                 }
             }
 
+            if (statsUiState.showsAddedCount > 0) {
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(top = 24.dp).height(IntrinsicSize.Max),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    StatCard(
+                        icon = Icons.Filled.LiveTv,
+                        value = statsUiState.showsAddedCount.toString(),
+                        unitLabel = stringResource(R.string.stats_shows_added_unit_label),
+                        caption = stringResource(R.string.stats_shows_added_caption),
+                        accentColor = StatusWatchingCompleted,
+                        modifier = Modifier.weight(1f).fillMaxHeight(),
+                    )
+                    StatCard(
+                        icon = Icons.Filled.Autorenew,
+                        value = statsUiState.showsInProductionCount.toString(),
+                        unitLabel = stringResource(R.string.stats_shows_added_unit_label),
+                        caption = stringResource(R.string.stats_shows_in_production_caption),
+                        accentColor = StatusPlanned,
+                        modifier = Modifier.weight(1f).fillMaxHeight(),
+                    )
+                }
+                if (statsUiState.showsByBroadcastStatus.isNotEmpty()) {
+                    Column(modifier = Modifier.padding(top = 20.dp)) {
+                        SectionHeader(stringResource(R.string.stats_broadcast_status_section_title))
+                        Column(modifier = Modifier.padding(top = 12.dp)) {
+                            statsUiState.showsByBroadcastStatus.forEachIndexed { index, stat ->
+                                GenreProgressBar(
+                                    item = GenreProgressItem(
+                                        genreId = index,
+                                        name = stat.status.displayLabel(),
+                                        fraction = stat.fraction,
+                                        color = StatusPalette[index % StatusPalette.size],
+                                    ),
+                                    modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp),
+                                )
+                            }
+                        }
+                    }
+                }
+                if (statsUiState.networkBreakdown.isNotEmpty()) {
+                    Column(modifier = Modifier.padding(top = 12.dp)) {
+                        SectionHeader(stringResource(R.string.stats_network_section_title))
+                        Column(modifier = Modifier.padding(top = 12.dp)) {
+                            statsUiState.networkBreakdown.forEachIndexed { index, stat ->
+                                GenreProgressBar(
+                                    item = GenreProgressItem(
+                                        genreId = index,
+                                        name = stat.name,
+                                        fraction = stat.fraction,
+                                        color = StatusPalette[index % StatusPalette.size],
+                                    ),
+                                    modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp),
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
             Column(modifier = Modifier.padding(top = 24.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                     SectionHeader(stringResource(R.string.stats_weekly_section_title), modifier = Modifier.weight(1f))
@@ -325,6 +423,18 @@ fun ProfileScreen(onItemClick: (MediaType, Int) -> Unit = { _, _ -> }, viewModel
                     )
                 }
                 BarChart(entries = statsUiState.monthlyChart, modifier = Modifier.fillMaxWidth().padding(top = 8.dp))
+            }
+
+            Column(modifier = Modifier.padding(top = 24.dp)) {
+                SectionHeader(stringResource(R.string.stats_weekday_section_title))
+                Row(modifier = Modifier.fillMaxWidth().padding(top = 4.dp)) {
+                    Text(
+                        stringResource(R.string.stats_weekday_caption),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+                BarChart(entries = statsUiState.weekdayChart, modifier = Modifier.fillMaxWidth().padding(top = 8.dp))
             }
 
             HorizontalDivider(modifier = Modifier.padding(top = 24.dp))
@@ -456,7 +566,7 @@ fun ProfileScreen(onItemClick: (MediaType, Int) -> Unit = { _, _ -> }, viewModel
                 Text(
                     genre.name,
                     style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(horizontal = 16.dp, bottom = 8.dp),
+                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
                 )
                 if (genreLibraryItems.isEmpty()) {
                     Text(

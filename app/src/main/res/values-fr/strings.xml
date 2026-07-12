@@ -103,6 +103,17 @@
     <string name="stats_chart_previous">Période précédente</string>
     <string name="stats_chart_next">Période suivante</string>
     <string name="chart_no_data">Pas encore de données.</string>
+    <string name="stats_remaining_unit_label">RESTANT</string>
+    <string name="stats_remaining_caption">Épisodes et films restant à voir</string>
+    <string name="stats_remaining_hours_caption">Temps restant estimé</string>
+    <string name="stats_weekly_average_caption">Moyenne par semaine</string>
+    <string name="stats_shows_added_unit_label">SÉRIES</string>
+    <string name="stats_shows_added_caption">Séries ajoutées</string>
+    <string name="stats_shows_in_production_caption">En production</string>
+    <string name="stats_broadcast_status_section_title">Séries par statut</string>
+    <string name="stats_network_section_title">Par chaîne</string>
+    <string name="stats_weekday_section_title">Par jour de la semaine</string>
+    <string name="stats_weekday_caption">Heures regardées par jour de la semaine</string>
 
     <!-- Shared: show/movie detail + preview -->
     <string name="season_count_format">%1$d saisons</string>

@@ -8,18 +8,26 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuthRecentLoginRequiredException
 import com.timeline.app.data.auth.AuthRepository
+import com.timeline.app.data.local.dao.GenreStat
+import com.timeline.app.data.local.entity.EpisodeEntity
+import com.timeline.app.data.local.entity.TrackedMovieEntity
+import com.timeline.app.data.local.entity.TrackedShowEntity
 import com.timeline.app.data.local.prefs.LanguagePreferenceStore
 import com.timeline.app.data.metadata.MetadataProvider
 import com.timeline.app.data.metadata.MetadataProviderRegistry
 import com.timeline.app.data.remote.tmdb.TmdbImageUrlBuilder
+import com.timeline.app.data.repository.BasicStats
 import com.timeline.app.data.repository.MovieRepository
 import com.timeline.app.data.repository.SettingsRepository
 import com.timeline.app.data.repository.ShowRepository
 import com.timeline.app.data.repository.StatsRepository
+import com.timeline.app.data.repository.TimeBucketEntry
 import com.timeline.app.data.sync.FirestoreSyncRepository
 import com.timeline.app.data.update.AppUpdateRepository
 import com.timeline.app.domain.model.MediaType
+import com.timeline.app.domain.model.ShowBroadcastStatus
 import com.timeline.app.domain.model.WatchStatus
+import com.timeline.app.domain.model.parseShowBroadcastStatus
 import com.timeline.app.ui.common.components.BarChartEntry
 import com.timeline.app.ui.common.components.GenreProgressItem
 import com.timeline.app.ui.theme.StatusFavorite
@@ -28,6 +36,7 @@ import com.timeline.app.ui.theme.StatusWantToWatch
 import com.timeline.app.ui.theme.StatusWatchingCompleted
 import com.timeline.app.ui.update.UpdateUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.time.DayOfWeek
 import java.time.Instant
 import java.time.YearMonth
 import java.time.format.TextStyle
@@ -69,6 +78,14 @@ private fun formatMonthLabel(rawLabel: String): String {
     return "$monthName $shortYear"
 }
 
+/** Turns a raw ISO day-of-week number ("1".."7") into a locale-aware short weekday name, e.g.
+ * "Lun." (FR) / "Mon" (EN). */
+private fun formatWeekdayLabel(rawLabel: String): String {
+    val locale = Locale.getDefault()
+    return DayOfWeek.of(rawLabel.toInt()).getDisplayName(TextStyle.SHORT, locale)
+        .replaceFirstChar { it.titlecase(locale) }
+}
+
 private val GenrePalette = listOf(StatusWatchingCompleted, StatusWantToWatch, StatusPlanned, StatusFavorite)
 
 data class ProfileUiState(
@@ -87,12 +104,39 @@ data class ProfileStatsUiState(
     val weeklyOffset: Int = 0,
     val monthlyChart: List<BarChartEntry> = emptyList(),
     val monthlyOffset: Int = 0,
+    val weekdayChart: List<BarChartEntry> = emptyList(),
     val genreBreakdown: List<GenreProgressItem> = emptyList(),
     val completedCount: Int = 0,
     val completedFraction: Float = 0f,
+    val remainingCount: Int = 0,
+    val remainingHoursEstimate: Double = 0.0,
+    val averageHoursPerWeek: Double = 0.0,
+    val showsAddedCount: Int = 0,
+    val showsInProductionCount: Int = 0,
+    val showsByBroadcastStatus: List<BroadcastStatusStat> = emptyList(),
+    val networkBreakdown: List<NetworkStat> = emptyList(),
 )
 
+data class BroadcastStatusStat(val status: ShowBroadcastStatus, val count: Int, val fraction: Float)
+
+data class NetworkStat(val name: String, val count: Int, val fraction: Float)
+
 private data class StatsQuery(val scope: StatsScope, val weeklyOffset: Int, val monthlyOffset: Int)
+
+private data class CoreStats(
+    val basic: BasicStats,
+    val weekly: List<TimeBucketEntry>,
+    val monthly: List<TimeBucketEntry>,
+    val genres: List<GenreStat>,
+    val completion: CompletionData,
+)
+
+private data class ExtraStats(
+    val shows: List<TrackedShowEntity>,
+    val unwatchedEpisodes: List<EpisodeEntity>,
+    val movies: List<TrackedMovieEntity>,
+    val weekday: List<TimeBucketEntry>,
+)
 
 data class GenreLibraryItem(val id: Int, val mediaType: MediaType, val title: String, val posterUrl: String?)
 
@@ -159,39 +203,99 @@ class ProfileViewModel @Inject constructor(
 
     val statsUiState: StateFlow<ProfileStatsUiState> = statsQuery.flatMapLatest { query ->
         val mediaType = query.scope.toMediaType()
-        combine(
+        val coreFlow = combine(
             statsRepository.getBasicStats(mediaType),
             statsRepository.getWeeklyBreakdown(mediaType, periodsAgo = query.weeklyOffset),
             statsRepository.getMonthlyBreakdown(mediaType, periodsAgo = query.monthlyOffset),
             statsRepository.getGenreBreakdown(mediaType, limit = 5),
             completionFlow(query.scope),
-        ) { basic, weekly, monthly, genres, completion ->
-            val totalGenreMinutes = genres.sumOf { it.totalMinutes }
-            ProfileStatsUiState(
-                scope = query.scope,
-                totalHoursWatched = basic.totalMinutesWatched / 60.0,
-                totalWatchedCount = basic.totalWatchedCount,
-                weeklyChart = weekly.map { BarChartEntry(it.label, it.minutesWatched / 60f) },
-                weeklyOffset = query.weeklyOffset,
-                monthlyChart = monthly.map { BarChartEntry(formatMonthLabel(it.label), it.minutesWatched / 60f) },
-                monthlyOffset = query.monthlyOffset,
-                genreBreakdown = genres.mapIndexed { index, genre ->
-                    GenreProgressItem(
-                        genreId = genre.genreId,
-                        name = genre.genreName,
-                        fraction = if (totalGenreMinutes == 0) 0f else genre.totalMinutes.toFloat() / totalGenreMinutes,
-                        color = GenrePalette[index % GenrePalette.size],
-                    )
-                },
-                completedCount = completion.completedCount,
-                completedFraction = if (completion.totalCount == 0) 0f else completion.completedCount.toFloat() / completion.totalCount,
-            )
-        }
+        ) { basic, weekly, monthly, genres, completion -> CoreStats(basic, weekly, monthly, genres, completion) }
+
+        val extraFlow = combine(
+            showRepository.getAllShows(),
+            showRepository.getAllUnwatchedEpisodesOrdered(),
+            movieRepository.getAllMovies(),
+            statsRepository.getWeekdayBreakdown(mediaType),
+        ) { shows, unwatchedEpisodes, movies, weekday -> ExtraStats(shows, unwatchedEpisodes, movies, weekday) }
+
+        combine(coreFlow, extraFlow) { core, extra -> buildStatsUiState(query, core, extra) }
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = ProfileStatsUiState(),
     )
+
+    private fun buildStatsUiState(query: StatsQuery, core: CoreStats, extra: ExtraStats): ProfileStatsUiState {
+        val totalGenreMinutes = core.genres.sumOf { it.totalMinutes }
+
+        // "Remaining" mixes unwatched episodes (Séries/Tout) and un-watched movies
+        // (Films/Tout) depending on scope, so it always reflects what's left in the library.
+        val unwatchedEpisodes = if (query.scope == StatsScope.FILMS) emptyList() else extra.unwatchedEpisodes
+        val remainingMovies = if (query.scope == StatsScope.SERIES) emptyList() else extra.movies.filter { !it.watched }
+        val showById = extra.shows.associateBy { it.tmdbId }
+        val remainingMinutes = unwatchedEpisodes.sumOf { episode ->
+            episode.runtimeMinutes ?: showById[episode.showId]?.averageEpisodeRuntimeMinutes ?: 0
+        } + remainingMovies.sumOf { it.runtimeMinutes ?: 0 }
+
+        val averageHoursPerWeek = if (core.weekly.isEmpty()) {
+            0.0
+        } else {
+            core.weekly.sumOf { it.minutesWatched }.toDouble() / core.weekly.size / 60.0
+        }
+
+        // Shows-added / broadcast-status / network breakdowns are inherently series-only —
+        // they collapse to empty/zero when browsing the Films scope.
+        val showsForScope = if (query.scope == StatsScope.FILMS) emptyList() else extra.shows
+        val broadcastCounts = showsForScope.groupingBy { parseShowBroadcastStatus(it.broadcastStatus) }.eachCount()
+        val showsByBroadcastStatus = if (showsForScope.isEmpty()) {
+            emptyList()
+        } else {
+            broadcastCounts.entries.sortedByDescending { it.value }.map { (status, count) ->
+                BroadcastStatusStat(status = status, count = count, fraction = count.toFloat() / showsForScope.size)
+            }
+        }
+        val networkCounts = showsForScope
+            .flatMap { it.networkNames?.split(",").orEmpty().map(String::trim) }
+            .filter { it.isNotBlank() }
+            .groupingBy { it }
+            .eachCount()
+        val totalNetworkMentions = networkCounts.values.sum()
+        val networkBreakdown = if (totalNetworkMentions == 0) {
+            emptyList()
+        } else {
+            networkCounts.entries.sortedByDescending { it.value }.take(5).map { (name, count) ->
+                NetworkStat(name = name, count = count, fraction = count.toFloat() / totalNetworkMentions)
+            }
+        }
+
+        return ProfileStatsUiState(
+            scope = query.scope,
+            totalHoursWatched = core.basic.totalMinutesWatched / 60.0,
+            totalWatchedCount = core.basic.totalWatchedCount,
+            weeklyChart = core.weekly.map { BarChartEntry(it.label, it.minutesWatched / 60f) },
+            weeklyOffset = query.weeklyOffset,
+            monthlyChart = core.monthly.map { BarChartEntry(formatMonthLabel(it.label), it.minutesWatched / 60f) },
+            monthlyOffset = query.monthlyOffset,
+            weekdayChart = extra.weekday.map { BarChartEntry(formatWeekdayLabel(it.label), it.minutesWatched / 60f) },
+            genreBreakdown = core.genres.mapIndexed { index, genre ->
+                GenreProgressItem(
+                    genreId = genre.genreId,
+                    name = genre.genreName,
+                    fraction = if (totalGenreMinutes == 0) 0f else genre.totalMinutes.toFloat() / totalGenreMinutes,
+                    color = GenrePalette[index % GenrePalette.size],
+                )
+            },
+            completedCount = core.completion.completedCount,
+            completedFraction = if (core.completion.totalCount == 0) 0f else core.completion.completedCount.toFloat() / core.completion.totalCount,
+            remainingCount = unwatchedEpisodes.size + remainingMovies.size,
+            remainingHoursEstimate = remainingMinutes / 60.0,
+            averageHoursPerWeek = averageHoursPerWeek,
+            showsAddedCount = showsForScope.size,
+            showsInProductionCount = broadcastCounts[ShowBroadcastStatus.IN_PRODUCTION] ?: 0,
+            showsByBroadcastStatus = showsByBroadcastStatus,
+            networkBreakdown = networkBreakdown,
+        )
+    }
 
     fun onStatsScopeSelected(scope: StatsScope) {
         scopeState.value = scope

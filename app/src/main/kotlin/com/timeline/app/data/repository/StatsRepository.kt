@@ -80,6 +80,18 @@ class StatsRepository @Inject constructor(
     fun getGenreBreakdown(mediaType: MediaType? = null, limit: Int = 5): Flow<List<GenreStat>> =
         watchLogDao.getGenreBreakdown(mediaType, limit)
 
+    /** Watch time bucketed by ISO day-of-week (1=Monday..7=Sunday), across the whole watch log
+     * (not windowed like the weekly/monthly charts). [TimeBucketEntry.label] is the raw day
+     * number as a string — the UI layer reformats it into a locale-aware short weekday name. */
+    fun getWeekdayBreakdown(mediaType: MediaType? = null): Flow<List<TimeBucketEntry>> =
+        watchLogDao.getAllEntriesForBreakdown(mediaType).map { entries ->
+            val zone = ZoneId.systemDefault()
+            val minutesByDay = entries
+                .groupingBy { it.watchedAt.atZone(zone).dayOfWeek.value }
+                .fold(0) { total, entry -> total + entry.runtimeMinutes }
+            (1..7).map { day -> TimeBucketEntry(label = day.toString(), minutesWatched = minutesByDay[day] ?: 0) }
+        }
+
     private fun Instant.weekKey(zone: ZoneId, weekFields: WeekFields): Pair<Int, Int> =
         atZone(zone).toLocalDate().weekKey(weekFields)
 
