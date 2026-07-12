@@ -22,8 +22,10 @@ interface MovieDao {
     @Upsert
     suspend fun upsertMovie(movie: TrackedMovieEntity)
 
-    @Query("UPDATE tracked_movies SET watched = :watched, watchedAt = :watchedAt WHERE tmdbId = :movieId")
-    suspend fun setMovieWatched(movieId: Int, watched: Boolean, watchedAt: Instant?)
+    @Query(
+        "UPDATE tracked_movies SET watched = :watched, watchedAt = :watchedAt, lastModifiedAt = :lastModifiedAt WHERE tmdbId = :movieId",
+    )
+    suspend fun setMovieWatched(movieId: Int, watched: Boolean, watchedAt: Instant?, lastModifiedAt: Instant)
 
     @Query("UPDATE tracked_movies SET isFavorite = :isFavorite, lastModifiedAt = :lastModifiedAt WHERE tmdbId = :movieId")
     suspend fun setMovieFavorite(movieId: Int, isFavorite: Boolean, lastModifiedAt: Instant)

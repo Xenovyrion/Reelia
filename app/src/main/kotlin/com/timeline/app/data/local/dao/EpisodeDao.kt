@@ -15,6 +15,9 @@ interface EpisodeDao {
     @Query("SELECT * FROM episodes WHERE showId = :showId ORDER BY seasonNumber, episodeNumber")
     fun getEpisodesForShow(showId: Int): Flow<List<EpisodeEntity>>
 
+    @Query("SELECT * FROM episodes WHERE showId = :showId ORDER BY seasonNumber, episodeNumber")
+    suspend fun getEpisodesForShowOnce(showId: Int): List<EpisodeEntity>
+
     @Query(
         """
         UPDATE episodes SET watched = :watched, watchedAt = :watchedAt

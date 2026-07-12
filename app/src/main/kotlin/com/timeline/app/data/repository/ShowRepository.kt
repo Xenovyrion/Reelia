@@ -60,9 +60,20 @@ class ShowRepository @Inject constructor(
     }
 
     /** Fetches full show + every season's episodes from TMDB and persists it as a new tracked
-     * show. All seasons are fetched concurrently so progress tracking is correct from the start
-     * — a show is never left with only some seasons' episodes locally cached. */
-    suspend fun addShowFromTmdb(tmdbId: Int): Unit = coroutineScope {
+     * show, then pushes its existence to Firestore so it can sync to other devices. All seasons
+     * are fetched concurrently so progress tracking is correct from the start — a show is never
+     * left with only some seasons' episodes locally cached. */
+    suspend fun addShowFromTmdb(tmdbId: Int) {
+        fetchAndPersistFromTmdb(tmdbId)
+        val now = Instant.now()
+        syncOutboxDao.markPending(SyncOutboxEntity(tmdbId, MediaType.TV, now))
+        firestoreSyncRepository.pushPendingChanges()
+    }
+
+    /** Used by FirestoreSyncRepository when a show is discovered remotely for the first time —
+     * fetches TMDB metadata only, without pushing back to Firestore (the caller applies the
+     * authoritative remote personal-state right after, so there's nothing new to push yet). */
+    suspend fun fetchAndPersistFromTmdb(tmdbId: Int): Unit = coroutineScope {
         val details = tmdbApi.getTvDetails(tmdbId)
         showDao.upsertShow(details.toEntity(status = WatchStatus.PLAN_TO_WATCH, addedAt = Instant.now()))
         seasonDao.upsertSeasons(details.toSeasonEntities())

@@ -28,6 +28,9 @@ interface ShowDao {
     @Query("UPDATE tracked_shows SET isFavorite = :isFavorite, lastModifiedAt = :lastModifiedAt WHERE tmdbId = :showId")
     suspend fun setShowFavorite(showId: Int, isFavorite: Boolean, lastModifiedAt: Instant)
 
+    @Query("UPDATE tracked_shows SET lastModifiedAt = :lastModifiedAt WHERE tmdbId = :showId")
+    suspend fun touchLastModified(showId: Int, lastModifiedAt: Instant)
+
     @Delete
     suspend fun deleteShow(show: TrackedShowEntity)
 }
