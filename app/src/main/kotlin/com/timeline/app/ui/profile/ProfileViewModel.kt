@@ -67,11 +67,15 @@ data class ProfileStatsUiState(
     val totalHoursWatched: Double = 0.0,
     val totalWatchedCount: Int = 0,
     val weeklyChart: List<BarChartEntry> = emptyList(),
+    val weeklyOffset: Int = 0,
     val monthlyChart: List<BarChartEntry> = emptyList(),
+    val monthlyOffset: Int = 0,
     val genreBreakdown: List<GenreProgressItem> = emptyList(),
     val completedCount: Int = 0,
     val completedFraction: Float = 0f,
 )
+
+private data class StatsQuery(val scope: StatsScope, val weeklyOffset: Int, val monthlyOffset: Int)
 
 data class DeleteAccountUiState(
     val isDeleting: Boolean = false,
@@ -114,6 +118,8 @@ class ProfileViewModel @Inject constructor(
     )
 
     private val scopeState = MutableStateFlow(StatsScope.ALL)
+    private val weeklyOffsetState = MutableStateFlow(0)
+    private val monthlyOffsetState = MutableStateFlow(0)
 
     private fun completionFlow(scope: StatsScope): Flow<CompletionData> =
         combine(showRepository.getAllShows(), movieRepository.getAllMovies()) { shows, movies ->
@@ -125,24 +131,33 @@ class ProfileViewModel @Inject constructor(
             CompletionData(totalCount = statuses.size, completedCount = statuses.count { it == WatchStatus.COMPLETED })
         }
 
-    val statsUiState: StateFlow<ProfileStatsUiState> = scopeState.flatMapLatest { scope ->
-        val mediaType = scope.toMediaType()
+    private val statsQuery: Flow<StatsQuery> = combine(
+        scopeState,
+        weeklyOffsetState,
+        monthlyOffsetState,
+    ) { scope, weeklyOffset, monthlyOffset -> StatsQuery(scope, weeklyOffset, monthlyOffset) }
+
+    val statsUiState: StateFlow<ProfileStatsUiState> = statsQuery.flatMapLatest { query ->
+        val mediaType = query.scope.toMediaType()
         combine(
             statsRepository.getBasicStats(mediaType),
-            statsRepository.getWeeklyBreakdown(mediaType),
-            statsRepository.getMonthlyBreakdown(mediaType),
+            statsRepository.getWeeklyBreakdown(mediaType, periodsAgo = query.weeklyOffset),
+            statsRepository.getMonthlyBreakdown(mediaType, periodsAgo = query.monthlyOffset),
             statsRepository.getGenreBreakdown(mediaType, limit = 5),
-            completionFlow(scope),
+            completionFlow(query.scope),
         ) { basic, weekly, monthly, genres, completion ->
             val totalGenreMinutes = genres.sumOf { it.totalMinutes }
             ProfileStatsUiState(
-                scope = scope,
+                scope = query.scope,
                 totalHoursWatched = basic.totalMinutesWatched / 60.0,
                 totalWatchedCount = basic.totalWatchedCount,
-                weeklyChart = weekly.reversed().map { BarChartEntry(it.bucket.takeLast(3), it.totalMinutes / 60f) },
-                monthlyChart = monthly.reversed().map { BarChartEntry(it.bucket.takeLast(2), it.totalMinutes / 60f) },
+                weeklyChart = weekly.map { BarChartEntry(it.label, it.minutesWatched / 60f) },
+                weeklyOffset = query.weeklyOffset,
+                monthlyChart = monthly.map { BarChartEntry(it.label, it.minutesWatched / 60f) },
+                monthlyOffset = query.monthlyOffset,
                 genreBreakdown = genres.mapIndexed { index, genre ->
                     GenreProgressItem(
+                        genreId = genre.genreId,
                         name = genre.genreName,
                         fraction = if (totalGenreMinutes == 0) 0f else genre.totalMinutes.toFloat() / totalGenreMinutes,
                         color = GenrePalette[index % GenrePalette.size],
@@ -160,6 +175,25 @@ class ProfileViewModel @Inject constructor(
 
     fun onStatsScopeSelected(scope: StatsScope) {
         scopeState.value = scope
+    }
+
+    // Chart paging — shifts the visible 12-period window one step at a time rather than by a
+    // full page, so it reads as scrolling smoothly back through time. "Next" is clamped at 0
+    // (the present) since there's nothing to show beyond it.
+    fun onWeeklyChartPrevious() {
+        weeklyOffsetState.update { it + 1 }
+    }
+
+    fun onWeeklyChartNext() {
+        weeklyOffsetState.update { (it - 1).coerceAtLeast(0) }
+    }
+
+    fun onMonthlyChartPrevious() {
+        monthlyOffsetState.update { it + 1 }
+    }
+
+    fun onMonthlyChartNext() {
+        monthlyOffsetState.update { (it - 1).coerceAtLeast(0) }
     }
 
     fun onSignOut() {

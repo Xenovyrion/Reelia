@@ -21,48 +21,28 @@ interface WatchLogDao {
     @Query("SELECT COALESCE(SUM(runtimeMinutes), 0) FROM watch_log WHERE (:mediaType IS NULL OR mediaType = :mediaType)")
     fun totalMinutesWatched(mediaType: MediaType? = null): Flow<Int>
 
-    @Query(
-        """
-        SELECT strftime('%Y-W%W', watchedAt / 1000, 'unixepoch') AS bucket,
-               COALESCE(SUM(runtimeMinutes), 0) AS totalMinutes, COUNT(*) AS totalCount
-        FROM watch_log
-        WHERE (:mediaType IS NULL OR mediaType = :mediaType)
-        GROUP BY bucket
-        ORDER BY bucket DESC
-        LIMIT :limit
-        """,
-    )
-    fun getWeeklyBreakdown(mediaType: MediaType?, limit: Int = 12): Flow<List<TimeBucketStat>>
+    /** Raw (watchedAt, runtimeMinutes) rows — bucketed into weeks/months in Kotlin (see
+     * StatsRepository) so periods with zero entries can be backfilled with a zero value instead
+     * of being silently absent from the chart. */
+    @Query("SELECT watchedAt, runtimeMinutes FROM watch_log WHERE (:mediaType IS NULL OR mediaType = :mediaType)")
+    fun getAllEntriesForBreakdown(mediaType: MediaType?): Flow<List<WatchLogTimeEntry>>
 
     @Query(
         """
-        SELECT strftime('%Y-%m', watchedAt / 1000, 'unixepoch') AS bucket,
-               COALESCE(SUM(runtimeMinutes), 0) AS totalMinutes, COUNT(*) AS totalCount
-        FROM watch_log
-        WHERE (:mediaType IS NULL OR mediaType = :mediaType)
-        GROUP BY bucket
-        ORDER BY bucket DESC
-        LIMIT :limit
-        """,
-    )
-    fun getMonthlyBreakdown(mediaType: MediaType?, limit: Int = 12): Flow<List<TimeBucketStat>>
-
-    @Query(
-        """
-        SELECT genreName, COALESCE(SUM(runtimeMinutes), 0) AS totalMinutes FROM (
-            SELECT wl.runtimeMinutes AS runtimeMinutes, g.name AS genreName
+        SELECT genreId, genreName, COALESCE(SUM(runtimeMinutes), 0) AS totalMinutes FROM (
+            SELECT wl.runtimeMinutes AS runtimeMinutes, g.tmdbId AS genreId, g.name AS genreName
             FROM watch_log wl
             JOIN show_genre_cross_ref sg ON sg.showId = wl.tmdbId
             JOIN genres g ON g.tmdbId = sg.genreId
             WHERE wl.mediaType = 'TV' AND (:mediaType IS NULL OR wl.mediaType = :mediaType)
             UNION ALL
-            SELECT wl.runtimeMinutes AS runtimeMinutes, g.name AS genreName
+            SELECT wl.runtimeMinutes AS runtimeMinutes, g.tmdbId AS genreId, g.name AS genreName
             FROM watch_log wl
             JOIN movie_genre_cross_ref mg ON mg.movieId = wl.tmdbId
             JOIN genres g ON g.tmdbId = mg.genreId
             WHERE wl.mediaType = 'MOVIE' AND (:mediaType IS NULL OR wl.mediaType = :mediaType)
         )
-        GROUP BY genreName
+        GROUP BY genreId, genreName
         ORDER BY totalMinutes DESC
         LIMIT :limit
         """,

@@ -3,6 +3,7 @@ package com.timeline.app.ui.navigation
 object Routes {
     const val HOME = "home"
     const val LIBRARY = "library"
+    const val LIBRARY_GENRE = "library_genre/{genreId}"
     const val SEARCH = "search"
     const val PROFILE = "profile"
     const val SHOW_DETAIL = "show_detail/{showId}"
@@ -11,6 +12,7 @@ object Routes {
     const val MOVIE_PREVIEW = "movie_preview/{tmdbId}"
     const val PERSON_DETAIL = "person_detail/{personId}"
 
+    fun libraryGenre(genreId: Int) = "library_genre/$genreId"
     fun showDetail(showId: Int) = "show_detail/$showId"
     fun movieDetail(movieId: Int) = "movie_detail/$movieId"
     fun showPreview(tmdbId: Int) = "show_preview/$tmdbId"

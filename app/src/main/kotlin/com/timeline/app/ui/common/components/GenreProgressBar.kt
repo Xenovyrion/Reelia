@@ -1,6 +1,7 @@
 package com.timeline.app.ui.common.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,12 +23,13 @@ import androidx.compose.ui.unit.sp
 import com.timeline.app.ui.theme.JetBrainsMonoFontFamily
 import kotlin.math.roundToInt
 
-data class GenreProgressItem(val name: String, val fraction: Float, val color: Color)
+data class GenreProgressItem(val genreId: Int, val name: String, val fraction: Float, val color: Color)
 
-/** One row of the Stats screen's per-genre watch-time breakdown, one palette color per row. */
+/** One row of the Stats screen's per-genre watch-time breakdown, one palette color per row.
+ * Tappable — [onClick] is used to jump to the library filtered to this genre. */
 @Composable
-fun GenreProgressBar(item: GenreProgressItem, modifier: Modifier = Modifier) {
-    Column(modifier = modifier.fillMaxWidth()) {
+fun GenreProgressBar(item: GenreProgressItem, onClick: () -> Unit = {}, modifier: Modifier = Modifier) {
+    Column(modifier = modifier.fillMaxWidth().clickable(onClick = onClick)) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,

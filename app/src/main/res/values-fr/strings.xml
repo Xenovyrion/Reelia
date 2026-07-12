@@ -100,6 +100,8 @@
     <string name="stats_completed_caption">Terminées</string>
     <string name="stats_completion_ring_caption">de ta bibliothèque terminée</string>
     <string name="stats_genre_section_title">Genres préférés</string>
+    <string name="stats_chart_previous">Période précédente</string>
+    <string name="stats_chart_next">Période suivante</string>
     <string name="chart_no_data">Pas encore de données.</string>
 
     <!-- Shared: show/movie detail + preview -->

@@ -2,8 +2,10 @@ package com.timeline.app.ui.profile
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -20,6 +22,9 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -63,6 +68,8 @@ import java.util.Date
 import java.util.Locale
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.ChevronLeft
+import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Schedule
 
 @Composable
@@ -76,7 +83,7 @@ private fun StatsScope.label(): String = stringResource(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel()) {
+fun ProfileScreen(onGenreClick: (Int) -> Unit = {}, viewModel: ProfileViewModel = hiltViewModel()) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val statsUiState by viewModel.statsUiState.collectAsStateWithLifecycle()
     val updateUiState by viewModel.updateUiState.collectAsStateWithLifecycle()
@@ -179,8 +186,10 @@ fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel()) {
                 }
             }
 
+            HorizontalDivider(modifier = Modifier.padding(top = 24.dp))
+
             // --- Statistiques ---
-            Spacer(Modifier.height(28.dp))
+            Spacer(Modifier.height(24.dp))
             Text(stringResource(R.string.stats_title), style = MaterialTheme.typography.titleMedium)
             Spacer(Modifier.height(12.dp))
             SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
@@ -194,7 +203,7 @@ fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel()) {
                 }
             }
             Row(
-                modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
+                modifier = Modifier.fillMaxWidth().padding(top = 16.dp).height(IntrinsicSize.Max),
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 StatCard(
@@ -203,7 +212,7 @@ fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel()) {
                     unitLabel = stringResource(R.string.stats_titles_unit_label),
                     caption = stringResource(R.string.stats_titles_caption),
                     accentColor = StatusWatchingCompleted,
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.weight(1f).fillMaxHeight(),
                 )
                 StatCard(
                     icon = Icons.Filled.Schedule,
@@ -211,7 +220,7 @@ fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel()) {
                     unitLabel = stringResource(R.string.stats_hours_unit_label),
                     caption = stringResource(R.string.stats_hours_caption),
                     accentColor = StatusPlanned,
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.weight(1f).fillMaxHeight(),
                 )
                 StatCard(
                     icon = Icons.Filled.CheckCircle,
@@ -219,7 +228,7 @@ fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel()) {
                     unitLabel = stringResource(R.string.stats_completed_unit_label),
                     caption = stringResource(R.string.stats_completed_caption),
                     accentColor = StatusFavorite,
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.weight(1f).fillMaxHeight(),
                 )
             }
 
@@ -254,15 +263,27 @@ fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel()) {
                     SectionHeader(stringResource(R.string.stats_genre_section_title))
                     Column(modifier = Modifier.padding(top = 12.dp)) {
                         statsUiState.genreBreakdown.forEach { genre ->
-                            GenreProgressBar(item = genre, modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp))
+                            GenreProgressBar(
+                                item = genre,
+                                onClick = { onGenreClick(genre.genreId) },
+                                modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp),
+                            )
                         }
                     }
                 }
             }
 
             Column(modifier = Modifier.padding(top = 24.dp)) {
-                SectionHeader(stringResource(R.string.stats_weekly_section_title))
-                Row(modifier = Modifier.fillMaxWidth().padding(top = 12.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+                    SectionHeader(stringResource(R.string.stats_weekly_section_title), modifier = Modifier.weight(1f))
+                    IconButton(onClick = viewModel::onWeeklyChartPrevious) {
+                        Icon(Icons.Filled.ChevronLeft, contentDescription = stringResource(R.string.stats_chart_previous))
+                    }
+                    IconButton(onClick = viewModel::onWeeklyChartNext, enabled = statsUiState.weeklyOffset > 0) {
+                        Icon(Icons.Filled.ChevronRight, contentDescription = stringResource(R.string.stats_chart_next))
+                    }
+                }
+                Row(modifier = Modifier.fillMaxWidth().padding(top = 4.dp)) {
                     Text(
                         stringResource(R.string.stats_weekly_caption),
                         style = MaterialTheme.typography.bodySmall,
@@ -273,8 +294,16 @@ fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel()) {
             }
 
             Column(modifier = Modifier.padding(top = 24.dp)) {
-                SectionHeader(stringResource(R.string.stats_monthly_section_title))
-                Row(modifier = Modifier.fillMaxWidth().padding(top = 12.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+                    SectionHeader(stringResource(R.string.stats_monthly_section_title), modifier = Modifier.weight(1f))
+                    IconButton(onClick = viewModel::onMonthlyChartPrevious) {
+                        Icon(Icons.Filled.ChevronLeft, contentDescription = stringResource(R.string.stats_chart_previous))
+                    }
+                    IconButton(onClick = viewModel::onMonthlyChartNext, enabled = statsUiState.monthlyOffset > 0) {
+                        Icon(Icons.Filled.ChevronRight, contentDescription = stringResource(R.string.stats_chart_next))
+                    }
+                }
+                Row(modifier = Modifier.fillMaxWidth().padding(top = 4.dp)) {
                     Text(
                         stringResource(R.string.stats_monthly_caption),
                         style = MaterialTheme.typography.bodySmall,
@@ -284,8 +313,10 @@ fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel()) {
                 BarChart(entries = statsUiState.monthlyChart, modifier = Modifier.fillMaxWidth().padding(top = 8.dp))
             }
 
+            HorizontalDivider(modifier = Modifier.padding(top = 24.dp))
+
             // --- Préférences ---
-            Spacer(Modifier.height(28.dp))
+            Spacer(Modifier.height(24.dp))
             Text(stringResource(R.string.settings_language_section_title), style = MaterialTheme.typography.titleMedium)
             Spacer(Modifier.height(8.dp))
             var languageMenuExpanded by remember { mutableStateOf(false) }
