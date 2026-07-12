@@ -1,17 +1,63 @@
-# TimeLine
+# Reelia
 
-Suivi de séries et films pour Android — remplaçant personnel de TV Time (Kotlin, Jetpack Compose, Material 3).
+![Kotlin](https://img.shields.io/badge/Kotlin-2.0.21-7F52FF?logo=kotlin&logoColor=white)
+![Jetpack Compose](https://img.shields.io/badge/Jetpack%20Compose-Material%203-4285F4?logo=jetpackcompose&logoColor=white)
+![minSdk](https://img.shields.io/badge/minSdk-26-3DDC84?logo=android&logoColor=white)
+![targetSdk](https://img.shields.io/badge/targetSdk-35-3DDC84?logo=android&logoColor=white)
+![Firebase](https://img.shields.io/badge/Firebase-Auth%20%2B%20Firestore-FFCA28?logo=firebase&logoColor=black)
+![Version](https://img.shields.io/badge/version-0.1.0-8C8FFF)
+![Android CI](https://github.com/Xenovyrion/TimeLine/actions/workflows/android-build.yml/badge.svg)
 
-## Fonctionnement
+Reelia est une application Android personnelle de suivi de séries et films — un
+remplaçant de TV Time, avec une bibliothèque synchronisée entre plusieurs appareils.
 
-- Bibliothèque locale (Room) : aucune donnée envoyée à un serveur perso.
-- Ajout d'une série/film via une recherche TMDB (poster, synopsis, saisons/épisodes récupérés automatiquement).
-- Suivi épisode par épisode, statut de visionnage, statistiques (temps regardé, nombre d'épisodes/films vus).
+## Fonctionnalités
+
+- **Bibliothèque** — ajout de séries/films via recherche TMDB (poster, synopsis,
+  saisons/épisodes récupérés automatiquement), suivi épisode par épisode.
+- **Statuts fonctionnels** — en cours, terminé, à voir, en pause, abandonné — plus un
+  drapeau **favori** indépendant du statut de visionnage.
+- **Statistiques** — temps regardé, nombre d'épisodes/films vus, répartition par genre,
+  historique par semaine/mois.
+- **Synchronisation multi-appareils** — via un compte (email/mot de passe ou Google),
+  la bibliothèque, les statuts vu/non-vu et la clé API TMDB se synchronisent
+  automatiquement entre deux appareils via Firebase.
+- **Français / English** — l'interface est entièrement traduite dans les deux langues.
+
+Voir [`docs/GUIDE.md`](docs/GUIDE.md) pour le guide d'utilisation détaillé (premiers
+pas, fonctionnement de la synchro, confidentialité).
+
+## Stack technique
+
+| Domaine | Bibliothèque |
+| --- | --- |
+| Langage | Kotlin 2.0 |
+| UI | Jetpack Compose + Material 3 |
+| Injection de dépendances | Hilt |
+| Persistance locale | Room |
+| Réseau | Retrofit + OkHttp + kotlinx.serialization |
+| Images | Coil |
+| Auth + sync cloud | Firebase Authentication + Cloud Firestore |
+| Connexion Google | Credential Manager + Google ID |
+| Données | [TMDB API](https://www.themoviedb.org/) |
+
+Architecture MVVM + Repository : ViewModels exposent des `StateFlow` consommés par
+Compose, les repositories arbitrent entre Room (source de vérité locale) et TMDB/Firestore
+(remote), et un outbox de synchronisation (`SyncOutboxEntity`) garantit qu'aucune
+modification locale n'est perdue si l'appareil est hors-ligne au moment du changement.
 
 ## Prérequis pour builder
 
-- Android Studio (dernière version stable) ou JDK 17 + Android SDK (compileSdk 35, minSdk 26) installés en local.
-- Une clé API TMDB personnelle, gratuite : créer un compte sur [themoviedb.org](https://www.themoviedb.org/), puis générer une clé API v3 dans les paramètres du compte. Elle se saisit dans l'écran **Réglages** de l'app (stockée uniquement sur l'appareil via DataStore, jamais committée dans le repo).
+- Android Studio (dernière version stable) ou JDK 17 + Android SDK (compileSdk 35,
+  minSdk 26) installés en local.
+- Une clé API TMDB personnelle, gratuite : créer un compte sur
+  [themoviedb.org](https://www.themoviedb.org/), puis générer une clé API v3 dans les
+  paramètres du compte. Elle se saisit dans l'écran **Réglages** de l'app (stockée en
+  local via DataStore, et synchronisée dans Firestore une fois connecté — jamais
+  committée dans le repo).
+- Un projet Firebase (offre gratuite Spark) avec Authentication (Email/Password, et
+  Google si tu veux ce mode de connexion) et Cloud Firestore activés. Le
+  `google-services.json` du projet doit être placé dans `app/`.
 
 ## Build
 
@@ -19,6 +65,11 @@ Suivi de séries et films pour Android — remplaçant personnel de TV Time (Kot
 ./gradlew assembleDebug
 ```
 
+La CI GitHub Actions compile chaque push/PR vers `main` et publie l'APK debug le plus
+récent en tant que [release "debug-latest"](https://github.com/Xenovyrion/TimeLine/releases/tag/debug-latest).
+
 ## État actuel
 
-Squelette de projet + premier parcours de bout en bout (ajouter une série/film via TMDB → bibliothèque → cocher des épisodes vus → stats de base). Statuts de bibliothèque détaillés, calendrier "à venir", notes, et statistiques avancées (genres, récap annuel) arrivent dans une itération suivante.
+Application fonctionnelle de bout en bout : ajout de séries/films, suivi épisode par
+épisode, statistiques, synchronisation complète (bibliothèque, statuts, journal de
+visionnage, clé API) entre appareils via compte Firebase.
