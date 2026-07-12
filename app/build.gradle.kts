@@ -8,6 +8,21 @@ plugins {
     alias(libs.plugins.google.services)
 }
 
+/** The exact commit this build was compiled from, embedded so the app can tell whether a
+ * GitHub release was built from a newer commit than itself (see AppUpdateRepository). */
+fun gitCommitSha(): String = try {
+    ProcessBuilder("git", "rev-parse", "HEAD")
+        .redirectErrorStream(true)
+        .start()
+        .let { process ->
+            val output = process.inputStream.bufferedReader().readText().trim()
+            process.waitFor()
+            output
+        }
+} catch (e: Exception) {
+    "unknown"
+}
+
 android {
     namespace = "com.timeline.app"
     compileSdk = 35
@@ -18,6 +33,7 @@ android {
         targetSdk = 35
         versionCode = 1
         versionName = "0.1.0"
+        buildConfigField("String", "GIT_SHA", "\"${gitCommitSha()}\"")
     }
 
     buildTypes {
@@ -38,6 +54,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
     sourceSets {

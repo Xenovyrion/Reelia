@@ -42,10 +42,13 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: debug-latest
-          name: "TimeLine — latest debug build"
+          target_commitish: ${{ github.sha }}
+          name: "Reelia — latest debug build"
           body: >
             Automated debug APK build from the latest CI run on
             `${{ github.ref_name }}` (${{ github.sha }}). Not signed for
-            release — for local testing only.
+            release — for local testing only. The in-app update checker
+            compares its own build's commit against this release's
+            `target_commitish` to detect new builds.
           prerelease: true
           files: app/build/outputs/apk/debug/*.apk

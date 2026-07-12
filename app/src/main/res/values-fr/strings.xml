@@ -176,6 +176,17 @@
     <string name="settings_last_synced_never">Pas encore synchronisé</string>
     <string name="settings_sign_out_button">Se déconnecter</string>
 
+    <!-- Mises à jour de l'app (auto-hébergées, via GitHub Releases) -->
+    <string name="update_banner_title">Mise à jour disponible</string>
+    <string name="update_banner_subtitle">Une nouvelle version de Reelia est prête à être installée.</string>
+    <string name="update_action_download_install">Mettre à jour</string>
+    <string name="update_action_dismiss">Plus tard</string>
+    <string name="settings_update_section_title">Mises à jour</string>
+    <string name="settings_update_check_button">Rechercher les mises à jour</string>
+    <string name="settings_update_checking">Recherche en cours…</string>
+    <string name="settings_update_up_to_date">Reelia est à jour.</string>
+    <string name="settings_update_available">Nouvelle version disponible</string>
+
     <!-- Language display names (shown in the language picker; must reflect the CURRENT ui locale) -->
     <string name="lang_name_fr">Français</string>
     <string name="lang_name_en_us">Anglais (États-Unis)</string>

@@ -31,6 +31,7 @@ import com.timeline.app.ui.auth.LoginScreen
 import com.timeline.app.ui.navigation.BottomNavItem
 import com.timeline.app.ui.navigation.TimeLineNavGraph
 import com.timeline.app.ui.theme.TimeLineTheme
+import com.timeline.app.ui.update.UpdateBanner
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -67,6 +68,7 @@ private fun TimeLineAppContent() {
     val currentRoute = backStackEntry?.destination
 
     Scaffold(
+        topBar = { UpdateBanner() },
         bottomBar = {
             val showBottomBar = BottomNavItem.entries.any { item ->
                 currentRoute?.hierarchy?.any { it.route == item.route } == true

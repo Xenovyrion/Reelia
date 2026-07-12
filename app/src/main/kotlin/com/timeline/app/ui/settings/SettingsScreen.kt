@@ -44,6 +44,7 @@ import java.util.Date
 @Composable
 fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val updateUiState by viewModel.updateUiState.collectAsStateWithLifecycle()
     var apiKeyInput by remember { mutableStateOf("") }
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
@@ -54,6 +55,12 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
     LaunchedEffect(Unit) {
         viewModel.saveEvent.collect {
             snackbarHostState.showSnackbar(context.getString(R.string.settings_save_confirmation))
+        }
+    }
+    LaunchedEffect(updateUiState.downloadedApkUri) {
+        updateUiState.downloadedApkUri?.let { uri ->
+            context.startActivity(viewModel.buildInstallIntent(uri))
+            viewModel.onInstallLaunched()
         }
     }
 
@@ -159,6 +166,42 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
             Spacer(Modifier.height(12.dp))
             Button(onClick = viewModel::onSignOut) {
                 Text(stringResource(R.string.settings_sign_out_button))
+            }
+
+            Spacer(Modifier.height(24.dp))
+            Text(stringResource(R.string.settings_update_section_title), style = MaterialTheme.typography.titleMedium)
+            Spacer(Modifier.height(8.dp))
+            when {
+                updateUiState.isChecking -> Text(
+                    stringResource(R.string.settings_update_checking),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                updateUiState.availableUpdate != null -> Text(
+                    stringResource(R.string.settings_update_available),
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                updateUiState.hasChecked -> Text(
+                    stringResource(R.string.settings_update_up_to_date),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            Spacer(Modifier.height(12.dp))
+            Row {
+                if (updateUiState.availableUpdate != null) {
+                    Button(onClick = viewModel::onUpdateDownloadClicked, enabled = !updateUiState.isDownloading) {
+                        if (updateUiState.isDownloading) {
+                            Text(stringResource(R.string.settings_update_checking))
+                        } else {
+                            Text(stringResource(R.string.update_action_download_install))
+                        }
+                    }
+                } else {
+                    Button(onClick = viewModel::onCheckForUpdateClicked, enabled = !updateUiState.isChecking) {
+                        Text(stringResource(R.string.settings_update_check_button))
+                    }
+                }
             }
         }
     }
