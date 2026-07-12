@@ -59,6 +59,21 @@
     <string name="films_title">Films</string>
     <string name="films_empty_state">Ajoute un film depuis l\'onglet Rechercher.</string>
 
+    <!-- Library tab (fusion Séries + Films) -->
+    <string name="library_title">Bibliothèque</string>
+    <string name="library_type_filter_all">Tout</string>
+    <string name="library_type_filter_series">Séries</string>
+    <string name="library_type_filter_films">Films</string>
+    <string name="library_empty_state">Ajoute une série ou un film depuis Rechercher.</string>
+    <string name="library_search_content_description">Rechercher</string>
+
+    <!-- Home tab -->
+    <string name="home_title">Accueil</string>
+    <string name="home_greeting">Bonjour</string>
+    <string name="home_continue_watching_title">Continuer</string>
+    <string name="home_library_section_title">Ta bibliothèque</string>
+    <string name="home_empty_state">Ajoute une série ou un film depuis Rechercher pour commencer.</string>
+
     <!-- Search tab -->
     <string name="search_title">Rechercher</string>
     <string name="search_field_label">Titre d\'une série ou d\'un film</string>
