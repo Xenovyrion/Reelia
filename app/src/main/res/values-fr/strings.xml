@@ -151,6 +151,9 @@
     <string name="login_sign_up_button">Créer un compte</string>
     <string name="login_toggle_to_sign_up">Pas encore de compte ? Créer un compte</string>
     <string name="login_toggle_to_sign_in">Déjà un compte ? Se connecter</string>
+    <string name="login_or_divider">ou</string>
+    <string name="login_google_button">Continuer avec Google</string>
+    <string name="login_learn_more_button">En savoir plus</string>
 
     <!-- Person Detail -->
     <string name="person_detail_error_load">Impossible de charger les informations de cette personne.</string>

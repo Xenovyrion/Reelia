@@ -52,4 +52,23 @@ class LoginViewModel @Inject constructor(
             }
         }
     }
+
+    fun onGoogleIdTokenReceived(idToken: String) {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+            try {
+                authRepository.signInWithGoogleIdToken(idToken)
+            } catch (e: Exception) {
+                _uiState.update { it.copy(errorMessage = e.message) }
+            } finally {
+                _uiState.update { it.copy(isLoading = false) }
+            }
+        }
+    }
+
+    /** Credential Manager itself failed (user cancelled, no Google account on device, etc.) —
+     * surfaced the same way as a Firebase Auth error. */
+    fun onGoogleSignInFailed(message: String?) {
+        _uiState.update { it.copy(errorMessage = message) }
+    }
 }

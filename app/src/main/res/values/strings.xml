@@ -151,6 +151,14 @@
     <string name="login_sign_up_button">Create account</string>
     <string name="login_toggle_to_sign_up">No account yet? Create one</string>
     <string name="login_toggle_to_sign_in">Already have an account? Sign in</string>
+    <string name="login_or_divider">or</string>
+    <string name="login_google_button">Continue with Google</string>
+    <string name="login_learn_more_button">Learn more</string>
+    <!-- Update after enabling Google Sign-In in the Firebase console (Authentication > Sign-in
+         method > Google) — the Web client ID is shown right there, no need to redownload
+         google-services.json. -->
+    <string name="google_web_client_id" translatable="false">REPLACE_WITH_YOUR_FIREBASE_WEB_CLIENT_ID</string>
+    <string name="login_learn_more_url" translatable="false">https://github.com/Xenovyrion/TimeLine/blob/claude/timeline-redesign/docs/GUIDE.md</string>
 
     <!-- Person Detail -->
     <string name="person_detail_error_load">Couldn\'t load this person\'s info.</string>

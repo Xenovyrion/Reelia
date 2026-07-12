@@ -2,6 +2,7 @@ package com.timeline.app.data.auth
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.GoogleAuthProvider
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.channels.awaitClose
@@ -25,6 +26,10 @@ class AuthRepository @Inject constructor(
 
     suspend fun signUp(email: String, password: String) {
         firebaseAuth.createUserWithEmailAndPassword(email, password).await()
+    }
+
+    suspend fun signInWithGoogleIdToken(idToken: String) {
+        firebaseAuth.signInWithCredential(GoogleAuthProvider.getCredential(idToken, null)).await()
     }
 
     fun signOut() {
