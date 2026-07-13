@@ -1,5 +1,18 @@
 # Release notes
 
+## 0.11.0 — July 13, 2026
+### ✨ New
+- Person pages now show an Awards & Nominations section (via Wikidata, since TMDB has no awards data)
+- Show/movie pages now have a clickable Crew section (director, writer, composer, creator) alongside Cast — tap through to their person page just like an actor
+- Home's greeting now reflects the time of day and your first name when signed in, instead of a flat "Bonjour"
+### 🐛 Fixed
+- The in-app update could fail to install with a generic "problem with the app file" error and no way to understand why — a failed download is now caught and shown as a real, retryable error
+- Home's discovery rows (and the person page's filmography) shifted around while scrolling because card height varied by title length — every card now reserves a consistent height
+- The Continue Watching progress ring and episode text could become unreadable on a bright/light backdrop image — both now sit on a dark scrim so they stay legible regardless of the artwork
+### 🔧 Improved
+- Cast/Crew rows widened so full names are actually readable instead of truncated to a few letters
+- Crew job titles (Director, Writer, Composer, Creator) are now translated instead of always showing the raw English TMDB term
+
 ## 0.10.0 — July 13, 2026
 ### ✨ New
 - Home is now a discovery hub instead of repeating the Library grid: Suggestions based on your library, Trending Now, and Latest Movie/Show Releases, alongside Continue Watching — all via TMDB, no paid third-party service

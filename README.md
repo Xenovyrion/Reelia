@@ -5,7 +5,7 @@
 ![minSdk](https://img.shields.io/badge/minSdk-26-3DDC84?logo=android&logoColor=white)
 ![targetSdk](https://img.shields.io/badge/targetSdk-35-3DDC84?logo=android&logoColor=white)
 ![Firebase](https://img.shields.io/badge/Firebase-Auth%20%2B%20Firestore-FFCA28?logo=firebase&logoColor=black)
-![Version](https://img.shields.io/badge/version-0.10.0-8C8FFF)
+![Version](https://img.shields.io/badge/version-0.11.0-8C8FFF)
 ![Android CI](https://github.com/Xenovyrion/TimeLine/actions/workflows/android-build.yml/badge.svg)
 
 Reelia est une application Android personnelle de suivi de séries et films — un
@@ -22,7 +22,11 @@ remplaçant de TV Time, avec une bibliothèque synchronisée entre plusieurs app
   appui long permet de cocher/décocher un épisode individuellement. Le clic sur un
   épisode ouvre une fenêtre de détail (image, résumé, date de diffusion, note).
 - **Fiches acteurs/actrices** — biographie (avec repli automatique en anglais si la
-  traduction française n'existe pas sur TMDB), filmographie complète cliquable.
+  traduction française n'existe pas sur TMDB), filmographie complète cliquable, et
+  récompenses/nominations (via Wikidata, TMDB n'ayant aucune donnée sur le sujet).
+- **Distribution et réalisation** — sur chaque fiche série/film, la distribution et
+  l'équipe technique (réalisateur, scénariste, compositeur, créateur) sont cliquables
+  et renvoient vers la fiche de la personne.
 - **Import depuis TV Time** — reprend l'export de données TV Time (séries, films,
   historique de visionnage) et l'ajoute automatiquement à la bibliothèque via
   correspondance TMDB.

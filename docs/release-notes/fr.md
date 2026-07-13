@@ -1,5 +1,18 @@
 # Notes de version
 
+## 0.11.0 — 13 juillet 2026
+### ✨ Nouveautés
+- Les fiches acteur/actrice affichent maintenant une section Récompenses et nominations (via Wikidata, TMDB n'ayant aucune donnée sur le sujet)
+- Les fiches série/film ont maintenant une section Réalisation cliquable (réalisateur, scénariste, compositeur, créateur) en plus de la Distribution — clique dessus pour ouvrir la fiche de la personne, comme pour un acteur
+- La salutation d'accueil reflète maintenant l'heure de la journée et ton prénom si tu es connecté, au lieu d'un simple "Bonjour"
+### 🐛 Corrections
+- La mise à jour dans l'app pouvait échouer avec une erreur générique "problème avec le fichier de l'application" sans explication — un téléchargement raté est maintenant détecté et affiché comme une vraie erreur, avec possibilité de réessayer
+- Les listes de découverte de l'accueil (et la filmographie de la fiche acteur) bougeaient pendant le défilement car la hauteur des cartes variait selon la longueur du titre — chaque carte réserve maintenant une hauteur constante
+- Le cercle de progression et le texte d'épisode de "Continuer" pouvaient devenir illisibles sur une jaquette claire — les deux reposent maintenant sur un fond assombri pour rester lisibles quelle que soit l'image
+### 🔧 Améliorations
+- Vignettes distribution/réalisation élargies pour que les noms complets soient enfin lisibles au lieu d'être tronqués
+- Les rôles de l'équipe technique (réalisateur, scénariste, compositeur, créateur) sont maintenant traduits au lieu d'afficher le terme anglais brut de TMDB
+
 ## 0.10.0 — 13 juillet 2026
 ### ✨ Nouveautés
 - L'accueil devient un hub de découverte au lieu de dupliquer la bibliothèque : suggestions basées sur ta bibliothèque, tendances du moment, derniers films/séries sortis, en plus de "Continuer" — tout via TMDB, sans service tiers payant
