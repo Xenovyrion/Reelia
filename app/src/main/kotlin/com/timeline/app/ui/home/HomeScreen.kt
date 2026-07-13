@@ -12,11 +12,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -27,6 +29,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -203,11 +207,33 @@ private fun ContinueWatchingCard(item: ContinueWatchingItem, onClick: () -> Unit
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize(),
         )
-        CircularProgressRing(
-            progress = item.progress,
-            color = item.status.statusColor(),
-            modifier = Modifier.align(Alignment.TopEnd).padding(10.dp),
+        // A bright/light backdrop can make the ring and text unreadable without this — the
+        // scrim guarantees contrast no matter what the underlying image looks like.
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    Brush.verticalGradient(
+                        0f to Color.Transparent,
+                        0.55f to Color.Transparent,
+                        1f to Color.Black.copy(alpha = 0.85f),
+                    ),
+                ),
         )
+        Box(
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(10.dp)
+                .size(34.dp)
+                .clip(CircleShape)
+                .background(Color.Black.copy(alpha = 0.45f)),
+            contentAlignment = Alignment.Center,
+        ) {
+            CircularProgressRing(
+                progress = item.progress,
+                color = item.status.statusColor(),
+            )
+        }
         Column(
             modifier = Modifier
                 .align(Alignment.BottomStart)
