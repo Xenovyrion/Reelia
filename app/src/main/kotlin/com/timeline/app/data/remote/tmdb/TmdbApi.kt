@@ -5,6 +5,7 @@ import com.timeline.app.data.remote.tmdb.dto.TmdbCreditsDto
 import com.timeline.app.data.remote.tmdb.dto.TmdbFindResponseDto
 import com.timeline.app.data.remote.tmdb.dto.TmdbMovieDetailsDto
 import com.timeline.app.data.remote.tmdb.dto.TmdbPagedResponseDto
+import com.timeline.app.data.remote.tmdb.dto.TmdbPersonCombinedCreditsDto
 import com.timeline.app.data.remote.tmdb.dto.TmdbPersonDetailsDto
 import com.timeline.app.data.remote.tmdb.dto.TmdbSearchResponseDto
 import com.timeline.app.data.remote.tmdb.dto.TmdbSeasonDetailsDto
@@ -80,8 +81,17 @@ interface TmdbApi {
     @GET("movie/{id}/videos")
     suspend fun getMovieVideos(@Path("id") id: Int): TmdbVideosDto
 
+    /** [language] lets callers force a specific locale (e.g. an English fallback when the
+     * user's own locale has no translated biography), overriding the default injected by
+     * [TmdbLanguageInterceptor] — leave null for normal locale-aware calls. */
     @GET("person/{id}")
-    suspend fun getPersonDetails(@Path("id") id: Int): TmdbPersonDetailsDto
+    suspend fun getPersonDetails(
+        @Path("id") id: Int,
+        @Query("language") language: String? = null,
+    ): TmdbPersonDetailsDto
+
+    @GET("person/{id}/combined_credits")
+    suspend fun getPersonCombinedCredits(@Path("id") id: Int): TmdbPersonCombinedCreditsDto
 
     companion object {
         const val BASE_URL = "https://api.themoviedb.org/3/"

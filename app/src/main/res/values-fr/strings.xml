@@ -171,7 +171,11 @@
     <!-- Person Detail -->
     <string name="person_detail_error_load">Impossible de charger les informations de cette personne.</string>
     <string name="person_detail_born_format">Né(e) le %1$s</string>
+    <string name="person_detail_died_format">Décédé(e) le %1$s</string>
     <string name="person_detail_no_biography">Aucune biographie disponible.</string>
+    <string name="person_detail_biography_section_title">Biographie</string>
+    <string name="person_detail_filmography_section_title">Filmographie</string>
+    <string name="person_detail_no_filmography">Aucun film ou série connu.</string>
 
     <!-- Settings -->
     <string name="settings_language_section_title">Langue du contenu</string>

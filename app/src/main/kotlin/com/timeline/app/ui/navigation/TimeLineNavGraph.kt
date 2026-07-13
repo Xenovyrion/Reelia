@@ -142,7 +142,11 @@ fun TimeLineNavGraph(navController: NavHostController, modifier: Modifier = Modi
             route = Routes.PERSON_DETAIL,
             arguments = listOf(navArgument("personId") { type = NavType.IntType }),
         ) {
-            PersonDetailScreen(onBack = { navController.popBackStack() })
+            PersonDetailScreen(
+                onBack = { navController.popBackStack() },
+                onShowClick = { navController.navigate(Routes.showPreview(it)) },
+                onMovieClick = { navController.navigate(Routes.moviePreview(it)) },
+            )
         }
     }
 }

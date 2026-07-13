@@ -10,9 +10,12 @@ class TmdbLanguageInterceptor @Inject constructor(
     private val languageStore: LanguagePreferenceStore,
 ) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
+        val originalUrl = chain.request().url
+        if (originalUrl.queryParameter("language") != null) {
+            return chain.proceed(chain.request())
+        }
         val language = languageStore.currentLanguage
         val region = language.substringAfter('-', missingDelimiterValue = "")
-        val originalUrl = chain.request().url
         val newUrlBuilder = originalUrl.newBuilder()
             .addQueryParameter("language", language)
         if (region.isNotEmpty()) {

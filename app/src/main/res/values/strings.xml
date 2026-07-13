@@ -176,7 +176,11 @@
     <!-- Person Detail -->
     <string name="person_detail_error_load">Couldn\'t load this person\'s info.</string>
     <string name="person_detail_born_format">Born %1$s</string>
+    <string name="person_detail_died_format">Died %1$s</string>
     <string name="person_detail_no_biography">No biography available.</string>
+    <string name="person_detail_biography_section_title">Biography</string>
+    <string name="person_detail_filmography_section_title">Filmography</string>
+    <string name="person_detail_no_filmography">No known movies or shows.</string>
 
     <!-- Settings -->
     <string name="settings_language_section_title">Content language</string>
