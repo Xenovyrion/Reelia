@@ -385,6 +385,7 @@ private fun EpisodeRow(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun EpisodeDetailSheet(
     seasonNumber: Int,
@@ -403,7 +404,7 @@ private fun EpisodeDetailSheet(
                     .height(200.dp)
                     .background(MaterialTheme.colorScheme.surfaceVariant),
             )
-            Column(modifier = Modifier.padding(horizontal = 20.dp, top = 16.dp)) {
+            Column(modifier = Modifier.padding(start = 20.dp, top = 16.dp, end = 20.dp)) {
                 EpisodeCodeBadge(seasonNumber = seasonNumber, episodeNumber = episode.episodeNumber)
                 Text(
                     episode.name,
