@@ -26,7 +26,6 @@ import com.timeline.app.data.sync.FirestoreSyncRepository
 import com.timeline.app.data.update.AppUpdateRepository
 import com.timeline.app.domain.model.MediaType
 import com.timeline.app.domain.model.ShowBroadcastStatus
-import com.timeline.app.domain.model.WatchStatus
 import com.timeline.app.domain.model.parseShowBroadcastStatus
 import com.timeline.app.ui.common.components.BarChartEntry
 import com.timeline.app.ui.common.components.GenreProgressItem
@@ -51,6 +50,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -112,7 +112,7 @@ data class ProfileStatsUiState(
     val remainingHoursEstimate: Double = 0.0,
     val averageHoursPerWeek: Double = 0.0,
     val showsAddedCount: Int = 0,
-    val showsInProductionCount: Int = 0,
+    val showsAiringCount: Int = 0,
     val showsByBroadcastStatus: List<BroadcastStatusStat> = emptyList(),
     val networkBreakdown: List<NetworkStat> = emptyList(),
 )
@@ -185,14 +185,31 @@ class ProfileViewModel @Inject constructor(
     private val weeklyOffsetState = MutableStateFlow(0)
     private val monthlyOffsetState = MutableStateFlow(0)
 
+    // "Completed" is derived from actual watch progress rather than the user-set WatchStatus
+    // field — WatchStatus.COMPLETED is never set automatically anywhere in this app (it's only
+    // ever assigned PLAN_TO_WATCH at add-time), so counting it directly always reads as 0. A show
+    // is complete when every known episode is watched; a movie is complete when its `watched`
+    // flag is set.
     private fun completionFlow(scope: StatsScope): Flow<CompletionData> =
-        combine(showRepository.getAllShows(), movieRepository.getAllMovies()) { shows, movies ->
-            val statuses = when (scope) {
-                StatsScope.ALL -> shows.map { it.status } + movies.map { it.status }
-                StatsScope.SERIES -> shows.map { it.status }
-                StatsScope.FILMS -> movies.map { it.status }
+        combine(
+            showRepository.getAllShows(),
+            showRepository.getEpisodeProgressByShow(),
+            movieRepository.getAllMovies(),
+        ) { shows, showProgress, movies ->
+            val progressByShowId = showProgress.associateBy { it.showId }
+            val completedShowCount = shows.count { show ->
+                val progress = progressByShowId[show.tmdbId]
+                progress != null && progress.total > 0 && progress.watchedCount == progress.total
             }
-            CompletionData(totalCount = statuses.size, completedCount = statuses.count { it == WatchStatus.COMPLETED })
+            val completedMovieCount = movies.count { it.watched }
+            when (scope) {
+                StatsScope.ALL -> CompletionData(
+                    totalCount = shows.size + movies.size,
+                    completedCount = completedShowCount + completedMovieCount,
+                )
+                StatsScope.SERIES -> CompletionData(totalCount = shows.size, completedCount = completedShowCount)
+                StatsScope.FILMS -> CompletionData(totalCount = movies.size, completedCount = completedMovieCount)
+            }
         }
 
     private val statsQuery: Flow<StatsQuery> = combine(
@@ -291,7 +308,10 @@ class ProfileViewModel @Inject constructor(
             remainingHoursEstimate = remainingMinutes / 60.0,
             averageHoursPerWeek = averageHoursPerWeek,
             showsAddedCount = showsForScope.size,
-            showsInProductionCount = broadcastCounts[ShowBroadcastStatus.IN_PRODUCTION] ?: 0,
+            // TMDB's "In Production" status only covers pre-air shows (announced/greenlit but no
+            // episodes aired yet) — a show like House of the Dragon that's airing and renewed for
+            // more seasons is reported as "Returning Series", which is what this counts.
+            showsAiringCount = broadcastCounts[ShowBroadcastStatus.RETURNING] ?: 0,
             showsByBroadcastStatus = showsByBroadcastStatus,
             networkBreakdown = networkBreakdown,
         )
@@ -353,6 +373,33 @@ class ProfileViewModel @Inject constructor(
 
     fun onGenreSelected(genreId: Int?) {
         selectedGenreIdState.value = genreId
+    }
+
+    // Network drill-down bottom sheet — same idea as the genre one above, but shows only (movies
+    // have no network field) filtered by a case-insensitive match against the comma-separated
+    // networkNames string, since there's no cross-ref table for networks.
+    private val selectedNetworkState = MutableStateFlow<String?>(null)
+
+    val networkLibraryItems: StateFlow<List<GenreLibraryItem>> = selectedNetworkState.flatMapLatest { network ->
+        if (network == null) {
+            flowOf(emptyList())
+        } else {
+            showRepository.getAllShows().map { shows ->
+                shows.filter { show ->
+                    show.networkNames?.split(",").orEmpty().any { it.trim().equals(network, ignoreCase = true) }
+                }.map { show ->
+                    GenreLibraryItem(show.tmdbId, MediaType.TV, show.name, imageUrlBuilder.posterUrl(show.posterPath))
+                }
+            }
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = emptyList(),
+    )
+
+    fun onNetworkSelected(network: String?) {
+        selectedNetworkState.value = network
     }
 
     fun onSignOut() {

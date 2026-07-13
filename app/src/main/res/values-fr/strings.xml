@@ -109,7 +109,6 @@
     <string name="stats_weekly_average_caption">Moyenne par semaine</string>
     <string name="stats_shows_added_unit_label">SÉRIES</string>
     <string name="stats_shows_added_caption">Séries ajoutées</string>
-    <string name="stats_shows_in_production_caption">En production</string>
     <string name="stats_broadcast_status_section_title">Séries par statut</string>
     <string name="stats_network_section_title">Par chaîne</string>
     <string name="stats_weekday_section_title">Par jour de la semaine</string>

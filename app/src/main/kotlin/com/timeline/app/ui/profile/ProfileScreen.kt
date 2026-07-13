@@ -47,6 +47,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -102,16 +103,23 @@ fun ProfileScreen(onItemClick: (MediaType, Int) -> Unit = { _, _ -> }, viewModel
     val updateUiState by viewModel.updateUiState.collectAsStateWithLifecycle()
     val deleteAccountUiState by viewModel.deleteAccountUiState.collectAsStateWithLifecycle()
     val genreLibraryItems by viewModel.genreLibraryItems.collectAsStateWithLifecycle()
+    val networkLibraryItems by viewModel.networkLibraryItems.collectAsStateWithLifecycle()
 
     var apiKeyInput by remember { mutableStateOf("") }
     var showDeleteConfirmation by remember { mutableStateOf(false) }
     var selectedGenre by remember { mutableStateOf<GenreProgressItem?>(null) }
+    var selectedNetwork by remember { mutableStateOf<NetworkStat?>(null) }
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
 
     fun dismissGenreSheet() {
         selectedGenre = null
         viewModel.onGenreSelected(null)
+    }
+
+    fun dismissNetworkSheet() {
+        selectedNetwork = null
+        viewModel.onNetworkSelected(null)
     }
 
     LaunchedEffect(uiState.apiKey) {
@@ -153,6 +161,7 @@ fun ProfileScreen(onItemClick: (MediaType, Int) -> Unit = { _, _ -> }, viewModel
     }
 
     Scaffold(
+        containerColor = Color.Transparent,
         topBar = { TopAppBar(title = { Text(stringResource(R.string.nav_profile)) }, colors = timeLineTopAppBarColors()) },
         snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { padding ->
@@ -252,7 +261,7 @@ fun ProfileScreen(onItemClick: (MediaType, Int) -> Unit = { _, _ -> }, viewModel
                 )
             }
             Row(
-                modifier = Modifier.fillMaxWidth().padding(top = 12.dp).height(IntrinsicSize.Max),
+                modifier = Modifier.fillMaxWidth().padding(top = 16.dp).height(IntrinsicSize.Max),
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 StatCard(
@@ -281,7 +290,7 @@ fun ProfileScreen(onItemClick: (MediaType, Int) -> Unit = { _, _ -> }, viewModel
                 )
             }
 
-            Card(modifier = Modifier.fillMaxWidth().padding(top = 20.dp)) {
+            Card(modifier = Modifier.fillMaxWidth().padding(top = 24.dp)) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.padding(16.dp),
@@ -308,9 +317,9 @@ fun ProfileScreen(onItemClick: (MediaType, Int) -> Unit = { _, _ -> }, viewModel
             }
 
             if (statsUiState.genreBreakdown.isNotEmpty()) {
-                Column(modifier = Modifier.padding(top = 24.dp)) {
+                Column(modifier = Modifier.padding(top = 28.dp)) {
                     SectionHeader(stringResource(R.string.stats_genre_section_title))
-                    Column(modifier = Modifier.padding(top = 12.dp)) {
+                    Column(modifier = Modifier.padding(top = 16.dp)) {
                         statsUiState.genreBreakdown.forEach { genre ->
                             GenreProgressBar(
                                 item = genre,
@@ -318,7 +327,7 @@ fun ProfileScreen(onItemClick: (MediaType, Int) -> Unit = { _, _ -> }, viewModel
                                     selectedGenre = genre
                                     viewModel.onGenreSelected(genre.genreId)
                                 },
-                                modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp),
+                                modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
                             )
                         }
                     }
@@ -327,7 +336,7 @@ fun ProfileScreen(onItemClick: (MediaType, Int) -> Unit = { _, _ -> }, viewModel
 
             if (statsUiState.showsAddedCount > 0) {
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(top = 24.dp).height(IntrinsicSize.Max),
+                    modifier = Modifier.fillMaxWidth().padding(top = 28.dp).height(IntrinsicSize.Max),
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
                     StatCard(
@@ -340,17 +349,17 @@ fun ProfileScreen(onItemClick: (MediaType, Int) -> Unit = { _, _ -> }, viewModel
                     )
                     StatCard(
                         icon = Icons.Filled.Autorenew,
-                        value = statsUiState.showsInProductionCount.toString(),
+                        value = statsUiState.showsAiringCount.toString(),
                         unitLabel = stringResource(R.string.stats_shows_added_unit_label),
-                        caption = stringResource(R.string.stats_shows_in_production_caption),
+                        caption = stringResource(R.string.show_broadcast_status_returning),
                         accentColor = StatusPlanned,
                         modifier = Modifier.weight(1f).fillMaxHeight(),
                     )
                 }
                 if (statsUiState.showsByBroadcastStatus.isNotEmpty()) {
-                    Column(modifier = Modifier.padding(top = 20.dp)) {
+                    Column(modifier = Modifier.padding(top = 24.dp)) {
                         SectionHeader(stringResource(R.string.stats_broadcast_status_section_title))
-                        Column(modifier = Modifier.padding(top = 12.dp)) {
+                        Column(modifier = Modifier.padding(top = 16.dp)) {
                             statsUiState.showsByBroadcastStatus.forEachIndexed { index, stat ->
                                 GenreProgressBar(
                                     item = GenreProgressItem(
@@ -359,16 +368,16 @@ fun ProfileScreen(onItemClick: (MediaType, Int) -> Unit = { _, _ -> }, viewModel
                                         fraction = stat.fraction,
                                         color = StatusPalette[index % StatusPalette.size],
                                     ),
-                                    modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp),
+                                    modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
                                 )
                             }
                         }
                     }
                 }
                 if (statsUiState.networkBreakdown.isNotEmpty()) {
-                    Column(modifier = Modifier.padding(top = 12.dp)) {
+                    Column(modifier = Modifier.padding(top = 20.dp)) {
                         SectionHeader(stringResource(R.string.stats_network_section_title))
-                        Column(modifier = Modifier.padding(top = 12.dp)) {
+                        Column(modifier = Modifier.padding(top = 16.dp)) {
                             statsUiState.networkBreakdown.forEachIndexed { index, stat ->
                                 GenreProgressBar(
                                     item = GenreProgressItem(
@@ -377,7 +386,11 @@ fun ProfileScreen(onItemClick: (MediaType, Int) -> Unit = { _, _ -> }, viewModel
                                         fraction = stat.fraction,
                                         color = StatusPalette[index % StatusPalette.size],
                                     ),
-                                    modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp),
+                                    onClick = {
+                                        selectedNetwork = stat
+                                        viewModel.onNetworkSelected(stat.name)
+                                    },
+                                    modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
                                 )
                             }
                         }
@@ -385,7 +398,7 @@ fun ProfileScreen(onItemClick: (MediaType, Int) -> Unit = { _, _ -> }, viewModel
                 }
             }
 
-            Column(modifier = Modifier.padding(top = 24.dp)) {
+            Column(modifier = Modifier.padding(top = 28.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                     SectionHeader(stringResource(R.string.stats_weekly_section_title), modifier = Modifier.weight(1f))
                     IconButton(onClick = viewModel::onWeeklyChartPrevious) {
@@ -395,17 +408,17 @@ fun ProfileScreen(onItemClick: (MediaType, Int) -> Unit = { _, _ -> }, viewModel
                         Icon(Icons.Filled.ChevronRight, contentDescription = stringResource(R.string.stats_chart_next))
                     }
                 }
-                Row(modifier = Modifier.fillMaxWidth().padding(top = 4.dp)) {
+                Row(modifier = Modifier.fillMaxWidth().padding(top = 6.dp)) {
                     Text(
                         stringResource(R.string.stats_weekly_caption),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
-                BarChart(entries = statsUiState.weeklyChart, modifier = Modifier.fillMaxWidth().padding(top = 8.dp))
+                BarChart(entries = statsUiState.weeklyChart, modifier = Modifier.fillMaxWidth().padding(top = 12.dp))
             }
 
-            Column(modifier = Modifier.padding(top = 24.dp)) {
+            Column(modifier = Modifier.padding(top = 28.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                     SectionHeader(stringResource(R.string.stats_monthly_section_title), modifier = Modifier.weight(1f))
                     IconButton(onClick = viewModel::onMonthlyChartPrevious) {
@@ -415,26 +428,26 @@ fun ProfileScreen(onItemClick: (MediaType, Int) -> Unit = { _, _ -> }, viewModel
                         Icon(Icons.Filled.ChevronRight, contentDescription = stringResource(R.string.stats_chart_next))
                     }
                 }
-                Row(modifier = Modifier.fillMaxWidth().padding(top = 4.dp)) {
+                Row(modifier = Modifier.fillMaxWidth().padding(top = 6.dp)) {
                     Text(
                         stringResource(R.string.stats_monthly_caption),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
-                BarChart(entries = statsUiState.monthlyChart, modifier = Modifier.fillMaxWidth().padding(top = 8.dp))
+                BarChart(entries = statsUiState.monthlyChart, modifier = Modifier.fillMaxWidth().padding(top = 12.dp))
             }
 
-            Column(modifier = Modifier.padding(top = 24.dp)) {
+            Column(modifier = Modifier.padding(top = 28.dp)) {
                 SectionHeader(stringResource(R.string.stats_weekday_section_title))
-                Row(modifier = Modifier.fillMaxWidth().padding(top = 4.dp)) {
+                Row(modifier = Modifier.fillMaxWidth().padding(top = 6.dp)) {
                     Text(
                         stringResource(R.string.stats_weekday_caption),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
-                BarChart(entries = statsUiState.weekdayChart, modifier = Modifier.fillMaxWidth().padding(top = 8.dp))
+                BarChart(entries = statsUiState.weekdayChart, modifier = Modifier.fillMaxWidth().padding(top = 12.dp))
             }
 
             HorizontalDivider(modifier = Modifier.padding(top = 24.dp))
@@ -585,6 +598,39 @@ fun ProfileScreen(onItemClick: (MediaType, Int) -> Unit = { _, _ -> }, viewModel
                             onClick = {
                                 onItemClick(item.mediaType, item.id)
                                 dismissGenreSheet()
+                            },
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    selectedNetwork?.let { network ->
+        ModalBottomSheet(onDismissRequest = { dismissNetworkSheet() }) {
+            Column(modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)) {
+                Text(
+                    network.name,
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
+                )
+                if (networkLibraryItems.isEmpty()) {
+                    Text(
+                        stringResource(R.string.chart_no_data),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                    )
+                } else {
+                    networkLibraryItems.forEach { item ->
+                        MediaListRow(
+                            title = item.title,
+                            subtitle = null,
+                            posterUrl = item.posterUrl,
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                            onClick = {
+                                onItemClick(item.mediaType, item.id)
+                                dismissNetworkSheet()
                             },
                         )
                     }

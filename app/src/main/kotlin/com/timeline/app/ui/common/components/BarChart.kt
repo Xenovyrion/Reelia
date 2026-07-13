@@ -71,7 +71,7 @@ fun BarChart(
             Spacer(Modifier.width(YAxisSpacing))
             Row(
                 modifier = Modifier.weight(1f).height(maxBarHeight),
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.Bottom,
             ) {
                 entries.forEachIndexed { index, entry ->
@@ -79,7 +79,7 @@ fun BarChart(
                     Box(
                         modifier = Modifier
                             .weight(1f)
-                            .padding(horizontal = 2.dp)
+                            .padding(horizontal = 3.dp)
                             .height(maxBarHeight * heightFraction)
                             .clip(RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp))
                             .background(
@@ -93,7 +93,7 @@ fun BarChart(
                 }
             }
         }
-        Row(modifier = Modifier.padding(start = YAxisWidth + YAxisSpacing, top = 4.dp)) {
+        Row(modifier = Modifier.padding(start = YAxisWidth + YAxisSpacing, top = 8.dp)) {
             entries.forEach { entry ->
                 Text(
                     entry.label,
