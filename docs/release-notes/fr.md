@@ -1,5 +1,17 @@
 # Notes de version
 
+## 0.9.0 — 13 juillet 2026
+### ✨ Nouveautés
+- Le clic sur un épisode ouvre une fenêtre de détail avec son image, son titre, sa date de diffusion, sa note et son résumé
+- Cocher un épisode remplit automatiquement tous les épisodes non vus précédents de la saison (rattrapage) ; un appui long sur une coche permet de ne cocher/décocher que cet épisode individuellement
+### 🐛 Corrections
+- La coche "tout marquer vu" de la saison ne faisait que marquer vu — un appui dessus quand la saison est déjà entièrement vue la décoche maintenant entièrement
+- Le bouton "vu" de la fenêtre de détail d'épisode pouvait rester bloqué sur un état obsolète et ne plus répondre aux appuis répétés
+- La fenêtre de détail d'épisode pouvait masquer le bouton "vu" avec un long résumé — son contenu défile maintenant
+### 🔧 Améliorations
+- Les lignes d'épisodes redessinées en cartes avec un état "vu" plus lisible
+- Les sections "À propos" des fiches série/film séparées en cartes (résumé, diffusion, casting, diffuseurs), dans le même style que l'écran de statistiques
+
 ## 0.8.0 — 13 juillet 2026
 ### ✨ Nouveautés
 - Les graphiques (hebdo/mensuel/jour de la semaine) sont maintenant tapables pour afficher la valeur exacte d'une barre

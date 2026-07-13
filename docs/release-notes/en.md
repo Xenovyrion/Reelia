@@ -1,5 +1,17 @@
 # Release notes
 
+## 0.9.0 — July 13, 2026
+### ✨ New
+- Tapping an episode opens a detail sheet with its image, title, air date, rating, and overview
+- Checking an episode now auto-fills every earlier unwatched episode in the season (catch-up); long-press a checkmark to toggle just that one episode individually
+### 🐛 Fixed
+- The season "mark all watched" checkmark only ever marked watched — tapping it while the season was fully watched now un-marks the whole season
+- The episode detail sheet's mark-watched button could get stuck reflecting a stale state and stop responding to repeated taps
+- The episode detail sheet could cut off the mark-watched button on long overviews — its content now scrolls
+### 🔧 Improved
+- Episode list rows redesigned as cards with a clearer watched state
+- Show/movie detail "About" sections split into cards (overview, schedule, cast, watch providers), matching the Stats screen's look
+
 ## 0.8.0 — July 13, 2026
 ### ✨ New
 - Charts (weekly/monthly/weekday) are now tappable to reveal a bar's exact value
