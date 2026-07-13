@@ -11,6 +11,7 @@ import com.timeline.app.domain.model.WatchProviderOption
 import com.timeline.app.domain.model.parseShowBroadcastStatus
 import com.timeline.app.domain.usecase.MarkEpisodeWatchedUseCase
 import com.timeline.app.domain.usecase.MarkSeasonWatchedUseCase
+import com.timeline.app.ui.common.effectiveShowStatus
 import com.timeline.app.ui.common.components.CastRowItem
 import com.timeline.app.ui.common.components.WatchProviderRowItem
 import com.timeline.app.ui.common.format.toYearOrNull
@@ -107,6 +108,8 @@ class ShowDetailViewModel @Inject constructor(
             ?.let { (seasonNumber, episode) ->
                 NextEpisodeUi(seasonNumber, episode.episodeNumber, episode.name, episode.stillUrl)
             }
+        val watchedEpisodeCount = seasons.sumOf { season -> season.episodes.count { it.watched } }
+        val totalEpisodeCount = seasons.sumOf { it.episodeCount }
         val broadcastStatus = parseShowBroadcastStatus(details.show.broadcastStatus)
         val firstYear = details.show.firstAirDate.toYearOrNull()
         val lastYear = details.show.lastAirDate.toYearOrNull()
@@ -123,11 +126,11 @@ class ShowDetailViewModel @Inject constructor(
             overview = details.show.overview,
             posterUrl = imageUrlBuilder.posterUrl(details.show.posterPath),
             backdropUrl = imageUrlBuilder.backdropUrl(details.show.backdropPath),
-            status = details.show.status,
+            status = effectiveShowStatus(details.show.status, totalEpisodeCount, watchedEpisodeCount),
             userRating = details.show.userRating,
             seasonCount = seasons.size,
-            watchedEpisodeCount = seasons.sumOf { season -> season.episodes.count { it.watched } },
-            totalEpisodeCount = seasons.sumOf { it.episodeCount },
+            watchedEpisodeCount = watchedEpisodeCount,
+            totalEpisodeCount = totalEpisodeCount,
             seasons = seasons,
             nextUnwatchedEpisode = nextUnwatchedEpisode,
             watchProvidersFlatrate = extra.watchProvidersFlatrate,

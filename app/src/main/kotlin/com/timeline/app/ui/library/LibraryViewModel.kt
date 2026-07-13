@@ -14,6 +14,8 @@ import com.timeline.app.data.repository.MovieRepository
 import com.timeline.app.data.repository.ShowRepository
 import com.timeline.app.domain.model.MediaType
 import com.timeline.app.domain.model.WatchStatus
+import com.timeline.app.ui.common.effectiveMovieStatus
+import com.timeline.app.ui.common.effectiveShowStatus
 import com.timeline.app.ui.common.components.GenreOption
 import com.timeline.app.ui.common.components.ViewMode
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -88,13 +90,14 @@ class LibraryViewModel @Inject constructor(
             emptyList()
         } else {
             showData.shows
-                .filter { show ->
-                    val matchesStatus = filter.selectedStatuses.isEmpty() || show.status in filter.selectedStatuses
+                .map { show -> show to effectiveShowStatus(show.status, progressByShowId[show.tmdbId]) }
+                .filter { (show, status) ->
+                    val matchesStatus = filter.selectedStatuses.isEmpty() || status in filter.selectedStatuses
                     val matchesGenre = filter.selectedGenreIds.isEmpty() ||
                         genreIdsByShowId[show.tmdbId].orEmpty().any { it in filter.selectedGenreIds }
                     matchesStatus && matchesGenre
                 }
-                .map { show ->
+                .map { (show, status) ->
                     val showProgress = progressByShowId[show.tmdbId]
                     val nextEpisode = nextEpisodeByShowId[show.tmdbId]
                     LibraryItem(
@@ -103,7 +106,7 @@ class LibraryViewModel @Inject constructor(
                         title = show.name,
                         posterUrl = imageUrlBuilder.posterUrl(show.posterPath),
                         progress = showProgress?.let { if (it.total == 0) 0f else it.watchedCount.toFloat() / it.total },
-                        status = show.status,
+                        status = status,
                         isFavorite = show.isFavorite,
                         addedAt = show.addedAt,
                         nextEpisodeCode = nextEpisode?.let { "S${it.seasonNumber} · E${it.episodeNumber}" },
@@ -116,20 +119,21 @@ class LibraryViewModel @Inject constructor(
             emptyList()
         } else {
             movieData.movies
-                .filter { movie ->
-                    val matchesStatus = filter.selectedStatuses.isEmpty() || movie.status in filter.selectedStatuses
+                .map { movie -> movie to effectiveMovieStatus(movie.status, movie.watched) }
+                .filter { (movie, status) ->
+                    val matchesStatus = filter.selectedStatuses.isEmpty() || status in filter.selectedStatuses
                     val matchesGenre = filter.selectedGenreIds.isEmpty() ||
                         genreIdsByMovieId[movie.tmdbId].orEmpty().any { it in filter.selectedGenreIds }
                     matchesStatus && matchesGenre
                 }
-                .map { movie ->
+                .map { (movie, status) ->
                     LibraryItem(
                         id = movie.tmdbId,
                         mediaType = MediaType.MOVIE,
                         title = movie.title,
                         posterUrl = imageUrlBuilder.posterUrl(movie.posterPath),
                         progress = if (movie.watched) 1f else null,
-                        status = movie.status,
+                        status = status,
                         isFavorite = movie.isFavorite,
                         addedAt = movie.addedAt,
                         runtimeMinutes = movie.runtimeMinutes,

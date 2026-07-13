@@ -11,6 +11,8 @@ import com.timeline.app.data.repository.MovieRepository
 import com.timeline.app.data.repository.ShowRepository
 import com.timeline.app.domain.model.MediaType
 import com.timeline.app.domain.model.WatchStatus
+import com.timeline.app.ui.common.effectiveMovieStatus
+import com.timeline.app.ui.common.effectiveShowStatus
 import com.timeline.app.ui.library.LibraryItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -60,7 +62,7 @@ class HomeViewModel @Inject constructor(
             val nextEpisodeByShowId = raw.unwatchedEpisodes.groupBy { it.showId }.mapValues { it.value.first() }
 
             val continueWatching = raw.shows
-                .filter { it.status == WatchStatus.WATCHING }
+                .filter { effectiveShowStatus(it.status, progressByShowId[it.tmdbId]) == WatchStatus.WATCHING }
                 .mapNotNull { show ->
                     val nextEpisode = nextEpisodeByShowId[show.tmdbId] ?: return@mapNotNull null
                     val showProgress = progressByShowId[show.tmdbId]
@@ -73,7 +75,7 @@ class HomeViewModel @Inject constructor(
                         episodeNumber = nextEpisode.episodeNumber,
                         episodeName = nextEpisode.name,
                         progress = progress,
-                        status = show.status,
+                        status = effectiveShowStatus(show.status, showProgress),
                     )
                 }
 
@@ -85,7 +87,7 @@ class HomeViewModel @Inject constructor(
                     title = show.name,
                     posterUrl = imageUrlBuilder.posterUrl(show.posterPath),
                     progress = showProgress?.let { if (it.total == 0) 0f else it.watchedCount.toFloat() / it.total },
-                    status = show.status,
+                    status = effectiveShowStatus(show.status, showProgress),
                     isFavorite = show.isFavorite,
                     addedAt = show.addedAt,
                 )
@@ -97,7 +99,7 @@ class HomeViewModel @Inject constructor(
                     title = movie.title,
                     posterUrl = imageUrlBuilder.posterUrl(movie.posterPath),
                     progress = if (movie.watched) 1f else null,
-                    status = movie.status,
+                    status = effectiveMovieStatus(movie.status, movie.watched),
                     isFavorite = movie.isFavorite,
                     addedAt = movie.addedAt,
                 )
