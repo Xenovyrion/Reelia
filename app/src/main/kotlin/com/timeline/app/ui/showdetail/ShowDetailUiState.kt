@@ -12,6 +12,7 @@ data class EpisodeUi(
     val overview: String? = null,
     val voteAverage: Float? = null,
     val stillUrl: String? = null,
+    val airDate: String? = null,
 )
 
 data class SeasonUi(

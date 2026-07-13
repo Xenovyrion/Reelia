@@ -21,12 +21,16 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -61,6 +65,7 @@ import com.timeline.app.ui.common.components.SectionHeader
 import com.timeline.app.ui.common.components.WatchProvidersRow
 import com.timeline.app.ui.common.components.WatchedToggleButton
 import com.timeline.app.ui.theme.StatusFavorite
+import com.timeline.app.ui.theme.StatusWatchingCompleted
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -74,8 +79,8 @@ fun ShowDetailScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var selectedSeasonNumber by remember { mutableStateOf<Int?>(null) }
-    var expandedEpisodes by remember { mutableStateOf(setOf<String>()) }
     var selectedTab by remember { mutableIntStateOf(0) }
+    var selectedEpisode by remember { mutableStateOf<Pair<Int, EpisodeUi>?>(null) }
 
     Scaffold { padding ->
         if (uiState.isLoading) {
@@ -292,70 +297,139 @@ fun ShowDetailScreen(
                             )
                         }
                         items(season.episodes, key = { "ep_${season.seasonNumber}_${it.episodeNumber}" }) { episode ->
-                            val episodeKey = "${season.seasonNumber}_${episode.episodeNumber}"
-                            val isEpisodeExpanded = expandedEpisodes.contains(episodeKey)
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable {
-                                        expandedEpisodes = if (isEpisodeExpanded) {
-                                            expandedEpisodes - episodeKey
-                                        } else {
-                                            expandedEpisodes + episodeKey
-                                        }
-                                    },
-                            ) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(horizontal = 16.dp, vertical = 4.dp),
-                                ) {
-                                    WatchedToggleButton(
-                                        checked = episode.watched,
-                                        onCheckedChange = {
-                                            viewModel.onEpisodeToggled(season.seasonNumber, episode.episodeNumber, it)
-                                        },
-                                    )
-                                    AsyncImage(
-                                        model = episode.stillUrl,
-                                        contentDescription = episode.name,
-                                        contentScale = ContentScale.Crop,
-                                        modifier = Modifier
-                                            .width(96.dp)
-                                            .height(54.dp)
-                                            .clip(RoundedCornerShape(6.dp))
-                                            .background(MaterialTheme.colorScheme.surfaceVariant),
-                                    )
-                                    Column(modifier = Modifier.padding(start = 12.dp)) {
-                                        EpisodeCodeBadge(
-                                            seasonNumber = season.seasonNumber,
-                                            episodeNumber = episode.episodeNumber,
-                                        )
-                                        Text(episode.name, modifier = Modifier.padding(top = 2.dp))
-                                    }
-                                }
-                                if (isEpisodeExpanded) {
-                                    Column(modifier = Modifier.padding(start = 48.dp, end = 16.dp, bottom = 12.dp)) {
-                                        episode.voteAverage?.let { rating ->
-                                            Text(
-                                                stringResource(R.string.episode_rating_format, "%.1f".format(rating)),
-                                                style = MaterialTheme.typography.labelMedium,
-                                                color = MaterialTheme.colorScheme.tertiary,
-                                            )
-                                        }
-                                        Text(
-                                            episode.overview?.takeIf { it.isNotBlank() }
-                                                ?: stringResource(R.string.episode_no_overview),
-                                            style = MaterialTheme.typography.bodySmall,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                            modifier = Modifier.padding(top = 4.dp),
-                                        )
-                                    }
-                                }
-                            }
+                            EpisodeRow(
+                                seasonNumber = season.seasonNumber,
+                                episode = episode,
+                                onClick = { selectedEpisode = season.seasonNumber to episode },
+                                onWatchedChange = { viewModel.onEpisodeToggled(season.seasonNumber, episode.episodeNumber, it) },
+                            )
                         }
                     }
+                }
+            }
+        }
+
+        selectedEpisode?.let { (seasonNumber, episode) ->
+            EpisodeDetailSheet(
+                seasonNumber = seasonNumber,
+                episode = episode,
+                onWatchedToggled = { viewModel.onEpisodeToggled(seasonNumber, episode.episodeNumber, it) },
+                onDismiss = { selectedEpisode = null },
+            )
+        }
+    }
+}
+
+@Composable
+private fun EpisodeRow(
+    seasonNumber: Int,
+    episode: EpisodeUi,
+    onClick: () -> Unit,
+    onWatchedChange: (Boolean) -> Unit,
+) {
+    Card(
+        onClick = onClick,
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = if (episode.watched) {
+                StatusWatchingCompleted.copy(alpha = 0.08f)
+            } else {
+                MaterialTheme.colorScheme.surfaceContainer
+            },
+        ),
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth().padding(8.dp),
+        ) {
+            AsyncImage(
+                model = episode.stillUrl,
+                contentDescription = episode.name,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .width(96.dp)
+                    .height(54.dp)
+                    .clip(RoundedCornerShape(6.dp))
+                    .background(MaterialTheme.colorScheme.surfaceVariant),
+            )
+            Column(modifier = Modifier.padding(start = 12.dp).weight(1f)) {
+                EpisodeCodeBadge(seasonNumber = seasonNumber, episodeNumber = episode.episodeNumber)
+                Text(episode.name, modifier = Modifier.padding(top = 4.dp))
+            }
+            WatchedToggleButton(
+                checked = episode.watched,
+                onCheckedChange = onWatchedChange,
+                size = 32.dp,
+                modifier = Modifier.padding(start = 8.dp),
+                contentDescription = stringResource(R.string.show_detail_mark_episode_watched_content_description),
+            )
+        }
+    }
+}
+
+@Composable
+private fun EpisodeDetailSheet(
+    seasonNumber: Int,
+    episode: EpisodeUi,
+    onWatchedToggled: (Boolean) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    ModalBottomSheet(onDismissRequest = onDismiss) {
+        Column(modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp)) {
+            AsyncImage(
+                model = episode.stillUrl,
+                contentDescription = episode.name,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
+                    .background(MaterialTheme.colorScheme.surfaceVariant),
+            )
+            Column(modifier = Modifier.padding(horizontal = 20.dp, top = 16.dp)) {
+                EpisodeCodeBadge(seasonNumber = seasonNumber, episodeNumber = episode.episodeNumber)
+                Text(
+                    episode.name,
+                    style = MaterialTheme.typography.headlineSmall,
+                    modifier = Modifier.padding(top = 8.dp),
+                )
+                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 6.dp)) {
+                    episode.airDate?.let {
+                        Text(
+                            formatAirDate(it),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                    episode.voteAverage?.let { rating ->
+                        Text(
+                            stringResource(R.string.episode_rating_format, "%.1f".format(rating)),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.tertiary,
+                            modifier = Modifier.padding(start = 12.dp),
+                        )
+                    }
+                }
+                Text(
+                    episode.overview?.takeIf { it.isNotBlank() } ?: stringResource(R.string.episode_no_overview),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(top = 16.dp),
+                )
+                Button(
+                    onClick = { onWatchedToggled(!episode.watched) },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary,
+                    ),
+                    modifier = Modifier.padding(top = 20.dp),
+                ) {
+                    Text(
+                        if (episode.watched) {
+                            stringResource(R.string.movie_detail_watched_button)
+                        } else {
+                            stringResource(R.string.movie_detail_mark_watched_button)
+                        },
+                    )
                 }
             }
         }

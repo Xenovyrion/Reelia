@@ -98,6 +98,7 @@ class ShowDetailViewModel @Inject constructor(
                                 it.overview,
                                 it.voteAverage,
                                 imageUrlBuilder.stillUrl(it.stillPath),
+                                it.airDate,
                             )
                         },
                 )
