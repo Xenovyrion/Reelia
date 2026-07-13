@@ -7,6 +7,7 @@ import androidx.room.Transaction
 import androidx.room.Upsert
 import com.timeline.app.data.local.entity.ShowWithDetails
 import com.timeline.app.data.local.entity.TrackedShowEntity
+import com.timeline.app.domain.model.WatchStatus
 import java.time.Instant
 import kotlinx.coroutines.flow.Flow
 
@@ -30,6 +31,9 @@ interface ShowDao {
 
     @Query("UPDATE tracked_shows SET lastModifiedAt = :lastModifiedAt WHERE tmdbId = :showId")
     suspend fun touchLastModified(showId: Int, lastModifiedAt: Instant)
+
+    @Query("UPDATE tracked_shows SET status = :status, lastModifiedAt = :lastModifiedAt WHERE tmdbId = :showId")
+    suspend fun setShowStatus(showId: Int, status: WatchStatus, lastModifiedAt: Instant)
 
     @Delete
     suspend fun deleteShow(show: TrackedShowEntity)

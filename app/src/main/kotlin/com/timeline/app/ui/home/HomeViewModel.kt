@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 private data class RawHomeData(
     val shows: List<TrackedShowEntity>,
@@ -33,6 +34,16 @@ class HomeViewModel @Inject constructor(
     private val movieRepository: MovieRepository,
     private val imageUrlBuilder: TmdbImageUrlBuilder,
 ) : ViewModel() {
+
+    init {
+        // One-time backfill: status used to only ever be set once at add-time, so anything
+        // already fully watched before this fix shipped is stuck showing "à voir" until
+        // reconciled against real progress here.
+        viewModelScope.launch {
+            showRepository.reconcileAllStatuses()
+            movieRepository.reconcileAllStatuses()
+        }
+    }
 
     private val rawData = combine(
         showRepository.getAllShows(),

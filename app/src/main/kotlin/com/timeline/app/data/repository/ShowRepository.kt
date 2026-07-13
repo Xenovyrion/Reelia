@@ -25,6 +25,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 
@@ -51,6 +52,26 @@ class ShowRepository @Inject constructor(
     fun getGenresForShow(showId: Int): Flow<List<GenreEntity>> = genreDao.getGenresForShow(showId)
 
     fun getShowGenreCrossRefs(): Flow<List<ShowGenreCrossRef>> = genreDao.getAllShowGenreCrossRefs()
+
+    /** One-time backfill for shows whose `status` predates the fix that keeps it in sync with
+     * real episode-watch progress (status used to only ever be set once, at add-time). Only
+     * writes rows that are actually out of sync. */
+    suspend fun reconcileAllStatuses() {
+        val now = Instant.now()
+        val progressByShowId = episodeDao.getEpisodeProgressByShow().first().associateBy { it.showId }
+        showDao.getAllShows().first().forEach { show ->
+            val progress = progressByShowId[show.tmdbId] ?: return@forEach
+            if (progress.total == 0) return@forEach
+            val computedStatus = when {
+                progress.watchedCount == progress.total -> WatchStatus.COMPLETED
+                progress.watchedCount > 0 -> WatchStatus.WATCHING
+                else -> WatchStatus.PLAN_TO_WATCH
+            }
+            if (computedStatus != show.status) {
+                showDao.setShowStatus(show.tmdbId, computedStatus, now)
+            }
+        }
+    }
 
     suspend fun setFavorite(showId: Int, isFavorite: Boolean) {
         val now = Instant.now()

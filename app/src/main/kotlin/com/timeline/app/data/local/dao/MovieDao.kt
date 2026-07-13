@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Query
 import androidx.room.Upsert
 import com.timeline.app.data.local.entity.TrackedMovieEntity
+import com.timeline.app.domain.model.WatchStatus
 import java.time.Instant
 import kotlinx.coroutines.flow.Flow
 
@@ -29,6 +30,9 @@ interface MovieDao {
 
     @Query("UPDATE tracked_movies SET isFavorite = :isFavorite, lastModifiedAt = :lastModifiedAt WHERE tmdbId = :movieId")
     suspend fun setMovieFavorite(movieId: Int, isFavorite: Boolean, lastModifiedAt: Instant)
+
+    @Query("UPDATE tracked_movies SET status = :status, lastModifiedAt = :lastModifiedAt WHERE tmdbId = :movieId")
+    suspend fun setMovieStatus(movieId: Int, status: WatchStatus, lastModifiedAt: Instant)
 
     @Delete
     suspend fun deleteMovie(movie: TrackedMovieEntity)

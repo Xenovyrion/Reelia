@@ -44,6 +44,7 @@ class MarkEpisodeWatchedUseCase @Inject constructor(
         }
 
         val now = Instant.now()
+        refreshComputedStatus(episodeDao, showDao, showId, now)
         showDao.touchLastModified(showId, now)
         syncOutboxDao.markPending(SyncOutboxEntity(showId, MediaType.TV, now))
         firestoreSyncRepository.pushPendingChanges()

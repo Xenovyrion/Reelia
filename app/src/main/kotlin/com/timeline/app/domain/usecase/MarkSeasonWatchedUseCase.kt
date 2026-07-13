@@ -44,6 +44,7 @@ class MarkSeasonWatchedUseCase @Inject constructor(
             firestoreSyncRepository.pushWatchLogEntry(entry)
         }
 
+        refreshComputedStatus(episodeDao, showDao, showId, watchedAt)
         showDao.touchLastModified(showId, watchedAt)
         syncOutboxDao.markPending(SyncOutboxEntity(showId, MediaType.TV, watchedAt))
         firestoreSyncRepository.pushPendingChanges()

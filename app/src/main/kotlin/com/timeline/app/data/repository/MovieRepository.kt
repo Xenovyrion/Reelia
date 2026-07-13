@@ -17,6 +17,7 @@ import java.time.Instant
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 
 @Singleton
 class MovieRepository @Inject constructor(
@@ -35,6 +36,19 @@ class MovieRepository @Inject constructor(
     fun getMovieGenreCrossRefs(): Flow<List<MovieGenreCrossRef>> = genreDao.getAllMovieGenreCrossRefs()
 
     fun getGenresForMovie(movieId: Int): Flow<List<GenreEntity>> = genreDao.getGenresForMovie(movieId)
+
+    /** One-time backfill for movies whose `status` predates the fix that keeps it in sync with
+     * the real `watched` flag (status used to only ever be set once, at add-time). Only writes
+     * rows that are actually out of sync. */
+    suspend fun reconcileAllStatuses() {
+        val now = Instant.now()
+        movieDao.getAllMovies().first().forEach { movie ->
+            val computedStatus = if (movie.watched) WatchStatus.COMPLETED else WatchStatus.PLAN_TO_WATCH
+            if (computedStatus != movie.status) {
+                movieDao.setMovieStatus(movie.tmdbId, computedStatus, now)
+            }
+        }
+    }
 
     suspend fun setFavorite(movieId: Int, isFavorite: Boolean) {
         val now = Instant.now()
