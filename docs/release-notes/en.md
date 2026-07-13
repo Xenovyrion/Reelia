@@ -1,5 +1,13 @@
 # Release notes
 
+## 0.12.0 — July 13, 2026
+### ✨ New
+- Library is split back into two dedicated tabs, Séries and Films, each with its own filter, search, and grid/list toggle — searching from Séries only searches shows, and from Films only movies
+- The Search screen is fully redesigned to match the rest of the app (poster cards, sections), with a clear button and a genre filter
+- Home now has a search button (covering both series and movies) and an "Upcoming" section, matching Séries/Films
+### 🔧 Improved
+- Search no longer fires a network call on every keystroke: longer debounce and a 2-character minimum before it queries
+
 ## 0.11.0 — July 13, 2026
 ### ✨ New
 - Person pages now show an Awards & Nominations section (via Wikidata, since TMDB has no awards data)

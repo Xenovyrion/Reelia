@@ -1,5 +1,13 @@
 # Notes de version
 
+## 0.12.0 — 13 juillet 2026
+### ✨ Nouveautés
+- L'onglet Bibliothèque redevient deux onglets distincts, Séries et Films, chacun avec son propre filtre, sa recherche et son affichage grille/liste — la recherche lancée depuis Séries ne porte que sur les séries, et inversement pour Films
+- L'écran Recherche est entièrement redessiné pour ressembler au reste de l'appli (cartes affiches, sections), avec un bouton pour effacer la recherche et un filtre par genre
+- L'accueil a maintenant un bouton recherche (portant sur séries et films) et une section "À venir", comme dans Séries/Films
+### 🔧 Améliorations
+- La recherche n'interroge plus l'API à chaque lettre tapée : délai augmenté et minimum de 2 caractères avant de lancer une requête
+
 ## 0.11.0 — 13 juillet 2026
 ### ✨ Nouveautés
 - Les fiches acteur/actrice affichent maintenant une section Récompenses et nominations (via Wikidata, TMDB n'ayant aucune donnée sur le sujet)
