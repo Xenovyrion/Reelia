@@ -63,7 +63,8 @@ fun TvTimeImportScreen(onBack: () -> Unit, viewModel: TvTimeImportViewModel = hi
         ) {
             when (val state = uiState) {
                 is TvTimeImportUiState.PickFile -> {
-                    Text(stringResource(R.string.tvtime_import_pick_file_explanation), style = MaterialTheme.typography.bodyMedium)
+                    Text(stringResource(R.string.tvtime_import_pick_file_step1), style = MaterialTheme.typography.bodyMedium)
+                    Text(stringResource(R.string.tvtime_import_pick_file_step2), style = MaterialTheme.typography.bodyMedium)
                     Button(onClick = { launcher.launch("*/*") }) {
                         Text(stringResource(R.string.tvtime_import_pick_file_button))
                     }

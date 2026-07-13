@@ -194,10 +194,11 @@
     <string name="settings_tvtime_import_button">Importer depuis TV Time</string>
 
     <string name="tvtime_import_title">Importer depuis TV Time</string>
-    <string name="tvtime_import_pick_file_explanation">Choisis le fichier ZIP de ton export de données TV Time (Réglages → Demander mes données sur tvtime.com), ou l\'un des fichiers CSV extraits.</string>
+    <string name="tvtime_import_pick_file_step1">1. Sur tvtime.com, demande l\'export de tes données personnelles — Réglages → Confidentialité, ou directement sur gdpr.tvtime.com/gdpr/self-service. TV Time t\'envoie un lien de téléchargement pour un fichier ZIP ; cela peut prendre un moment avant de le recevoir.</string>
+    <string name="tvtime_import_pick_file_step2">2. Une fois téléchargé, choisis ce fichier ZIP ci-dessous tel quel. Inutile de l\'extraire ou de choisir un fichier précis à l\'intérieur — Reelia retrouve automatiquement ce dont elle a besoin.</string>
     <string name="tvtime_import_pick_file_button">Choisir un fichier</string>
     <string name="tvtime_import_parsing">Lecture du fichier d\'export…</string>
-    <string name="tvtime_import_parse_failed">Aucune donnée exploitable trouvée dans ce fichier. Vérifie que tu as bien choisi le ZIP d\'export TV Time, ou un CSV extrait de celui-ci.</string>
+    <string name="tvtime_import_parse_failed">Aucune donnée exploitable trouvée dans ce fichier. Vérifie que tu as bien choisi le fichier ZIP tel que téléchargé depuis ton export TV Time, sans l\'extraire.</string>
     <string name="tvtime_import_try_again_button">Réessayer</string>
     <string name="tvtime_import_ready_summary">%1$d séries et %2$d films trouvés.</string>
     <string name="tvtime_import_ready_explanation">L\'import recherche chaque titre sur TMDB et l\'ajoute à ta bibliothèque avec son historique de visionnage. Cela peut prendre quelques minutes et nécessite une connexion réseau.</string>
