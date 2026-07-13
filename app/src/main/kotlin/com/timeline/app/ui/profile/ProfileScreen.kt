@@ -231,18 +231,31 @@ fun ProfileScreen(
                 modifier = Modifier.padding(top = 4.dp),
             )
             Spacer(Modifier.height(12.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                Button(onClick = viewModel::onSignOut) {
-                    Text(stringResource(R.string.settings_sign_out_button))
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Button(onClick = viewModel::onSignOut, modifier = Modifier.weight(1f)) {
+                    Text(
+                        stringResource(R.string.settings_sign_out_button),
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.labelLarge,
+                    )
                 }
                 OutlinedButton(
                     onClick = { showDeleteConfirmation = true },
                     enabled = !deleteAccountUiState.isDeleting,
+                    modifier = Modifier.weight(1f),
                 ) {
                     if (deleteAccountUiState.isDeleting) {
-                        CircularProgressIndicator(modifier = Modifier.padding(2.dp), strokeWidth = 2.dp)
+                        CircularProgressIndicator(modifier = Modifier.padding(2.dp).size(16.dp), strokeWidth = 2.dp)
                     } else {
-                        Text(stringResource(R.string.profile_delete_account_button), color = MaterialTheme.colorScheme.error)
+                        Text(
+                            stringResource(R.string.profile_delete_account_button),
+                            color = MaterialTheme.colorScheme.error,
+                            textAlign = TextAlign.Center,
+                            style = MaterialTheme.typography.labelLarge,
+                        )
                     }
                 }
             }
