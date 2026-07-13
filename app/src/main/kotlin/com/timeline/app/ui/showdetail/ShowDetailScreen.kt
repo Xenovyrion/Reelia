@@ -82,7 +82,7 @@ fun ShowDetailScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var selectedSeasonNumber by remember { mutableStateOf<Int?>(null) }
     var selectedTab by remember { mutableIntStateOf(0) }
-    var selectedEpisode by remember { mutableStateOf<Pair<Int, EpisodeUi>?>(null) }
+    var selectedEpisodeKey by remember { mutableStateOf<Pair<Int, Int>?>(null) }
 
     Scaffold { padding ->
         if (uiState.isLoading) {
@@ -313,15 +313,17 @@ fun ShowDetailScreen(
                         item(key = "season_summary_${season.seasonNumber}") {
                             SeasonSummaryRow(
                                 season = season,
-                                onMarkAllWatched = { viewModel.onSeasonMarkAllWatched(season.seasonNumber) },
+                                onMarkAllWatched = { watched -> viewModel.onSeasonMarkAllWatched(season.seasonNumber, watched) },
                             )
                         }
                         items(season.episodes, key = { "ep_${season.seasonNumber}_${it.episodeNumber}" }) { episode ->
                             EpisodeRow(
                                 seasonNumber = season.seasonNumber,
                                 episode = episode,
-                                onClick = { selectedEpisode = season.seasonNumber to episode },
-                                onWatchedChange = { viewModel.onEpisodeToggled(season.seasonNumber, episode.episodeNumber, it) },
+                                onClick = { selectedEpisodeKey = season.seasonNumber to episode.episodeNumber },
+                                onWatchedChange = { watched, fillGaps ->
+                                    viewModel.onEpisodeToggled(season.seasonNumber, episode.episodeNumber, watched, fillGaps)
+                                },
                             )
                         }
                     }
@@ -329,13 +331,21 @@ fun ShowDetailScreen(
             }
         }
 
-        selectedEpisode?.let { (seasonNumber, episode) ->
-            EpisodeDetailSheet(
-                seasonNumber = seasonNumber,
-                episode = episode,
-                onWatchedToggled = { viewModel.onEpisodeToggled(seasonNumber, episode.episodeNumber, it) },
-                onDismiss = { selectedEpisode = null },
-            )
+        selectedEpisodeKey?.let { (seasonNumber, episodeNumber) ->
+            val currentEpisode = uiState.seasons
+                .find { it.seasonNumber == seasonNumber }
+                ?.episodes
+                ?.find { it.episodeNumber == episodeNumber }
+            if (currentEpisode != null) {
+                EpisodeDetailSheet(
+                    seasonNumber = seasonNumber,
+                    episode = currentEpisode,
+                    onWatchedToggled = { watched, fillGaps ->
+                        viewModel.onEpisodeToggled(seasonNumber, episodeNumber, watched, fillGaps)
+                    },
+                    onDismiss = { selectedEpisodeKey = null },
+                )
+            }
         }
     }
 }
@@ -345,7 +355,7 @@ private fun EpisodeRow(
     seasonNumber: Int,
     episode: EpisodeUi,
     onClick: () -> Unit,
-    onWatchedChange: (Boolean) -> Unit,
+    onWatchedChange: (watched: Boolean, fillGaps: Boolean) -> Unit,
 ) {
     Card(
         onClick = onClick,
@@ -378,7 +388,8 @@ private fun EpisodeRow(
             }
             WatchedToggleButton(
                 checked = episode.watched,
-                onCheckedChange = onWatchedChange,
+                onCheckedChange = { checked -> onWatchedChange(checked, checked) },
+                onLongPress = { onWatchedChange(!episode.watched, false) },
                 size = 32.dp,
                 modifier = Modifier.padding(start = 8.dp),
                 contentDescription = stringResource(R.string.show_detail_mark_episode_watched_content_description),
@@ -392,7 +403,7 @@ private fun EpisodeRow(
 private fun EpisodeDetailSheet(
     seasonNumber: Int,
     episode: EpisodeUi,
-    onWatchedToggled: (Boolean) -> Unit,
+    onWatchedToggled: (watched: Boolean, fillGaps: Boolean) -> Unit,
     onDismiss: () -> Unit,
 ) {
     ModalBottomSheet(onDismissRequest = onDismiss) {
@@ -442,7 +453,10 @@ private fun EpisodeDetailSheet(
                     modifier = Modifier.padding(top = 16.dp),
                 )
                 Button(
-                    onClick = { onWatchedToggled(!episode.watched) },
+                    onClick = {
+                        val newWatched = !episode.watched
+                        onWatchedToggled(newWatched, newWatched)
+                    },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primary,
                         contentColor = MaterialTheme.colorScheme.onPrimary,
@@ -511,7 +525,7 @@ private fun BroadcastStatusPill(status: ShowBroadcastStatus) {
 }
 
 @Composable
-private fun SeasonSummaryRow(season: SeasonUi, onMarkAllWatched: () -> Unit) {
+private fun SeasonSummaryRow(season: SeasonUi, onMarkAllWatched: (Boolean) -> Unit) {
     val watchedCount = season.episodes.count { it.watched }
     val allWatched = season.episodeCount > 0 && watchedCount == season.episodeCount
 
@@ -525,7 +539,7 @@ private fun SeasonSummaryRow(season: SeasonUi, onMarkAllWatched: () -> Unit) {
             )
             WatchedToggleButton(
                 checked = allWatched,
-                onCheckedChange = { onMarkAllWatched() },
+                onCheckedChange = onMarkAllWatched,
                 modifier = Modifier.padding(start = 8.dp),
                 contentDescription = stringResource(R.string.show_detail_mark_season_watched_content_description),
             )

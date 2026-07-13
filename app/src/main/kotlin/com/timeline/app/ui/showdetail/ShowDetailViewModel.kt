@@ -157,15 +157,15 @@ class ShowDetailViewModel @Inject constructor(
     private suspend fun List<WatchProviderOption>.toRowItems(): List<WatchProviderRowItem> =
         map { WatchProviderRowItem(name = it.providerName, logoUrl = imageUrlBuilder.posterUrl(it.logoPath, size = "w92")) }
 
-    fun onEpisodeToggled(seasonNumber: Int, episodeNumber: Int, watched: Boolean) {
+    fun onEpisodeToggled(seasonNumber: Int, episodeNumber: Int, watched: Boolean, fillGaps: Boolean = false) {
         viewModelScope.launch {
-            markEpisodeWatchedUseCase(showId, seasonNumber, episodeNumber, watched)
+            markEpisodeWatchedUseCase(showId, seasonNumber, episodeNumber, watched, fillGaps)
         }
     }
 
-    fun onSeasonMarkAllWatched(seasonNumber: Int) {
+    fun onSeasonMarkAllWatched(seasonNumber: Int, watched: Boolean) {
         viewModelScope.launch {
-            markSeasonWatchedUseCase(showId, seasonNumber)
+            markSeasonWatchedUseCase(showId, seasonNumber, watched)
         }
     }
 

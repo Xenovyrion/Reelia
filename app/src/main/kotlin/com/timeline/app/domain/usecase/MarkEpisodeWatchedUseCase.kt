@@ -17,6 +17,11 @@ import javax.inject.Inject
  * intentionally decoupled — see WatchLogEntryEntity's kdoc. Also bumps the parent show's
  * `lastModifiedAt` and pushes it, since per-episode watched-state syncs as part of the
  * show's own Firestore document (see FirestoreSyncRepository).
+ *
+ * When [fillGaps] is true and [watched] is true, also marks every earlier unwatched episode in
+ * the same season (episodeNumber <= this one) watched, so checking episode 10 after skipping
+ * 1-9 catches those up too. [fillGaps] is ignored when unmarking — unchecking always affects
+ * only the single episode requested.
  */
 class MarkEpisodeWatchedUseCase @Inject constructor(
     private val episodeDao: EpisodeDao,
@@ -25,25 +30,45 @@ class MarkEpisodeWatchedUseCase @Inject constructor(
     private val syncOutboxDao: SyncOutboxDao,
     private val firestoreSyncRepository: FirestoreSyncRepository,
 ) {
-    suspend operator fun invoke(showId: Int, seasonNumber: Int, episodeNumber: Int, watched: Boolean) {
-        val watchedAt = if (watched) Instant.now() else null
-        episodeDao.setEpisodeWatched(showId, seasonNumber, episodeNumber, watched, watchedAt)
+    suspend operator fun invoke(
+        showId: Int,
+        seasonNumber: Int,
+        episodeNumber: Int,
+        watched: Boolean,
+        fillGaps: Boolean = false,
+    ) {
+        val now = Instant.now()
 
-        if (watched) {
-            val episode = episodeDao.getEpisode(showId, seasonNumber, episodeNumber) ?: return
-            val entry = WatchLogEntryEntity(
-                mediaType = MediaType.TV,
-                tmdbId = showId,
-                seasonNumber = seasonNumber,
-                episodeNumber = episodeNumber,
-                runtimeMinutes = episode.runtimeMinutes ?: 0,
-                watchedAt = watchedAt ?: Instant.now(),
-            )
-            watchLogDao.insert(entry)
-            firestoreSyncRepository.pushWatchLogEntry(entry)
+        val episodeNumbersToMark = if (watched && fillGaps) {
+            episodeDao.getUnwatchedEpisodesInSeason(showId, seasonNumber)
+                .map { it.episodeNumber }
+                .filter { it <= episodeNumber }
+                .plus(episodeNumber)
+                .distinct()
+        } else {
+            listOf(episodeNumber)
         }
 
-        val now = Instant.now()
+        episodeNumbersToMark.forEach { number ->
+            episodeDao.setEpisodeWatched(showId, seasonNumber, number, watched, if (watched) now else null)
+        }
+
+        if (watched) {
+            episodeNumbersToMark.forEach { number ->
+                val episode = episodeDao.getEpisode(showId, seasonNumber, number) ?: return@forEach
+                val entry = WatchLogEntryEntity(
+                    mediaType = MediaType.TV,
+                    tmdbId = showId,
+                    seasonNumber = seasonNumber,
+                    episodeNumber = number,
+                    runtimeMinutes = episode.runtimeMinutes ?: 0,
+                    watchedAt = now,
+                )
+                watchLogDao.insert(entry)
+                firestoreSyncRepository.pushWatchLogEntry(entry)
+            }
+        }
+
         refreshComputedStatus(episodeDao, showDao, showId, now)
         showDao.touchLastModified(showId, now)
         syncOutboxDao.markPending(SyncOutboxEntity(showId, MediaType.TV, now))
