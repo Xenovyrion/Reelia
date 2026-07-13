@@ -85,6 +85,16 @@ fun TimeLineNavGraph(navController: NavHostController, modifier: Modifier = Modi
         ) {
             SearchScreen(
                 onItemClick = { mediaType, id -> navigateToPreview(navController, mediaType, id) },
+                onItemAdded = { mediaType, id ->
+                    navController.navigate(
+                        when (mediaType) {
+                            MediaType.TV -> Routes.showDetail(id)
+                            MediaType.MOVIE -> Routes.movieDetail(id)
+                        },
+                    ) {
+                        popUpTo(Routes.SEARCH) { inclusive = true }
+                    }
+                },
             )
         }
         composable(Routes.PROFILE) {

@@ -30,6 +30,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,20 +49,22 @@ import com.timeline.app.R
 import com.timeline.app.domain.model.MediaType
 import com.timeline.app.ui.common.components.GenreFilterBottomSheet
 import com.timeline.app.ui.common.components.SectionHeader
-import com.timeline.app.ui.common.components.TopToastHost
 import com.timeline.app.ui.common.format.toYearOrNull
 import com.timeline.app.ui.theme.timeLineTopAppBarColors
-import kotlinx.coroutines.flow.map
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(
     onItemClick: (MediaType, Int) -> Unit,
+    onItemAdded: (MediaType, Int) -> Unit,
     viewModel: SearchViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val addedConfirmationFormat = stringResource(R.string.search_add_confirmation)
     var showFilterSheet by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        viewModel.addedEvent.collect { added -> onItemAdded(added.mediaType, added.id) }
+    }
 
     val titleRes = when (uiState.lockedMediaType) {
         MediaType.TV -> R.string.search_title_series
@@ -88,8 +91,6 @@ fun SearchScreen(
         },
     ) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
-            TopToastHost(events = viewModel.addedEvent.map { String.format(addedConfirmationFormat, it) })
-
             OutlinedTextField(
                 value = uiState.query,
                 onValueChange = viewModel::onQueryChange,
@@ -147,6 +148,7 @@ fun SearchScreen(
                             row.forEach { item ->
                                 SearchResultCard(
                                     item = item,
+                                    isAdding = (item.mediaType to item.id) in uiState.addingItems,
                                     onClick = { onItemClick(item.mediaType, item.id) },
                                     onAddClick = { viewModel.onAddClicked(item) },
                                     modifier = Modifier.weight(1f).padding(end = 4.dp),
@@ -178,6 +180,7 @@ fun SearchScreen(
 @Composable
 private fun SearchResultCard(
     item: SearchResultItem,
+    isAdding: Boolean,
     onClick: () -> Unit,
     onAddClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -202,14 +205,22 @@ private fun SearchResultCard(
                     .align(Alignment.TopEnd)
                     .padding(6.dp)
                     .size(28.dp)
-                    .clickable(onClick = onAddClick),
+                    .clickable(enabled = !isAdding, onClick = onAddClick),
             ) {
-                Icon(
-                    Icons.Filled.Add,
-                    contentDescription = stringResource(R.string.search_add_content_description),
-                    tint = MaterialTheme.colorScheme.onPrimary,
-                    modifier = Modifier.padding(5.dp),
-                )
+                if (isAdding) {
+                    CircularProgressIndicator(
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        strokeWidth = 2.dp,
+                        modifier = Modifier.padding(7.dp),
+                    )
+                } else {
+                    Icon(
+                        Icons.Filled.Add,
+                        contentDescription = stringResource(R.string.search_add_content_description),
+                        tint = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier.padding(5.dp),
+                    )
+                }
             }
         }
         Text(

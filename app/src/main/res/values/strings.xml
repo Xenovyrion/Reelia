@@ -86,7 +86,6 @@
     <string name="search_error_feed">Couldn\'t load the latest releases.</string>
     <string name="search_error_query">Search failed. Check your connection.</string>
     <string name="search_add_content_description">Add</string>
-    <string name="search_add_confirmation">\"%1$s\" added to your library</string>
     <string name="search_error_add">Couldn\'t add this title. Try again.</string>
 
     <!-- Stats tab -->

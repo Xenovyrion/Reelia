@@ -50,8 +50,8 @@ class SearchViewModel @Inject constructor(
 
     private var searchJob: Job? = null
 
-    private val addedEventChannel = Channel<String>(Channel.BUFFERED)
-    val addedEvent: Flow<String> = addedEventChannel.receiveAsFlow()
+    private val addedEventChannel = Channel<AddedItem>(Channel.BUFFERED)
+    val addedEvent: Flow<AddedItem> = addedEventChannel.receiveAsFlow()
 
     init {
         viewModelScope.launch {
@@ -124,15 +124,20 @@ class SearchViewModel @Inject constructor(
         lockedMediaType?.let { type -> filter { it.mediaType == type } } ?: this
 
     fun onAddClicked(item: SearchResultItem) {
+        val key = item.mediaType to item.id
+        if (key in _uiState.value.addingItems) return
         viewModelScope.launch {
+            _uiState.update { it.copy(addingItems = it.addingItems + key) }
             try {
                 when (item.mediaType) {
                     MediaType.TV -> showRepository.addShowFromTmdb(item.id)
                     MediaType.MOVIE -> movieRepository.addMovieFromTmdb(item.id)
                 }
-                addedEventChannel.send(item.title)
+                addedEventChannel.send(AddedItem(item.mediaType, item.id))
             } catch (e: Exception) {
                 _uiState.update { it.copy(errorMessageRes = R.string.search_error_add) }
+            } finally {
+                _uiState.update { it.copy(addingItems = it.addingItems - key) }
             }
         }
     }

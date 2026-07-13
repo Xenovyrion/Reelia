@@ -86,7 +86,6 @@
     <string name="search_error_feed">Impossible de charger les dernières sorties.</string>
     <string name="search_error_query">Recherche impossible. Vérifie ta connexion.</string>
     <string name="search_add_content_description">Ajouter</string>
-    <string name="search_add_confirmation">« %1$s » ajouté à ta bibliothèque</string>
     <string name="search_error_add">Impossible d\'ajouter ce titre. Réessaie.</string>
 
     <!-- Stats tab -->
