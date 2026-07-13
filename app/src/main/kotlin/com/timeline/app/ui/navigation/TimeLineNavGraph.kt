@@ -56,6 +56,7 @@ fun TimeLineNavGraph(navController: NavHostController, modifier: Modifier = Modi
             HomeScreen(
                 onShowClick = { navController.navigate(Routes.showDetail(it)) },
                 onDiscoverItemClick = { mediaType, id -> navigateToPreview(navController, mediaType, id) },
+                onSearchClick = { navController.navigate(Routes.search()) },
             )
         }
         composable(Routes.SERIES) {

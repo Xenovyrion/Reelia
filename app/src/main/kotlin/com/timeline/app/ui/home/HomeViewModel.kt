@@ -16,6 +16,8 @@ import com.timeline.app.domain.model.MediaType
 import com.timeline.app.domain.model.WatchStatus
 import com.timeline.app.ui.common.effectiveShowStatus
 import com.timeline.app.ui.common.format.toYearOrNull
+import com.timeline.app.ui.common.model.buildUpcomingMovieItems
+import com.timeline.app.ui.common.model.buildUpcomingShowItems
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.LocalTime
 import javax.inject.Inject
@@ -34,6 +36,7 @@ private data class RawHomeData(
     val shows: List<TrackedShowEntity>,
     val progress: List<ShowEpisodeProgress>,
     val unwatchedEpisodes: List<EpisodeEntity>,
+    val movies: List<TrackedMovieEntity>,
 )
 
 private data class DiscoverData(
@@ -102,8 +105,9 @@ class HomeViewModel @Inject constructor(
         showRepository.getAllShows(),
         showRepository.getEpisodeProgressByShow(),
         showRepository.getAllUnwatchedEpisodesOrdered(),
-    ) { shows, progress, unwatchedEpisodes ->
-        RawHomeData(shows, progress, unwatchedEpisodes)
+        movieRepository.getAllMovies(),
+    ) { shows, progress, unwatchedEpisodes, movies ->
+        RawHomeData(shows, progress, unwatchedEpisodes, movies)
     }
 
     private val userFirstName = authRepository.currentUser.map { user ->
@@ -143,6 +147,8 @@ class HomeViewModel @Inject constructor(
             greetingPeriod = greetingPeriod,
             userFirstName = firstName,
             continueWatching = continueWatching,
+            upcomingShows = buildUpcomingShowItems(raw.shows, imageUrlBuilder),
+            upcomingMovies = buildUpcomingMovieItems(raw.movies, imageUrlBuilder),
             trending = discover.trending.map { it.toDiscoverItem() },
             recentMovies = discover.recentMovies.map { it.toDiscoverItem() },
             recentShows = discover.recentShows.map { it.toDiscoverItem() },

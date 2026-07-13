@@ -4,6 +4,8 @@ import com.timeline.app.domain.model.MediaType
 import com.timeline.app.domain.model.WatchStatus
 import com.timeline.app.ui.common.components.GenreOption
 import com.timeline.app.ui.common.components.ViewMode
+import com.timeline.app.ui.common.model.UpcomingMovieItem
+import com.timeline.app.ui.common.model.UpcomingShowItem
 import java.time.Instant
 
 enum class LibraryTypeFilter { ALL, SERIES, FILMS }
@@ -21,24 +23,6 @@ data class LibraryItem(
     val nextEpisodeName: String? = null,
     val runtimeMinutes: Int? = null,
     val genreNames: List<String> = emptyList(),
-)
-
-data class UpcomingShowItem(
-    val showId: Int,
-    val showTitle: String,
-    val episodeName: String,
-    val networkNames: String?,
-    val posterUrl: String?,
-    val airDate: String,
-    val daysUntil: Long,
-)
-
-data class UpcomingMovieItem(
-    val movieId: Int,
-    val title: String,
-    val posterUrl: String?,
-    val releaseDate: String,
-    val daysUntil: Long,
 )
 
 data class LibraryUiState(

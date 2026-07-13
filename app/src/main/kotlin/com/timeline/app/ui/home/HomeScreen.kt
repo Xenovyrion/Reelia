@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,7 +21,11 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -44,11 +49,14 @@ import com.timeline.app.domain.model.statusColor
 import com.timeline.app.ui.common.components.CircularProgressRing
 import com.timeline.app.ui.common.components.EpisodeCodeBadge
 import com.timeline.app.ui.common.components.SectionHeader
+import com.timeline.app.ui.common.components.UpcomingMovieCard
+import com.timeline.app.ui.common.components.UpcomingShowCard
 
 @Composable
 fun HomeScreen(
     onShowClick: (Int) -> Unit,
     onDiscoverItemClick: (MediaType, Int) -> Unit,
+    onSearchClick: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -62,6 +70,8 @@ fun HomeScreen(
         }
 
         val isEmpty = uiState.continueWatching.isEmpty() &&
+            uiState.upcomingShows.isEmpty() &&
+            uiState.upcomingMovies.isEmpty() &&
             uiState.trending.isEmpty() &&
             uiState.recentMovies.isEmpty() &&
             uiState.recentShows.isEmpty() &&
@@ -86,11 +96,40 @@ fun HomeScreen(
                 val greeting = uiState.userFirstName?.let {
                     stringResource(R.string.home_greeting_with_name_format, stringResource(periodRes), it)
                 } ?: stringResource(periodRes)
-                Text(
-                    greeting,
-                    style = MaterialTheme.typography.headlineMedium,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+                ) {
+                    Text(
+                        greeting,
+                        style = MaterialTheme.typography.headlineMedium,
+                        modifier = Modifier.weight(1f),
+                    )
+                    IconButton(onClick = onSearchClick) {
+                        Icon(
+                            Icons.Filled.Search,
+                            contentDescription = stringResource(R.string.library_search_content_description),
+                        )
+                    }
+                }
+            }
+
+            if (uiState.upcomingShows.isNotEmpty() || uiState.upcomingMovies.isNotEmpty()) {
+                item {
+                    SectionHeader(
+                        stringResource(R.string.section_upcoming),
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                    )
+                }
+                item {
+                    LazyRow(
+                        contentPadding = PaddingValues(horizontal = 16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    ) {
+                        items(uiState.upcomingShows, key = { "show_${it.showId}" }) { UpcomingShowCard(it) }
+                        items(uiState.upcomingMovies, key = { "movie_${it.movieId}" }) { UpcomingMovieCard(it) }
+                    }
+                }
             }
 
             if (uiState.continueWatching.isNotEmpty()) {

@@ -2,6 +2,8 @@ package com.timeline.app.ui.home
 
 import com.timeline.app.domain.model.MediaType
 import com.timeline.app.domain.model.WatchStatus
+import com.timeline.app.ui.common.model.UpcomingMovieItem
+import com.timeline.app.ui.common.model.UpcomingShowItem
 
 data class ContinueWatchingItem(
     val showId: Int,
@@ -29,6 +31,8 @@ data class HomeUiState(
     val greetingPeriod: GreetingPeriod = GreetingPeriod.MORNING,
     val userFirstName: String? = null,
     val continueWatching: List<ContinueWatchingItem> = emptyList(),
+    val upcomingShows: List<UpcomingShowItem> = emptyList(),
+    val upcomingMovies: List<UpcomingMovieItem> = emptyList(),
     val trending: List<HomeDiscoverItem> = emptyList(),
     val recentMovies: List<HomeDiscoverItem> = emptyList(),
     val recentShows: List<HomeDiscoverItem> = emptyList(),

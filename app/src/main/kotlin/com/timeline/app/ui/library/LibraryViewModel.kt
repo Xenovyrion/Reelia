@@ -18,9 +18,9 @@ import com.timeline.app.ui.common.effectiveMovieStatus
 import com.timeline.app.ui.common.effectiveShowStatus
 import com.timeline.app.ui.common.components.GenreOption
 import com.timeline.app.ui.common.components.ViewMode
+import com.timeline.app.ui.common.model.buildUpcomingMovieItems
+import com.timeline.app.ui.common.model.buildUpcomingShowItems
 import dagger.hilt.android.lifecycle.HiltViewModel
-import java.time.LocalDate
-import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -147,44 +147,16 @@ class LibraryViewModel @Inject constructor(
             .associateWith { status -> combinedItems.filter { it.status == status } }
             .filterValues { it.isNotEmpty() }
 
-        val today = LocalDate.now()
         val upcomingShows = if (filter.typeFilter == LibraryTypeFilter.FILMS) {
             emptyList()
         } else {
-            showData.shows
-                .mapNotNull { show ->
-                    val airDateStr = show.nextEpisodeToAirDate ?: return@mapNotNull null
-                    val airDate = runCatching { LocalDate.parse(airDateStr) }.getOrNull() ?: return@mapNotNull null
-                    UpcomingShowItem(
-                        showId = show.tmdbId,
-                        showTitle = show.name,
-                        episodeName = show.nextEpisodeToAirName.orEmpty(),
-                        networkNames = show.networkNames,
-                        posterUrl = imageUrlBuilder.posterUrl(show.posterPath),
-                        airDate = airDateStr,
-                        daysUntil = ChronoUnit.DAYS.between(today, airDate),
-                    )
-                }
-                .sortedBy { it.airDate }
+            buildUpcomingShowItems(showData.shows, imageUrlBuilder)
         }
 
         val upcomingMovies = if (filter.typeFilter == LibraryTypeFilter.SERIES) {
             emptyList()
         } else {
-            movieData.movies
-                .mapNotNull { movie ->
-                    val releaseDateStr = movie.releaseDate ?: return@mapNotNull null
-                    val releaseDate = runCatching { LocalDate.parse(releaseDateStr) }.getOrNull() ?: return@mapNotNull null
-                    if (releaseDate.isBefore(today)) return@mapNotNull null
-                    UpcomingMovieItem(
-                        movieId = movie.tmdbId,
-                        title = movie.title,
-                        posterUrl = imageUrlBuilder.posterUrl(movie.posterPath),
-                        releaseDate = releaseDateStr,
-                        daysUntil = ChronoUnit.DAYS.between(today, releaseDate),
-                    )
-                }
-                .sortedBy { it.releaseDate }
+            buildUpcomingMovieItems(movieData.movies, imageUrlBuilder)
         }
 
         val availableGenres = (showData.genres + movieData.genres)
