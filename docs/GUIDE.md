@@ -29,6 +29,25 @@ resynchronise dans la foulée. Si ce n'est pas encore le cas (première connexio
 faite avant), ressaisis ta clé une fois dans Réglages : cela relance la synchro et rapatrie tout
 ce qui était déjà enregistré sur Firebase.
 
+## Écran d'accueil
+
+L'accueil est un hub de découverte, pas une deuxième bibliothèque : il propose la suite
+de visionnage, des suggestions basées sur tes favoris/ajouts récents, les tendances du
+moment, et les derniers films/séries sortis (via TMDB, gratuit). Un titre cliqué depuis
+l'accueil n'est pas forcément déjà dans ta bibliothèque — ça ouvre sa fiche TMDB avec un
+bouton pour l'ajouter, comme depuis Rechercher.
+
+## Marquer des épisodes comme vus
+
+- **Cocher un épisode** rattrape automatiquement tous les épisodes précédents non vus de
+  la même saison (ex : cocher l'épisode 10 alors que 1 à 9 ne l'étaient pas coche aussi
+  1 à 9). Pratique pour un rattrapage rapide.
+- **Décocher** un épisode n'affecte que celui-là.
+- Pour cocher/décocher un seul épisode sans ce rattrapage automatique (par exemple pour
+  marquer un épisode isolé sans toucher aux autres), fais un **appui long** sur sa coche.
+- La coche en haut de la liste d'épisodes (à côté de "X / Y épisodes vus") marque ou
+  démarque toute la saison d'un coup, dans les deux sens.
+
 ## Confidentialité
 
 - Ta bibliothèque et ta clé API sont stockées dans un document Firestore accessible

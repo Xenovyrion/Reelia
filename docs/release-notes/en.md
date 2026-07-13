@@ -1,5 +1,16 @@
 # Release notes
 
+## 0.10.0 — July 13, 2026
+### ✨ New
+- Home is now a discovery hub instead of repeating the Library grid: Suggestions based on your library, Trending Now, and Latest Movie/Show Releases, alongside Continue Watching — all via TMDB, no paid third-party service
+- Person pages now show a full filmography (TMDB combined credits), with posters linking to each title
+### 🐛 Fixed
+- Dates (birthday/death date, upcoming release dates) were shown as raw ISO strings instead of following the app's language — a French device would still see "1955-01-18" instead of "18 janvier 1955"
+- A long character name on a filmography poster could push the release year off-screen
+### 🔧 Improved
+- Person pages redesigned into cards (biography, filmography), matching the show/movie detail screens
+- An actor/actress biography now falls back to English when TMDB has no translation for the app's language, instead of showing an empty biography
+
 ## 0.9.0 — July 13, 2026
 ### ✨ New
 - Tapping an episode opens a detail sheet with its image, title, air date, rating, and overview

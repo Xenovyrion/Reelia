@@ -1,5 +1,16 @@
 # Notes de version
 
+## 0.10.0 — 13 juillet 2026
+### ✨ Nouveautés
+- L'accueil devient un hub de découverte au lieu de dupliquer la bibliothèque : suggestions basées sur ta bibliothèque, tendances du moment, derniers films/séries sortis, en plus de "Continuer" — tout via TMDB, sans service tiers payant
+- Les fiches acteur/actrice affichent maintenant la filmographie complète (crédits TMDB), avec des affiches cliquables vers chaque titre
+### 🐛 Corrections
+- Les dates (naissance/décès, sorties à venir) s'affichaient en format ISO brut au lieu de suivre la langue de l'appli — un appareil en français voyait encore "1955-01-18" au lieu de "18 janvier 1955"
+- Un nom de personnage long sur une affiche de filmographie pouvait pousser l'année de sortie hors de l'écran
+### 🔧 Améliorations
+- Fiches acteur/actrice redessinées en cartes (biographie, filmographie), dans le même style que les fiches série/film
+- La biographie d'un acteur/actrice bascule maintenant en anglais quand TMDB n'a pas de traduction française, au lieu d'afficher une biographie vide
+
 ## 0.9.0 — 13 juillet 2026
 ### ✨ Nouveautés
 - Le clic sur un épisode ouvre une fenêtre de détail avec son image, son titre, sa date de diffusion, sa note et son résumé

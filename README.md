@@ -5,7 +5,7 @@
 ![minSdk](https://img.shields.io/badge/minSdk-26-3DDC84?logo=android&logoColor=white)
 ![targetSdk](https://img.shields.io/badge/targetSdk-35-3DDC84?logo=android&logoColor=white)
 ![Firebase](https://img.shields.io/badge/Firebase-Auth%20%2B%20Firestore-FFCA28?logo=firebase&logoColor=black)
-![Version](https://img.shields.io/badge/version-0.9.0-8C8FFF)
+![Version](https://img.shields.io/badge/version-0.10.0-8C8FFF)
 ![Android CI](https://github.com/Xenovyrion/TimeLine/actions/workflows/android-build.yml/badge.svg)
 
 Reelia est une application Android personnelle de suivi de séries et films — un
@@ -13,11 +13,16 @@ remplaçant de TV Time, avec une bibliothèque synchronisée entre plusieurs app
 
 ## Fonctionnalités
 
+- **Accueil** — hub de découverte : suite de visionnage, suggestions basées sur ta
+  bibliothèque (recommandations TMDB), tendances du moment, derniers films/séries
+  sortis. 100% via l'API TMDB déjà utilisée par l'app, aucun service tiers payant.
 - **Bibliothèque** — ajout de séries/films via recherche TMDB (poster, synopsis,
   saisons/épisodes récupérés automatiquement), suivi épisode par épisode. Cocher un
   épisode rattrape automatiquement les épisodes précédents non vus de la saison ; un
   appui long permet de cocher/décocher un épisode individuellement. Le clic sur un
   épisode ouvre une fenêtre de détail (image, résumé, date de diffusion, note).
+- **Fiches acteurs/actrices** — biographie (avec repli automatique en anglais si la
+  traduction française n'existe pas sur TMDB), filmographie complète cliquable.
 - **Import depuis TV Time** — reprend l'export de données TV Time (séries, films,
   historique de visionnage) et l'ajoute automatiquement à la bibliothèque via
   correspondance TMDB.
@@ -32,7 +37,8 @@ remplaçant de TV Time, avec une bibliothèque synchronisée entre plusieurs app
   automatiquement entre deux appareils via Firebase.
 - **Réinitialisation de bibliothèque** et **notes de version** consultables directement
   dans l'appli (Profil > Compte).
-- **Français / English** — l'interface est entièrement traduite dans les deux langues.
+- **Français / English** — l'interface est entièrement traduite dans les deux langues,
+  y compris le format des dates selon la région.
 
 Voir [`docs/GUIDE.md`](docs/GUIDE.md) pour le guide d'utilisation détaillé (premiers
 pas, fonctionnement de la synchro, confidentialité).
