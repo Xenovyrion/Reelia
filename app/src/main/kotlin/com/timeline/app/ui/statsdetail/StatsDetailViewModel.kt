@@ -10,6 +10,8 @@ import com.timeline.app.data.repository.ShowRepository
 import com.timeline.app.domain.model.MediaType
 import com.timeline.app.domain.model.parseShowBroadcastStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.text.Collator
+import java.util.Locale
 import javax.inject.Inject
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -70,6 +72,9 @@ class StatsDetailViewModel @Inject constructor(
                     .map { show -> LibraryItemSummary(show.tmdbId, MediaType.TV, show.name, imageUrlBuilder.posterUrl(show.posterPath)) }
             }
         }
+    }.map { items ->
+        val collator = Collator.getInstance(Locale.getDefault())
+        items.sortedWith { a, b -> collator.compare(a.title, b.title) }
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
