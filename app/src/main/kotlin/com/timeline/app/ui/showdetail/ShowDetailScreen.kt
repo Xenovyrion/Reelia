@@ -66,11 +66,9 @@ import com.timeline.app.ui.common.components.SeasonPillTabs
 import com.timeline.app.ui.common.components.SectionHeader
 import com.timeline.app.ui.common.components.WatchProvidersRow
 import com.timeline.app.ui.common.components.WatchedToggleButton
+import com.timeline.app.ui.common.format.toFormattedDateOrNull
 import com.timeline.app.ui.theme.StatusFavorite
 import com.timeline.app.ui.theme.StatusWatchingCompleted
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -501,13 +499,7 @@ private fun RatingBadge(rating: Float) {
     }
 }
 
-private fun formatAirDate(dateStr: String): String = try {
-    val date = LocalDate.parse(dateStr)
-    val formatter = DateTimeFormatter.ofPattern("EEEE d MMMM yyyy", Locale.getDefault())
-    date.format(formatter)
-} catch (e: Exception) {
-    dateStr
-}
+private fun formatAirDate(dateStr: String): String = dateStr.toFormattedDateOrNull(includeWeekday = true) ?: dateStr
 
 @Composable
 private fun BroadcastStatusPill(status: ShowBroadcastStatus) {

@@ -43,6 +43,7 @@ import coil.compose.AsyncImage
 import com.timeline.app.R
 import com.timeline.app.domain.model.MediaType
 import com.timeline.app.ui.common.components.SectionHeader
+import com.timeline.app.ui.common.format.toFormattedDateOrNull
 import com.timeline.app.ui.theme.timeLineTopAppBarColors
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -102,8 +103,8 @@ fun PersonDetailScreen(
                 )
 
                 val metadata = listOfNotNull(
-                    uiState.birthday?.let { stringResource(R.string.person_detail_born_format, it) },
-                    uiState.deathday?.let { stringResource(R.string.person_detail_died_format, it) },
+                    uiState.birthday.toFormattedDateOrNull()?.let { stringResource(R.string.person_detail_born_format, it) },
+                    uiState.deathday.toFormattedDateOrNull()?.let { stringResource(R.string.person_detail_died_format, it) },
                     uiState.placeOfBirth,
                 ).joinToString(" • ")
                 if (metadata.isNotBlank()) {

@@ -56,6 +56,7 @@ import com.timeline.app.ui.common.components.PosterCard
 import com.timeline.app.ui.common.components.SectionHeader
 import com.timeline.app.ui.common.components.UpcomingCountdownBadge
 import com.timeline.app.ui.common.components.ViewMode
+import com.timeline.app.ui.common.format.toFormattedDateOrNull
 import com.timeline.app.ui.theme.timeLineTopAppBarColors
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -281,7 +282,7 @@ private fun UpcomingMovieCard(movie: UpcomingMovieItem) {
                     overflow = TextOverflow.Ellipsis,
                 )
                 Text(
-                    movie.releaseDate,
+                    movie.releaseDate.toFormattedDateOrNull() ?: movie.releaseDate,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
