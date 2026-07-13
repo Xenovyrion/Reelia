@@ -55,12 +55,17 @@ class AppUpdateRepository @Inject constructor(
     }
 
     /** Downloads the APK into the app's cache dir and returns a content:// Uri the system
-     * package installer can read (see the FileProvider declared in the manifest). */
+     * package installer can read (see the FileProvider declared in the manifest). Validates
+     * the HTTP response before writing — without this check, a non-2xx response (e.g. GitHub
+     * rate-limited or the asset briefly unavailable mid-publish) would silently write an error
+     * page to "reelia-update.apk" and hand it to the installer, which then fails with Android's
+     * generic, unhelpful "problem with the app file" dialog instead of a clear error here. */
     suspend fun downloadUpdate(update: AppUpdate): Uri = withContext(Dispatchers.IO) {
         val dir = File(context.cacheDir, "apk_updates").apply { mkdirs() }
         val file = File(dir, "reelia-update.apk")
         val request = Request.Builder().url(update.downloadUrl).build()
         httpClient.newCall(request).execute().use { response ->
+            if (!response.isSuccessful) error("Download failed: HTTP ${response.code}")
             val body = response.body ?: error("Empty APK download response")
             file.outputStream().use { output -> body.byteStream().copyTo(output) }
         }

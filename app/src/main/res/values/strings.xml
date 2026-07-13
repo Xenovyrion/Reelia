@@ -248,6 +248,7 @@
     <!-- App updates (self-hosted, GitHub Releases based) -->
     <string name="update_banner_title">Update available</string>
     <string name="update_banner_subtitle">A new version of Reelia is ready to install.</string>
+    <string name="update_download_error">Download failed. Please try again.</string>
     <string name="update_action_download_install">Update</string>
     <string name="update_action_dismiss">Later</string>
     <string name="settings_update_section_title">Updates</string>

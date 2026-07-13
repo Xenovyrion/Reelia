@@ -51,9 +51,17 @@ fun UpdateBanner(viewModel: UpdateViewModel = hiltViewModel()) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(stringResource(R.string.update_banner_title), style = MaterialTheme.typography.titleSmall)
                 Text(
-                    stringResource(R.string.update_banner_subtitle),
+                    if (uiState.errorMessage != null) {
+                        stringResource(R.string.update_download_error)
+                    } else {
+                        stringResource(R.string.update_banner_subtitle)
+                    },
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = if (uiState.errorMessage != null) {
+                        MaterialTheme.colorScheme.error
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    },
                 )
             }
             if (uiState.isDownloading) {

@@ -243,6 +243,7 @@
     <!-- Mises à jour de l'app (auto-hébergées, via GitHub Releases) -->
     <string name="update_banner_title">Mise à jour disponible</string>
     <string name="update_banner_subtitle">Une nouvelle version de Reelia est prête à être installée.</string>
+    <string name="update_download_error">Échec du téléchargement. Réessaie.</string>
     <string name="update_action_download_install">Mettre à jour</string>
     <string name="update_action_dismiss">Plus tard</string>
     <string name="settings_update_section_title">Mises à jour</string>
