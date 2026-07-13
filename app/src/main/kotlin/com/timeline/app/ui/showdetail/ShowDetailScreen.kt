@@ -196,72 +196,90 @@ fun ShowDetailScreen(
 
             if (selectedTab == 0) {
                 item {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        SectionHeader(stringResource(R.string.show_detail_about_section_title))
-                        Spacer(Modifier.padding(top = 12.dp))
-                        Text(uiState.overview, style = MaterialTheme.typography.bodyMedium)
+                    Card(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            SectionHeader(stringResource(R.string.show_detail_about_section_title))
+                            Spacer(Modifier.padding(top = 12.dp))
+                            Text(uiState.overview, style = MaterialTheme.typography.bodyMedium)
 
-                        uiState.trailerYoutubeKey?.let { key ->
-                            Spacer(Modifier.padding(top = 16.dp))
-                            val context = LocalContext.current
-                            OutlinedButton(
-                                onClick = {
-                                    context.startActivity(
-                                        Intent(Intent.ACTION_VIEW, Uri.parse("https://www.youtube.com/watch?v=$key")),
+                            uiState.trailerYoutubeKey?.let { key ->
+                                Spacer(Modifier.padding(top = 16.dp))
+                                val context = LocalContext.current
+                                OutlinedButton(
+                                    onClick = {
+                                        context.startActivity(
+                                            Intent(Intent.ACTION_VIEW, Uri.parse("https://www.youtube.com/watch?v=$key")),
+                                        )
+                                    },
+                                ) {
+                                    Icon(Icons.Filled.PlayArrow, contentDescription = null)
+                                    Text(
+                                        stringResource(R.string.show_detail_trailer_button),
+                                        modifier = Modifier.padding(start = 8.dp),
                                     )
-                                },
-                            ) {
-                                Icon(Icons.Filled.PlayArrow, contentDescription = null)
-                                Text(
-                                    stringResource(R.string.show_detail_trailer_button),
-                                    modifier = Modifier.padding(start = 8.dp),
-                                )
+                                }
                             }
                         }
+                    }
+                }
 
-                        if (uiState.nextEpisodeAirDate != null || uiState.averageEpisodeRuntimeMinutes != null) {
-                            Spacer(Modifier.padding(top = 24.dp))
-                            SectionHeader(stringResource(R.string.show_detail_diffusion_section_title))
+                if (uiState.nextEpisodeAirDate != null || uiState.averageEpisodeRuntimeMinutes != null) {
+                    item {
+                        Card(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)) {
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                SectionHeader(stringResource(R.string.show_detail_diffusion_section_title))
+                                Spacer(Modifier.padding(top = 12.dp))
+                                uiState.nextEpisodeAirDate?.let {
+                                    Text(
+                                        stringResource(R.string.show_detail_next_episode_air_format, formatAirDate(it)),
+                                        style = MaterialTheme.typography.bodyMedium,
+                                    )
+                                }
+                                uiState.averageEpisodeRuntimeMinutes?.let {
+                                    Text(
+                                        stringResource(R.string.show_detail_episode_runtime_format, it),
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        modifier = Modifier.padding(top = 4.dp),
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (uiState.cast.isNotEmpty() || uiState.creatorNames != null) {
+                    item {
+                        Card(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)) {
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                SectionHeader(stringResource(R.string.preview_cast_section_title))
+                                Spacer(Modifier.padding(top = 12.dp))
+                                uiState.creatorNames?.let {
+                                    Text(
+                                        stringResource(R.string.show_detail_creators_format, it),
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        modifier = Modifier.padding(bottom = 12.dp),
+                                    )
+                                }
+                                if (uiState.cast.isNotEmpty()) {
+                                    CastRow(uiState.cast, onPersonClick = onPersonClick)
+                                }
+                            }
+                        }
+                    }
+                }
+
+                item {
+                    Card(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            SectionHeader(stringResource(R.string.preview_watch_providers_section_title))
                             Spacer(Modifier.padding(top = 12.dp))
-                            uiState.nextEpisodeAirDate?.let {
-                                Text(
-                                    stringResource(R.string.show_detail_next_episode_air_format, formatAirDate(it)),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                )
-                            }
-                            uiState.averageEpisodeRuntimeMinutes?.let {
-                                Text(
-                                    stringResource(R.string.show_detail_episode_runtime_format, it),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                )
-                            }
+                            WatchProvidersRow(
+                                flatrate = uiState.watchProvidersFlatrate,
+                                rent = uiState.watchProvidersRent,
+                                buy = uiState.watchProvidersBuy,
+                            )
                         }
-
-                        if (uiState.cast.isNotEmpty() || uiState.creatorNames != null) {
-                            Spacer(Modifier.padding(top = 24.dp))
-                            SectionHeader(stringResource(R.string.preview_cast_section_title))
-                            Spacer(Modifier.padding(top = 12.dp))
-                            uiState.creatorNames?.let {
-                                Text(
-                                    stringResource(R.string.show_detail_creators_format, it),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    modifier = Modifier.padding(bottom = 12.dp),
-                                )
-                            }
-                            if (uiState.cast.isNotEmpty()) {
-                                CastRow(uiState.cast, onPersonClick = onPersonClick)
-                            }
-                        }
-
-                        Spacer(Modifier.padding(top = 24.dp))
-                        SectionHeader(stringResource(R.string.preview_watch_providers_section_title))
-                        Spacer(Modifier.padding(top = 12.dp))
-                        WatchProvidersRow(
-                            flatrate = uiState.watchProvidersFlatrate,
-                            rent = uiState.watchProvidersRent,
-                            buy = uiState.watchProvidersBuy,
-                        )
                     }
                 }
             } else {

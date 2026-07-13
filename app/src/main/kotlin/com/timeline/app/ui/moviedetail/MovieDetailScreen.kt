@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -122,52 +123,6 @@ fun MovieDetailScreen(
                     )
                 }
                 Spacer(Modifier.padding(top = 16.dp))
-                Text(uiState.overview, style = MaterialTheme.typography.bodyMedium)
-
-                uiState.trailerYoutubeKey?.let { key ->
-                    Spacer(Modifier.padding(top = 16.dp))
-                    val context = LocalContext.current
-                    OutlinedButton(
-                        onClick = {
-                            context.startActivity(
-                                Intent(Intent.ACTION_VIEW, Uri.parse("https://www.youtube.com/watch?v=$key")),
-                            )
-                        },
-                    ) {
-                        Icon(Icons.Filled.PlayArrow, contentDescription = null)
-                        Text(
-                            stringResource(R.string.show_detail_trailer_button),
-                            modifier = Modifier.padding(start = 8.dp),
-                        )
-                    }
-                }
-
-                if (uiState.cast.isNotEmpty() || uiState.directorNames != null) {
-                    Spacer(Modifier.padding(top = 24.dp))
-                    SectionHeader(stringResource(R.string.preview_cast_section_title))
-                    Spacer(Modifier.padding(top = 12.dp))
-                    uiState.directorNames?.let {
-                        Text(
-                            stringResource(R.string.movie_detail_director_format, it),
-                            style = MaterialTheme.typography.bodyMedium,
-                            modifier = Modifier.padding(bottom = 12.dp),
-                        )
-                    }
-                    if (uiState.cast.isNotEmpty()) {
-                        CastRow(uiState.cast, onPersonClick = onPersonClick)
-                    }
-                }
-
-                Spacer(Modifier.padding(top = 24.dp))
-                SectionHeader(stringResource(R.string.preview_watch_providers_section_title))
-                Spacer(Modifier.padding(top = 12.dp))
-                WatchProvidersRow(
-                    flatrate = uiState.watchProvidersFlatrate,
-                    rent = uiState.watchProvidersRent,
-                    buy = uiState.watchProvidersBuy,
-                )
-
-                Spacer(Modifier.padding(top = 24.dp))
                 Button(
                     onClick = { viewModel.onWatchedToggled(!uiState.watched) },
                     colors = ButtonDefaults.buttonColors(
@@ -184,6 +139,65 @@ fun MovieDetailScreen(
                     )
                 }
             }
+
+            Card(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    SectionHeader(stringResource(R.string.show_detail_about_section_title))
+                    Spacer(Modifier.padding(top = 12.dp))
+                    Text(uiState.overview, style = MaterialTheme.typography.bodyMedium)
+
+                    uiState.trailerYoutubeKey?.let { key ->
+                        Spacer(Modifier.padding(top = 16.dp))
+                        val context = LocalContext.current
+                        OutlinedButton(
+                            onClick = {
+                                context.startActivity(
+                                    Intent(Intent.ACTION_VIEW, Uri.parse("https://www.youtube.com/watch?v=$key")),
+                                )
+                            },
+                        ) {
+                            Icon(Icons.Filled.PlayArrow, contentDescription = null)
+                            Text(
+                                stringResource(R.string.show_detail_trailer_button),
+                                modifier = Modifier.padding(start = 8.dp),
+                            )
+                        }
+                    }
+                }
+            }
+
+            if (uiState.cast.isNotEmpty() || uiState.directorNames != null) {
+                Card(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        SectionHeader(stringResource(R.string.preview_cast_section_title))
+                        Spacer(Modifier.padding(top = 12.dp))
+                        uiState.directorNames?.let {
+                            Text(
+                                stringResource(R.string.movie_detail_director_format, it),
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier.padding(bottom = 12.dp),
+                            )
+                        }
+                        if (uiState.cast.isNotEmpty()) {
+                            CastRow(uiState.cast, onPersonClick = onPersonClick)
+                        }
+                    }
+                }
+            }
+
+            Card(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    SectionHeader(stringResource(R.string.preview_watch_providers_section_title))
+                    Spacer(Modifier.padding(top = 12.dp))
+                    WatchProvidersRow(
+                        flatrate = uiState.watchProvidersFlatrate,
+                        rent = uiState.watchProvidersRent,
+                        buy = uiState.watchProvidersBuy,
+                    )
+                }
+            }
+
+            Spacer(Modifier.padding(bottom = 16.dp))
         }
     }
 }
