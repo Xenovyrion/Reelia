@@ -47,7 +47,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -161,8 +160,6 @@ fun ProfileScreen(onItemClick: (MediaType, Int) -> Unit = { _, _ -> }, viewModel
     }
 
     Scaffold(
-        containerColor = Color.Transparent,
-        contentColor = MaterialTheme.colorScheme.onBackground,
         topBar = { TopAppBar(title = { Text(stringResource(R.string.nav_profile)) }, colors = timeLineTopAppBarColors()) },
         snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { padding ->

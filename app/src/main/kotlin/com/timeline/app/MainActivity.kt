@@ -3,7 +3,6 @@ package com.timeline.app
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -32,7 +31,6 @@ import com.timeline.app.ui.auth.LoginScreen
 import com.timeline.app.ui.navigation.BottomNavItem
 import com.timeline.app.ui.navigation.TimeLineNavGraph
 import com.timeline.app.ui.theme.TimeLineTheme
-import com.timeline.app.ui.theme.appBackgroundBrush
 import com.timeline.app.ui.update.UpdateBanner
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -54,16 +52,12 @@ private fun TimeLineApp() {
     val authGateViewModel: AuthGateViewModel = hiltViewModel()
     val isSignedIn by authGateViewModel.isSignedIn.collectAsStateWithLifecycle()
 
-    // The gradient wash lives here, once, behind every screen — each screen's own Scaffold uses
-    // a transparent container so this shows through instead of being covered by a solid fill.
-    Box(Modifier.fillMaxSize().background(appBackgroundBrush())) {
-        when (isSignedIn) {
-            null -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
-            }
-            false -> LoginScreen()
-            true -> TimeLineAppContent()
+    when (isSignedIn) {
+        null -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
         }
+        false -> LoginScreen()
+        true -> TimeLineAppContent()
     }
 }
 
@@ -74,8 +68,6 @@ private fun TimeLineAppContent() {
     val currentRoute = backStackEntry?.destination
 
     Scaffold(
-        containerColor = Color.Transparent,
-        contentColor = MaterialTheme.colorScheme.onBackground,
         topBar = { UpdateBanner() },
         bottomBar = {
             val showBottomBar = BottomNavItem.entries.any { item ->
