@@ -1,5 +1,6 @@
 package com.timeline.app.data.metadata
 
+import com.timeline.app.domain.model.Genre
 import com.timeline.app.domain.model.MediaPreview
 import com.timeline.app.domain.model.MediaType
 import com.timeline.app.domain.model.TmdbSearchResult
@@ -17,6 +18,9 @@ interface MetadataProvider {
     val isAvailable: Boolean
 
     suspend fun search(query: String): List<TmdbSearchResult>
+    /** [mediaType] narrows the genre list to just movies or just TV; null returns the merged
+     * list (used when search isn't locked to one type, e.g. Home's search entry point). */
+    suspend fun getGenres(mediaType: MediaType?): List<Genre>
     suspend fun getTrendingFeed(): List<MediaPreview>
     suspend fun getRecentMoviesFeed(): List<MediaPreview>
     suspend fun getRecentShowsFeed(): List<MediaPreview>

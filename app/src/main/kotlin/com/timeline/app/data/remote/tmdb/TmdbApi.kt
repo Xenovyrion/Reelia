@@ -3,6 +3,7 @@ package com.timeline.app.data.remote.tmdb
 import com.timeline.app.data.remote.tmdb.dto.TmdbConfigurationDto
 import com.timeline.app.data.remote.tmdb.dto.TmdbCreditsDto
 import com.timeline.app.data.remote.tmdb.dto.TmdbFindResponseDto
+import com.timeline.app.data.remote.tmdb.dto.TmdbGenreListResponseDto
 import com.timeline.app.data.remote.tmdb.dto.TmdbMovieDetailsDto
 import com.timeline.app.data.remote.tmdb.dto.TmdbPagedResponseDto
 import com.timeline.app.data.remote.tmdb.dto.TmdbPersonCombinedCreditsDto
@@ -114,6 +115,12 @@ interface TmdbApi {
 
     @GET("person/{id}/combined_credits")
     suspend fun getPersonCombinedCredits(@Path("id") id: Int): TmdbPersonCombinedCreditsDto
+
+    @GET("genre/movie/list")
+    suspend fun getMovieGenres(): TmdbGenreListResponseDto
+
+    @GET("genre/tv/list")
+    suspend fun getTvGenres(): TmdbGenreListResponseDto
 
     companion object {
         const val BASE_URL = "https://api.themoviedb.org/3/"

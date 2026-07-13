@@ -13,6 +13,7 @@ import com.timeline.app.data.repository.ShowRepository
 import com.timeline.app.domain.model.MediaPreview
 import com.timeline.app.domain.model.MediaType
 import com.timeline.app.domain.model.TmdbSearchResult
+import com.timeline.app.ui.common.components.GenreOption
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.Job
@@ -26,6 +27,11 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+
+/** Below this length, TMDB results are too broad to be useful and every keystroke would still
+ * fire a network call — wait for at least this many characters before searching. */
+private const val MIN_QUERY_LENGTH = 2
+private const val SEARCH_DEBOUNCE_MILLIS = 400L
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
@@ -54,6 +60,7 @@ class SearchViewModel @Inject constructor(
             }
         }
         loadTrendingFeed()
+        loadGenres()
     }
 
     private fun loadTrendingFeed() {
@@ -73,15 +80,29 @@ class SearchViewModel @Inject constructor(
         }
     }
 
+    private fun loadGenres() {
+        viewModelScope.launch {
+            try {
+                val provider = metadataProviderRegistry.activeProvider.first()
+                val genres = provider.getGenres(lockedMediaType)
+                    .sortedBy { it.name }
+                    .map { GenreOption(it.id, it.name) }
+                _uiState.update { it.copy(availableGenres = genres) }
+            } catch (e: Exception) {
+                // Genre filter is a bonus, not core search functionality — fail silently.
+            }
+        }
+    }
+
     fun onQueryChange(query: String) {
         _uiState.update { it.copy(query = query) }
         searchJob?.cancel()
-        if (query.isBlank()) {
+        if (query.length < MIN_QUERY_LENGTH) {
             _uiState.update { it.copy(results = emptyList(), isSearching = false) }
             return
         }
         searchJob = viewModelScope.launch {
-            delay(300)
+            delay(SEARCH_DEBOUNCE_MILLIS)
             _uiState.update { it.copy(isSearching = true, errorMessageRes = null) }
             try {
                 val provider = metadataProviderRegistry.activeProvider.first()
@@ -93,6 +114,10 @@ class SearchViewModel @Inject constructor(
                 _uiState.update { it.copy(isSearching = false, errorMessageRes = R.string.search_error_query) }
             }
         }
+    }
+
+    fun onGenreFilterApplied(genreIds: Set<Int>) {
+        _uiState.update { it.copy(selectedGenreIds = genreIds) }
     }
 
     private fun List<SearchResultItem>.filterByLockedType(): List<SearchResultItem> =
@@ -118,6 +143,7 @@ class SearchViewModel @Inject constructor(
         title = title,
         posterUrl = imageUrlBuilder.posterUrl(posterPath),
         date = date,
+        genreIds = genreIds,
     )
 
     private suspend fun MediaPreview.toResultItem() = SearchResultItem(
@@ -126,5 +152,6 @@ class SearchViewModel @Inject constructor(
         title = title,
         posterUrl = imageUrlBuilder.posterUrl(posterPath),
         date = releaseDate,
+        genreIds = genreIds,
     )
 }

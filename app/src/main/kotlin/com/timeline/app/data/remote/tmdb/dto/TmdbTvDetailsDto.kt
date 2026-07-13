@@ -62,3 +62,8 @@ data class TmdbGenreDto(
     val id: Int,
     val name: String,
 )
+
+@Serializable
+data class TmdbGenreListResponseDto(
+    val genres: List<TmdbGenreDto> = emptyList(),
+)

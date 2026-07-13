@@ -7,4 +7,5 @@ data class TmdbSearchResult(
     val posterPath: String?,
     val overview: String,
     val date: String?,
+    val genreIds: List<Int> = emptyList(),
 )

@@ -75,7 +75,13 @@
 
     <!-- Search tab -->
     <string name="search_title">Search</string>
+    <string name="search_title_series">Search Series</string>
+    <string name="search_title_films">Search Movies</string>
     <string name="search_field_label">Show or movie title</string>
+    <string name="search_clear_content_description">Clear</string>
+    <string name="search_trending_section_title">Trending</string>
+    <string name="search_results_section_title">Results</string>
+    <string name="search_no_results">No results for this search.</string>
     <string name="search_missing_api_key_message">Add your TMDB API key in Settings first to search for a show or movie.</string>
     <string name="search_error_feed">Couldn\'t load the latest releases.</string>
     <string name="search_error_query">Search failed. Check your connection.</string>

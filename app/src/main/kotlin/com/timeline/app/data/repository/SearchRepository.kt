@@ -30,6 +30,7 @@ class SearchRepository @Inject constructor(
             posterPath = posterPath,
             overview = overview.orEmpty(),
             date = if (type == MediaType.TV) firstAirDate else releaseDate,
+            genreIds = genreIds,
         )
     }
 }

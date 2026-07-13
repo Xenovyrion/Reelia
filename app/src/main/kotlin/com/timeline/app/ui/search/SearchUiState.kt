@@ -2,6 +2,7 @@ package com.timeline.app.ui.search
 
 import androidx.annotation.StringRes
 import com.timeline.app.domain.model.MediaType
+import com.timeline.app.ui.common.components.GenreOption
 
 data class SearchResultItem(
     val id: Int,
@@ -9,6 +10,7 @@ data class SearchResultItem(
     val title: String,
     val posterUrl: String?,
     val date: String?,
+    val genreIds: List<Int> = emptyList(),
 )
 
 data class SearchUiState(
@@ -19,8 +21,17 @@ data class SearchUiState(
     val trendingFeed: List<SearchResultItem> = emptyList(),
     val hasApiKey: Boolean = true,
     val lockedMediaType: MediaType? = null,
+    val availableGenres: List<GenreOption> = emptyList(),
+    val selectedGenreIds: Set<Int> = emptySet(),
     @StringRes val errorMessageRes: Int? = null,
 ) {
     val displayedItems: List<SearchResultItem>
-        get() = if (query.isBlank()) trendingFeed else results
+        get() {
+            val base = if (query.isBlank()) trendingFeed else results
+            return if (selectedGenreIds.isEmpty()) {
+                base
+            } else {
+                base.filter { item -> item.genreIds.any { it in selectedGenreIds } }
+            }
+        }
 }

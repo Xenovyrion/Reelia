@@ -18,6 +18,7 @@ data class TmdbSearchResultDto(
     val overview: String? = null,
     @SerialName("first_air_date") val firstAirDate: String? = null,
     @SerialName("release_date") val releaseDate: String? = null,
+    @SerialName("genre_ids") val genreIds: List<Int> = emptyList(),
 )
 
 /** Response shape of TMDB's `/find/{externalId}` endpoint — only the `tv_results` bucket is

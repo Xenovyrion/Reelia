@@ -75,7 +75,13 @@
 
     <!-- Search tab -->
     <string name="search_title">Rechercher</string>
+    <string name="search_title_series">Rechercher une série</string>
+    <string name="search_title_films">Rechercher un film</string>
     <string name="search_field_label">Titre d\'une série ou d\'un film</string>
+    <string name="search_clear_content_description">Effacer</string>
+    <string name="search_trending_section_title">Tendances</string>
+    <string name="search_results_section_title">Résultats</string>
+    <string name="search_no_results">Aucun résultat pour cette recherche.</string>
     <string name="search_missing_api_key_message">Ajoute d\'abord ta clé API TMDB dans Réglages pour pouvoir chercher une série ou un film.</string>
     <string name="search_error_feed">Impossible de charger les dernières sorties.</string>
     <string name="search_error_query">Recherche impossible. Vérifie ta connexion.</string>

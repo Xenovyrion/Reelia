@@ -23,4 +23,5 @@ data class TmdbTrendingItemDto(
     @SerialName("release_date") val releaseDate: String? = null,
     @SerialName("first_air_date") val firstAirDate: String? = null,
     @SerialName("vote_average") val voteAverage: Float? = null,
+    @SerialName("genre_ids") val genreIds: List<Int> = emptyList(),
 )

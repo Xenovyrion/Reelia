@@ -23,6 +23,7 @@ data class MediaPreview(
     val numberOfSeasons: Int? = null,
     val voteAverage: Float? = null,
     val genreNames: List<String> = emptyList(),
+    val genreIds: List<Int> = emptyList(),
     val networkNames: List<String> = emptyList(),
     val cast: List<CastMember> = emptyList(),
     val crew: List<CrewMember> = emptyList(),

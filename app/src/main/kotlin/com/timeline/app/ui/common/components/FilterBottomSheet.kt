@@ -85,3 +85,43 @@ fun FilterBottomSheet(
         }
     }
 }
+
+/** Genre-only filter sheet for the Search screen — unlike [FilterBottomSheet], there's no
+ * watch-status dimension to filter by since search results aren't in the library yet. */
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@Composable
+fun GenreFilterBottomSheet(
+    availableGenres: List<GenreOption>,
+    selectedGenreIds: Set<Int>,
+    onApply: (Set<Int>) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    var genreIds by remember { mutableStateOf(selectedGenreIds) }
+
+    ModalBottomSheet(onDismissRequest = onDismiss) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(stringResource(R.string.filter_genre_label), style = MaterialTheme.typography.titleMedium)
+            FlowRow(modifier = Modifier.padding(top = 8.dp, bottom = 16.dp)) {
+                availableGenres.forEach { genre ->
+                    FilterChip(
+                        selected = genre.id in genreIds,
+                        onClick = {
+                            genreIds = if (genre.id in genreIds) genreIds - genre.id else genreIds + genre.id
+                        },
+                        label = { Text(genre.name) },
+                        modifier = Modifier.padding(end = 8.dp, bottom = 8.dp),
+                    )
+                }
+            }
+            Row(modifier = Modifier.fillMaxWidth()) {
+                TextButton(onClick = { genreIds = emptySet() }) {
+                    Text(stringResource(R.string.filter_reset_button))
+                }
+                Spacer(Modifier.weight(1f))
+                Button(onClick = { onApply(genreIds) }) {
+                    Text(stringResource(R.string.filter_apply_button))
+                }
+            }
+        }
+    }
+}

@@ -10,6 +10,7 @@ import com.timeline.app.data.remote.tmdb.dto.TmdbWatchProvidersResponseDto
 import com.timeline.app.data.repository.SearchRepository
 import com.timeline.app.domain.model.CastMember
 import com.timeline.app.domain.model.CrewMember
+import com.timeline.app.domain.model.Genre
 import com.timeline.app.domain.model.MediaPreview
 import com.timeline.app.domain.model.MediaType
 import com.timeline.app.domain.model.TmdbSearchResult
@@ -47,6 +48,18 @@ class TmdbMetadataProvider @Inject constructor(
         tmdbApi.discoverTv(firstAirDateLte = LocalDate.now().toString())
             .results
             .mapNotNull { it.toMediaPreviewOrNull(MediaType.TV) }
+
+    override suspend fun getGenres(mediaType: MediaType?): List<Genre> = when (mediaType) {
+        MediaType.TV -> tmdbApi.getTvGenres().genres.map { Genre(it.id, it.name) }
+        MediaType.MOVIE -> tmdbApi.getMovieGenres().genres.map { Genre(it.id, it.name) }
+        null -> coroutineScope {
+            val movieGenresDeferred = async { tmdbApi.getMovieGenres().genres }
+            val tvGenresDeferred = async { tmdbApi.getTvGenres().genres }
+            (movieGenresDeferred.await() + tvGenresDeferred.await())
+                .distinctBy { it.id }
+                .map { Genre(it.id, it.name) }
+        }
+    }
 
     override suspend fun getRecommendationsFeed(mediaType: MediaType, tmdbId: Int): List<MediaPreview> {
         val results = when (mediaType) {
@@ -130,6 +143,7 @@ private fun TmdbTrendingItemDto.toMediaPreviewOrNull(forcedType: MediaType? = nu
         overview = overview,
         releaseDate = if (type == MediaType.TV) firstAirDate else releaseDate,
         voteAverage = voteAverage,
+        genreIds = genreIds,
     )
 }
 
