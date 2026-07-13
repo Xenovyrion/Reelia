@@ -125,6 +125,10 @@
     <string name="season_count_format">%1$d seasons</string>
     <string name="preview_cast_section_title">Cast</string>
     <string name="preview_crew_section_title">Crew</string>
+    <string name="crew_job_director">Director</string>
+    <string name="crew_job_creator">Creator</string>
+    <string name="crew_job_composer">Composer</string>
+    <string name="crew_job_writer">Writer</string>
     <string name="preview_watch_providers_section_title">Where to Watch</string>
     <string name="preview_add_button">Add to my library</string>
     <string name="preview_added_button">Added ✓</string>

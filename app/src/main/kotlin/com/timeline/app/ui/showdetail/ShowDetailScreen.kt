@@ -60,6 +60,7 @@ import com.timeline.app.domain.model.ShowBroadcastStatus
 import com.timeline.app.domain.model.displayLabel
 import com.timeline.app.ui.common.components.BackdropHeader
 import com.timeline.app.ui.common.components.CastRow
+import com.timeline.app.ui.common.components.localizedCrewJobLabel
 import com.timeline.app.ui.common.components.EpisodeCodeBadge
 import com.timeline.app.ui.common.components.SeasonPillItem
 import com.timeline.app.ui.common.components.SeasonPillTabs
@@ -266,7 +267,10 @@ fun ShowDetailScreen(
                             Column(modifier = Modifier.padding(16.dp)) {
                                 SectionHeader(stringResource(R.string.preview_crew_section_title))
                                 Spacer(Modifier.padding(top = 12.dp))
-                                CastRow(uiState.crew, onPersonClick = onPersonClick)
+                                CastRow(
+                                    uiState.crew.map { it.copy(character = localizedCrewJobLabel(it.character)) },
+                                    onPersonClick = onPersonClick,
+                                )
                             }
                         }
                     }

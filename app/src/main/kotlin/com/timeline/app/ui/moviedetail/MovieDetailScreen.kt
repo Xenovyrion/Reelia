@@ -41,6 +41,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.timeline.app.R
 import com.timeline.app.ui.common.components.BackdropHeader
 import com.timeline.app.ui.common.components.CastRow
+import com.timeline.app.ui.common.components.localizedCrewJobLabel
 import com.timeline.app.ui.common.components.SectionHeader
 import com.timeline.app.ui.common.components.WatchProvidersRow
 import com.timeline.app.ui.common.format.toYearOrNull
@@ -181,7 +182,10 @@ fun MovieDetailScreen(
                     Column(modifier = Modifier.padding(16.dp)) {
                         SectionHeader(stringResource(R.string.preview_crew_section_title))
                         Spacer(Modifier.padding(top = 12.dp))
-                        CastRow(uiState.crew, onPersonClick = onPersonClick)
+                        CastRow(
+                            uiState.crew.map { it.copy(character = localizedCrewJobLabel(it.character)) },
+                            onPersonClick = onPersonClick,
+                        )
                     }
                 }
             }

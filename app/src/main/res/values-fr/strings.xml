@@ -125,6 +125,10 @@
     <string name="season_count_format">%1$d saisons</string>
     <string name="preview_cast_section_title">Distribution</string>
     <string name="preview_crew_section_title">Réalisation</string>
+    <string name="crew_job_director">Réalisateur</string>
+    <string name="crew_job_creator">Créateur</string>
+    <string name="crew_job_composer">Compositeur</string>
+    <string name="crew_job_writer">Scénariste</string>
     <string name="preview_watch_providers_section_title">Où regarder</string>
     <string name="preview_add_button">Ajouter à ma bibliothèque</string>
     <string name="preview_added_button">Ajouté ✓</string>
