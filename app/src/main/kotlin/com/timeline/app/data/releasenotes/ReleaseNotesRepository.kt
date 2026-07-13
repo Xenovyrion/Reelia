@@ -21,7 +21,9 @@ class ReleaseNotesRepository @Inject constructor() {
 
     suspend fun fetchReleaseNotes(language: String): Result<String> = withContext(Dispatchers.IO) {
         runCatching {
-            val fileName = if (language == "fr") "fr.md" else "en.md"
+            // language is e.g. "fr-FR"/"en-US" (see LanguagePreferenceStore) — only the leading
+            // language part matters here.
+            val fileName = if (language.startsWith("fr")) "fr.md" else "en.md"
             val request = Request.Builder().url("$RELEASE_NOTES_BASE_URL/$fileName").build()
             httpClient.newCall(request).execute().use { response ->
                 if (!response.isSuccessful) error("HTTP ${response.code}")

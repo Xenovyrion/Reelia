@@ -2,6 +2,7 @@ package com.timeline.app.ui.releasenotes
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.timeline.app.data.releasenotes.ReleaseNotesParser
 import com.timeline.app.data.releasenotes.ReleaseNotesRepository
 import com.timeline.app.data.repository.SettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,9 +24,11 @@ class ReleaseNotesViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
+            // Language codes here are e.g. "fr-FR"/"en-US" (see LanguagePreferenceStore) — only
+            // the leading language part decides which file to fetch.
             val language = settingsRepository.language.first()
             releaseNotesRepository.fetchReleaseNotes(language)
-                .onSuccess { markdown -> _uiState.value = ReleaseNotesUiState.Loaded(markdown) }
+                .onSuccess { markdown -> _uiState.value = ReleaseNotesUiState.Loaded(ReleaseNotesParser.parse(markdown)) }
                 .onFailure { e -> _uiState.value = ReleaseNotesUiState.Error(e.message) }
         }
     }

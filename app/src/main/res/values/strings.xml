@@ -245,6 +245,12 @@
     <string name="settings_release_notes_button">Release notes</string>
     <string name="release_notes_title">Release notes</string>
     <string name="release_notes_error">Couldn\'t load release notes. Check your connection and try again later.</string>
+    <string name="release_notes_version_format">Version %1$s</string>
+    <string name="release_notes_current_badge">Current</string>
+    <string name="release_notes_category_feature">New</string>
+    <string name="release_notes_category_fix">Fixed</string>
+    <string name="release_notes_category_improvement">Improved</string>
+    <string name="release_notes_category_other">Other</string>
 
     <!-- Language display names (shown in the language picker; must reflect the CURRENT ui locale) -->
     <string name="lang_name_fr">French</string>
