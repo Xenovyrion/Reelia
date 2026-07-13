@@ -28,9 +28,12 @@ data class TvTimeImportData(
 data class TvTimeImportProgress(val done: Int, val total: Int)
 
 data class TvTimeImportReport(
-    val importedShowCount: Int,
+    val importedShowNames: List<String>,
     val importedEpisodeCount: Int,
-    val importedMovieCount: Int,
+    val importedMovieNames: List<String>,
     val unmatchedShowNames: List<String>,
     val unmatchedMovieNames: List<String>,
-)
+) {
+    val importedShowCount: Int get() = importedShowNames.size
+    val importedMovieCount: Int get() = importedMovieNames.size
+}

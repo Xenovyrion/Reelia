@@ -200,18 +200,24 @@
     <string name="settings_tvtime_import_button">Import from TV Time</string>
 
     <string name="tvtime_import_title">Import from TV Time</string>
-    <string name="tvtime_import_pick_file_step1">1. On tvtime.com, request your personal data export — Settings → Privacy, or directly at gdpr.tvtime.com/gdpr/self-service. TV Time emails you a download link for a ZIP file; this can take a little while to arrive.</string>
-    <string name="tvtime_import_pick_file_step2">2. Once downloaded, pick that ZIP file below exactly as you received it. No need to extract it or pick a specific file inside — Reelia finds what it needs automatically.</string>
+    <string name="tvtime_import_pick_file_step1">1. Request your data export from TV Time.</string>
+    <string name="tvtime_import_open_gdpr_button">Open gdpr.tvtime.com</string>
+    <string name="tvtime_import_gdpr_url">https://gdpr.tvtime.com/gdpr/self-service</string>
+    <string name="tvtime_import_pick_file_step2">2. Pick the ZIP you receive by email, unchanged — no need to extract it.</string>
     <string name="tvtime_import_pick_file_button">Choose file</string>
     <string name="tvtime_import_parsing">Reading the export file…</string>
-    <string name="tvtime_import_parse_failed">Couldn\'t find any usable data in this file. Make sure you picked the ZIP file exactly as downloaded from your TV Time data export, without extracting it.</string>
+    <string name="tvtime_import_parse_failed">No usable data found. Make sure you picked the TV Time export ZIP, unextracted.</string>
     <string name="tvtime_import_try_again_button">Try again</string>
     <string name="tvtime_import_ready_summary">Found %1$d shows and %2$d movies.</string>
-    <string name="tvtime_import_ready_explanation">Importing looks up each title on TMDB and adds it to your library with its watch history. This can take a few minutes and needs a network connection.</string>
+    <string name="tvtime_import_ready_explanation">This looks each title up on TMDB and adds it with its watch history. Can take a few minutes.</string>
     <string name="tvtime_import_start_button">Start import</string>
     <string name="tvtime_import_progress_format">Importing… %1$d / %2$d</string>
     <string name="tvtime_import_done_title">Import complete</string>
     <string name="tvtime_import_done_summary">%1$d shows (%2$d episodes) and %3$d movies imported.</string>
+    <string name="tvtime_import_show_details_button">View details</string>
+    <string name="tvtime_import_hide_details_button">Hide details</string>
+    <string name="tvtime_import_imported_shows_title">Shows imported (%1$d)</string>
+    <string name="tvtime_import_imported_movies_title">Movies imported (%1$d)</string>
     <string name="tvtime_import_unmatched_shows_title">Shows not found on TMDB (%1$d)</string>
     <string name="tvtime_import_unmatched_movies_title">Movies not found on TMDB (%1$d)</string>
     <string name="tvtime_import_unmatched_explanation">You can add these manually from the search tab.</string>
@@ -235,6 +241,10 @@
     <string name="settings_update_checking">Checking…</string>
     <string name="settings_update_up_to_date">Reelia is up to date.</string>
     <string name="settings_update_available">New version available</string>
+    <string name="settings_app_version_format">Version %1$s (%2$s)</string>
+    <string name="settings_release_notes_button">Release notes</string>
+    <string name="release_notes_title">Release notes</string>
+    <string name="release_notes_error">Couldn\'t load release notes. Check your connection and try again later.</string>
 
     <!-- Language display names (shown in the language picker; must reflect the CURRENT ui locale) -->
     <string name="lang_name_fr">French</string>

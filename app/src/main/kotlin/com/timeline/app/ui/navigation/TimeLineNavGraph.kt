@@ -20,6 +20,7 @@ import com.timeline.app.ui.preview.MoviePreviewScreen
 import com.timeline.app.ui.preview.ShowPreviewScreen
 import com.timeline.app.ui.profile.ProfileScreen
 import com.timeline.app.ui.search.SearchScreen
+import com.timeline.app.ui.releasenotes.ReleaseNotesScreen
 import com.timeline.app.ui.showdetail.ShowDetailScreen
 import com.timeline.app.ui.tvtimeimport.TvTimeImportScreen
 
@@ -67,10 +68,14 @@ fun TimeLineNavGraph(navController: NavHostController, modifier: Modifier = Modi
             ProfileScreen(
                 onItemClick = { mediaType, id -> navigateToItem(navController, mediaType, id) },
                 onImportClick = { navController.navigate(Routes.TV_TIME_IMPORT) },
+                onReleaseNotesClick = { navController.navigate(Routes.RELEASE_NOTES) },
             )
         }
         composable(Routes.TV_TIME_IMPORT) {
             TvTimeImportScreen(onBack = { navController.popBackStack() })
+        }
+        composable(Routes.RELEASE_NOTES) {
+            ReleaseNotesScreen(onBack = { navController.popBackStack() })
         }
 
         composable(

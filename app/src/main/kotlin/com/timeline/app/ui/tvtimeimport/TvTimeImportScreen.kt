@@ -21,6 +21,7 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Icon
@@ -28,9 +29,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -47,6 +52,9 @@ fun TvTimeImportScreen(onBack: () -> Unit, viewModel: TvTimeImportViewModel = hi
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         uri?.let(viewModel::onFileSelected)
     }
+    val uriHandler = LocalUriHandler.current
+    val gdprUrl = stringResource(R.string.tvtime_import_gdpr_url)
+    var showDetails by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -77,6 +85,9 @@ fun TvTimeImportScreen(onBack: () -> Unit, viewModel: TvTimeImportViewModel = hi
                         style = MaterialTheme.typography.bodyMedium,
                         textAlign = TextAlign.Center,
                     )
+                    TextButton(onClick = { uriHandler.openUri(gdprUrl) }) {
+                        Text(stringResource(R.string.tvtime_import_open_gdpr_button))
+                    }
                     Text(
                         stringResource(R.string.tvtime_import_pick_file_step2),
                         style = MaterialTheme.typography.bodyMedium,
@@ -160,26 +171,55 @@ fun TvTimeImportScreen(onBack: () -> Unit, viewModel: TvTimeImportViewModel = hi
                         style = MaterialTheme.typography.bodyMedium,
                         textAlign = TextAlign.Center,
                     )
-                    if (state.report.unmatchedShowNames.isNotEmpty() || state.report.unmatchedMovieNames.isNotEmpty()) {
+                    TextButton(onClick = { showDetails = !showDetails }) {
+                        Text(
+                            stringResource(
+                                if (showDetails) R.string.tvtime_import_hide_details_button else R.string.tvtime_import_show_details_button,
+                            ),
+                        )
+                    }
+                    if (showDetails) {
                         Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                            HorizontalDivider()
-                            Text(stringResource(R.string.tvtime_import_unmatched_explanation), style = MaterialTheme.typography.bodySmall)
-                            if (state.report.unmatchedShowNames.isNotEmpty()) {
+                            if (state.report.importedShowNames.isNotEmpty()) {
+                                HorizontalDivider()
                                 Text(
-                                    stringResource(R.string.tvtime_import_unmatched_shows_title, state.report.unmatchedShowNames.size),
+                                    stringResource(R.string.tvtime_import_imported_shows_title, state.report.importedShowNames.size),
                                     style = MaterialTheme.typography.titleSmall,
                                 )
-                                state.report.unmatchedShowNames.forEach { name ->
+                                state.report.importedShowNames.forEach { name ->
                                     Text("• $name", style = MaterialTheme.typography.bodySmall)
                                 }
                             }
-                            if (state.report.unmatchedMovieNames.isNotEmpty()) {
+                            if (state.report.importedMovieNames.isNotEmpty()) {
+                                HorizontalDivider()
                                 Text(
-                                    stringResource(R.string.tvtime_import_unmatched_movies_title, state.report.unmatchedMovieNames.size),
+                                    stringResource(R.string.tvtime_import_imported_movies_title, state.report.importedMovieNames.size),
                                     style = MaterialTheme.typography.titleSmall,
                                 )
-                                state.report.unmatchedMovieNames.forEach { name ->
+                                state.report.importedMovieNames.forEach { name ->
                                     Text("• $name", style = MaterialTheme.typography.bodySmall)
+                                }
+                            }
+                            if (state.report.unmatchedShowNames.isNotEmpty() || state.report.unmatchedMovieNames.isNotEmpty()) {
+                                HorizontalDivider()
+                                Text(stringResource(R.string.tvtime_import_unmatched_explanation), style = MaterialTheme.typography.bodySmall)
+                                if (state.report.unmatchedShowNames.isNotEmpty()) {
+                                    Text(
+                                        stringResource(R.string.tvtime_import_unmatched_shows_title, state.report.unmatchedShowNames.size),
+                                        style = MaterialTheme.typography.titleSmall,
+                                    )
+                                    state.report.unmatchedShowNames.forEach { name ->
+                                        Text("• $name", style = MaterialTheme.typography.bodySmall)
+                                    }
+                                }
+                                if (state.report.unmatchedMovieNames.isNotEmpty()) {
+                                    Text(
+                                        stringResource(R.string.tvtime_import_unmatched_movies_title, state.report.unmatchedMovieNames.size),
+                                        style = MaterialTheme.typography.titleSmall,
+                                    )
+                                    state.report.unmatchedMovieNames.forEach { name ->
+                                        Text("• $name", style = MaterialTheme.typography.bodySmall)
+                                    }
                                 }
                             }
                         }

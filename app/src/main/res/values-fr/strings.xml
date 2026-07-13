@@ -195,18 +195,24 @@
     <string name="settings_tvtime_import_button">Importer depuis TV Time</string>
 
     <string name="tvtime_import_title">Importer depuis TV Time</string>
-    <string name="tvtime_import_pick_file_step1">1. Sur tvtime.com, demande l\'export de tes données personnelles — Réglages → Confidentialité, ou directement sur gdpr.tvtime.com/gdpr/self-service. TV Time t\'envoie un lien de téléchargement pour un fichier ZIP ; cela peut prendre un moment avant de le recevoir.</string>
-    <string name="tvtime_import_pick_file_step2">2. Une fois téléchargé, choisis ce fichier ZIP ci-dessous tel quel. Inutile de l\'extraire ou de choisir un fichier précis à l\'intérieur — Reelia retrouve automatiquement ce dont elle a besoin.</string>
+    <string name="tvtime_import_pick_file_step1">1. Demande ton export de données sur TV Time.</string>
+    <string name="tvtime_import_open_gdpr_button">Ouvrir gdpr.tvtime.com</string>
+    <string name="tvtime_import_gdpr_url">https://gdpr.tvtime.com/gdpr/self-service</string>
+    <string name="tvtime_import_pick_file_step2">2. Choisis le ZIP reçu par mail, tel quel — inutile de l\'extraire.</string>
     <string name="tvtime_import_pick_file_button">Choisir un fichier</string>
     <string name="tvtime_import_parsing">Lecture du fichier d\'export…</string>
-    <string name="tvtime_import_parse_failed">Aucune donnée exploitable trouvée dans ce fichier. Vérifie que tu as bien choisi le fichier ZIP tel que téléchargé depuis ton export TV Time, sans l\'extraire.</string>
+    <string name="tvtime_import_parse_failed">Aucune donnée exploitable trouvée. Vérifie que tu as choisi le ZIP d\'export TV Time, non extrait.</string>
     <string name="tvtime_import_try_again_button">Réessayer</string>
     <string name="tvtime_import_ready_summary">%1$d séries et %2$d films trouvés.</string>
-    <string name="tvtime_import_ready_explanation">L\'import recherche chaque titre sur TMDB et l\'ajoute à ta bibliothèque avec son historique de visionnage. Cela peut prendre quelques minutes et nécessite une connexion réseau.</string>
+    <string name="tvtime_import_ready_explanation">Chaque titre est recherché sur TMDB puis ajouté avec son historique. Peut prendre quelques minutes.</string>
     <string name="tvtime_import_start_button">Lancer l\'import</string>
     <string name="tvtime_import_progress_format">Import en cours… %1$d / %2$d</string>
     <string name="tvtime_import_done_title">Import terminé</string>
     <string name="tvtime_import_done_summary">%1$d séries (%2$d épisodes) et %3$d films importés.</string>
+    <string name="tvtime_import_show_details_button">Voir détail</string>
+    <string name="tvtime_import_hide_details_button">Masquer le détail</string>
+    <string name="tvtime_import_imported_shows_title">Séries importées (%1$d)</string>
+    <string name="tvtime_import_imported_movies_title">Films importés (%1$d)</string>
     <string name="tvtime_import_unmatched_shows_title">Séries introuvables sur TMDB (%1$d)</string>
     <string name="tvtime_import_unmatched_movies_title">Films introuvables sur TMDB (%1$d)</string>
     <string name="tvtime_import_unmatched_explanation">Tu peux les ajouter manuellement depuis la recherche.</string>
@@ -230,6 +236,10 @@
     <string name="settings_update_checking">Recherche en cours…</string>
     <string name="settings_update_up_to_date">Reelia est à jour.</string>
     <string name="settings_update_available">Nouvelle version disponible</string>
+    <string name="settings_app_version_format">Version %1$s (%2$s)</string>
+    <string name="settings_release_notes_button">Notes de version</string>
+    <string name="release_notes_title">Notes de version</string>
+    <string name="release_notes_error">Impossible de charger les notes de version. Vérifie ta connexion et réessaie plus tard.</string>
 
     <!-- Language display names (shown in the language picker; must reflect the CURRENT ui locale) -->
     <string name="lang_name_fr">Français</string>

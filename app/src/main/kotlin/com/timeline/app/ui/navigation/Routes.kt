@@ -11,6 +11,7 @@ object Routes {
     const val MOVIE_PREVIEW = "movie_preview/{tmdbId}"
     const val PERSON_DETAIL = "person_detail/{personId}"
     const val TV_TIME_IMPORT = "tv_time_import"
+    const val RELEASE_NOTES = "release_notes"
 
     fun showDetail(showId: Int) = "show_detail/$showId"
     fun movieDetail(movieId: Int) = "movie_detail/$movieId"

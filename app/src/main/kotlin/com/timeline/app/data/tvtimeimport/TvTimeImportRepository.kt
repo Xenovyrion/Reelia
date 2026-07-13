@@ -47,9 +47,9 @@ class TvTimeImportRepository @Inject constructor(
     suspend fun import(data: TvTimeImportData, onProgress: (TvTimeImportProgress) -> Unit): TvTimeImportReport {
         val total = data.shows.size + data.movies.size
         val done = AtomicInteger(0)
-        val importedShowCount = AtomicInteger(0)
+        val importedShowNames = CopyOnWriteArrayList<String>()
         val importedEpisodeCount = AtomicInteger(0)
-        val importedMovieCount = AtomicInteger(0)
+        val importedMovieNames = CopyOnWriteArrayList<String>()
         val unmatchedShowNames = CopyOnWriteArrayList<String>()
         val unmatchedMovieNames = CopyOnWriteArrayList<String>()
         val semaphore = Semaphore(permits = 6)
@@ -61,7 +61,7 @@ class TvTimeImportRepository @Inject constructor(
                 async {
                     semaphore.withPermit {
                         runCatching { importShow(show, importedEpisodeCount) }
-                            .onSuccess { matched -> if (matched) importedShowCount.incrementAndGet() else unmatchedShowNames.add(show.name) }
+                            .onSuccess { matched -> if (matched) importedShowNames.add(show.name) else unmatchedShowNames.add(show.name) }
                             .onFailure { unmatchedShowNames.add(show.name) }
                     }
                     reportProgress()
@@ -71,7 +71,7 @@ class TvTimeImportRepository @Inject constructor(
                 async {
                     semaphore.withPermit {
                         runCatching { importMovie(movie) }
-                            .onSuccess { matched -> if (matched) importedMovieCount.incrementAndGet() else unmatchedMovieNames.add(movie.name) }
+                            .onSuccess { matched -> if (matched) importedMovieNames.add(movie.name) else unmatchedMovieNames.add(movie.name) }
                             .onFailure { unmatchedMovieNames.add(movie.name) }
                     }
                     reportProgress()
@@ -85,9 +85,9 @@ class TvTimeImportRepository @Inject constructor(
         firestoreSyncRepository.pushPendingChangesInBackground()
 
         return TvTimeImportReport(
-            importedShowCount = importedShowCount.get(),
+            importedShowNames = importedShowNames.sorted(),
             importedEpisodeCount = importedEpisodeCount.get(),
-            importedMovieCount = importedMovieCount.get(),
+            importedMovieNames = importedMovieNames.sorted(),
             unmatchedShowNames = unmatchedShowNames.sorted(),
             unmatchedMovieNames = unmatchedMovieNames.sorted(),
         )

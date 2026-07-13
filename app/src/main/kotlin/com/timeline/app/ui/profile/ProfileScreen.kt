@@ -54,6 +54,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.timeline.app.BuildConfig
 import com.timeline.app.R
 import com.timeline.app.data.local.prefs.LanguagePreferenceStore
 import com.timeline.app.domain.model.MediaType
@@ -116,6 +117,7 @@ private fun formatWatchDuration(totalHours: Double): String {
 fun ProfileScreen(
     onItemClick: (MediaType, Int) -> Unit = { _, _ -> },
     onImportClick: () -> Unit = {},
+    onReleaseNotesClick: () -> Unit = {},
     viewModel: ProfileViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -669,6 +671,15 @@ fun ProfileScreen(
                         Text(stringResource(R.string.settings_update_check_button))
                     }
                 }
+            }
+            Text(
+                stringResource(R.string.settings_app_version_format, BuildConfig.VERSION_NAME, BuildConfig.GIT_SHA.take(7)),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = 12.dp),
+            )
+            TextButton(onClick = onReleaseNotesClick, modifier = Modifier.padding(top = 4.dp)) {
+                Text(stringResource(R.string.settings_release_notes_button))
             }
         }
     }
