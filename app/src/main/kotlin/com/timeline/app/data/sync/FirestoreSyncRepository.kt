@@ -185,8 +185,17 @@ class FirestoreSyncRepository @Inject constructor(
         firebaseAuth.currentUser?.delete()?.await()
     }
 
+    /** Deletes every document in a collection using batched writes (up to 500 per Firestore
+     * batch, chunked at 400 for headroom) instead of one sequential delete per document — a
+     * library's watch log alone can be several thousand documents, and awaiting each delete
+     * individually could take tens of minutes. */
     private suspend fun deleteAllDocuments(collectionPath: String) {
-        firestore.collection(collectionPath).get().await().documents.forEach { it.reference.delete().await() }
+        val documents = firestore.collection(collectionPath).get().await().documents
+        documents.chunked(400).forEach { chunk ->
+            val batch = firestore.batch()
+            chunk.forEach { batch.delete(it.reference) }
+            batch.commit().await()
+        }
     }
 
     /**

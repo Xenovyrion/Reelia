@@ -107,6 +107,7 @@
     <string name="stats_remaining_caption">Episodes and movies left to watch</string>
     <string name="stats_remaining_hours_caption">Estimated time left</string>
     <string name="stats_weekly_average_caption">Average per week</string>
+    <string name="stats_duration_breakdown_format">≈ %1$d months, %2$d days, %3$d hours watched in total</string>
     <string name="stats_shows_added_unit_label">SHOWS</string>
     <string name="stats_shows_added_caption">Shows added</string>
     <string name="stats_broadcast_status_section_title">Shows by status</string>

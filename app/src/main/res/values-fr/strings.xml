@@ -107,6 +107,7 @@
     <string name="stats_remaining_caption">Épisodes et films restant à voir</string>
     <string name="stats_remaining_hours_caption">Temps restant estimé</string>
     <string name="stats_weekly_average_caption">Moyenne par semaine</string>
+    <string name="stats_duration_breakdown_format">≈ %1$d mois, %2$d jours, %3$d heures regardées au total</string>
     <string name="stats_shows_added_unit_label">SÉRIES</string>
     <string name="stats_shows_added_caption">Séries ajoutées</string>
     <string name="stats_broadcast_status_section_title">Séries par statut</string>

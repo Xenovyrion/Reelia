@@ -10,9 +10,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Box
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -70,8 +72,10 @@ import com.timeline.app.ui.theme.StatusWantToWatch
 import com.timeline.app.ui.theme.StatusWatchingCompleted
 import com.timeline.app.ui.theme.timeLineTopAppBarColors
 import java.text.DateFormat
+import java.text.NumberFormat
 import java.util.Date
 import java.util.Locale
+import kotlin.math.roundToInt
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Autorenew
 import androidx.compose.material.icons.filled.CheckCircle
@@ -93,6 +97,19 @@ private fun StatsScope.label(): String = stringResource(
         StatsScope.FILMS -> R.string.stats_scope_films
     },
 )
+
+private fun formatCount(value: Int): String = NumberFormat.getIntegerInstance(Locale.getDefault()).format(value)
+
+private fun formatHours(hours: Double): String = formatCount(hours.roundToInt())
+
+@Composable
+private fun formatWatchDuration(totalHours: Double): String {
+    val totalWholeHours = (totalHours * 60).roundToInt() / 60
+    val months = totalWholeHours / (24 * 30)
+    val days = (totalWholeHours % (24 * 30)) / 24
+    val hours = totalWholeHours % 24
+    return stringResource(R.string.stats_duration_breakdown_format, months, days, hours)
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -241,18 +258,31 @@ fun ProfileScreen(
                     Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(top = 8.dp))
                 }
             }
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.padding(top = 12.dp)) {
-                OutlinedButton(onClick = onImportClick) {
-                    Text(stringResource(R.string.settings_tvtime_import_button))
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
+            ) {
+                OutlinedButton(onClick = onImportClick, modifier = Modifier.weight(1f)) {
+                    Text(
+                        stringResource(R.string.settings_tvtime_import_button),
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.labelLarge,
+                    )
                 }
                 OutlinedButton(
                     onClick = { showResetConfirmation = true },
                     enabled = !resetLibraryUiState.isResetting,
+                    modifier = Modifier.weight(1f),
                 ) {
                     if (resetLibraryUiState.isResetting) {
-                        CircularProgressIndicator(modifier = Modifier.padding(2.dp), strokeWidth = 2.dp)
+                        CircularProgressIndicator(modifier = Modifier.padding(2.dp).size(16.dp), strokeWidth = 2.dp)
                     } else {
-                        Text(stringResource(R.string.settings_reset_library_button), color = MaterialTheme.colorScheme.error)
+                        Text(
+                            stringResource(R.string.settings_reset_library_button),
+                            color = MaterialTheme.colorScheme.error,
+                            textAlign = TextAlign.Center,
+                            style = MaterialTheme.typography.labelLarge,
+                        )
                     }
                 }
             }
@@ -287,7 +317,7 @@ fun ProfileScreen(
             ) {
                 StatCard(
                     icon = Icons.Filled.CheckCircle,
-                    value = statsUiState.totalWatchedCount.toString(),
+                    value = formatCount(statsUiState.totalWatchedCount),
                     unitLabel = stringResource(R.string.stats_titles_unit_label),
                     caption = stringResource(R.string.stats_titles_caption),
                     accentColor = StatusWatchingCompleted,
@@ -295,7 +325,7 @@ fun ProfileScreen(
                 )
                 StatCard(
                     icon = Icons.Filled.Schedule,
-                    value = String.format(Locale.getDefault(), "%.1f", statsUiState.totalHoursWatched),
+                    value = formatHours(statsUiState.totalHoursWatched),
                     unitLabel = stringResource(R.string.stats_hours_unit_label),
                     caption = stringResource(R.string.stats_hours_caption),
                     accentColor = StatusPlanned,
@@ -303,20 +333,27 @@ fun ProfileScreen(
                 )
                 StatCard(
                     icon = Icons.Filled.CheckCircle,
-                    value = statsUiState.completedCount.toString(),
+                    value = formatCount(statsUiState.completedCount),
                     unitLabel = stringResource(R.string.stats_completed_unit_label),
                     caption = stringResource(R.string.stats_completed_caption),
                     accentColor = StatusFavorite,
                     modifier = Modifier.weight(1f).fillMaxHeight(),
                 )
             }
+            Text(
+                formatWatchDuration(statsUiState.totalHoursWatched),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+            )
             Row(
                 modifier = Modifier.fillMaxWidth().padding(top = 16.dp).height(IntrinsicSize.Max),
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 StatCard(
                     icon = Icons.Filled.Inventory2,
-                    value = statsUiState.remainingCount.toString(),
+                    value = formatCount(statsUiState.remainingCount),
                     unitLabel = stringResource(R.string.stats_remaining_unit_label),
                     caption = stringResource(R.string.stats_remaining_caption),
                     accentColor = StatusWantToWatch,
@@ -324,7 +361,7 @@ fun ProfileScreen(
                 )
                 StatCard(
                     icon = Icons.Filled.HourglassBottom,
-                    value = String.format(Locale.getDefault(), "%.1f", statsUiState.remainingHoursEstimate),
+                    value = formatHours(statsUiState.remainingHoursEstimate),
                     unitLabel = stringResource(R.string.stats_hours_unit_label),
                     caption = stringResource(R.string.stats_remaining_hours_caption),
                     accentColor = StatusPlanned,
