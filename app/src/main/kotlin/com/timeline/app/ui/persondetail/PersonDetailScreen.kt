@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,6 +19,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.EmojiEvents
+import androidx.compose.material.icons.outlined.EmojiEvents
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -44,6 +47,7 @@ import com.timeline.app.R
 import com.timeline.app.domain.model.MediaType
 import com.timeline.app.ui.common.components.SectionHeader
 import com.timeline.app.ui.common.format.toFormattedDateOrNull
+import com.timeline.app.ui.theme.StatusFavorite
 import com.timeline.app.ui.theme.timeLineTopAppBarColors
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -164,7 +168,47 @@ fun PersonDetailScreen(
                 }
             }
 
+            if (uiState.awards.isNotEmpty()) {
+                Card(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        SectionHeader(stringResource(R.string.person_detail_awards_section_title))
+                        Spacer(Modifier.padding(top = 12.dp))
+                        uiState.awards.forEachIndexed { index, award ->
+                            AwardRow(award)
+                            if (index != uiState.awards.lastIndex) {
+                                Spacer(Modifier.padding(top = 12.dp))
+                            }
+                        }
+                    }
+                }
+            }
+
             Box(Modifier.padding(bottom = 16.dp))
+        }
+    }
+}
+
+@Composable
+private fun AwardRow(award: PersonAward) {
+    Row(verticalAlignment = Alignment.Top, modifier = Modifier.fillMaxWidth()) {
+        Icon(
+            if (award.won) Icons.Filled.EmojiEvents else Icons.Outlined.EmojiEvents,
+            contentDescription = null,
+            tint = if (award.won) StatusFavorite else MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(top = 2.dp),
+        )
+        Column(modifier = Modifier.padding(start = 12.dp)) {
+            Text(award.name, style = MaterialTheme.typography.bodyMedium)
+            val subtitle = listOfNotNull(
+                stringResource(if (award.won) R.string.person_detail_award_won else R.string.person_detail_award_nominated),
+                award.year,
+                award.forWork,
+            ).joinToString(" • ")
+            Text(
+                subtitle,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
     }
 }
@@ -190,25 +234,22 @@ private fun FilmographyPoster(item: PersonFilmographyItem, onClick: () -> Unit) 
         Text(
             item.title,
             style = MaterialTheme.typography.labelMedium,
+            minLines = 2,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.padding(top = 6.dp),
         )
-        item.character?.let {
-            Text(
-                it,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-        }
-        item.year?.let {
-            Text(
-                it,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
+        Text(
+            item.character.orEmpty(),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+        Text(
+            item.year.orEmpty(),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }

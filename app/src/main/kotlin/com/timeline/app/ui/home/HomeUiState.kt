@@ -22,8 +22,12 @@ data class HomeDiscoverItem(
     val year: String?,
 )
 
+enum class GreetingPeriod { MORNING, AFTERNOON, EVENING }
+
 data class HomeUiState(
     val isLoading: Boolean = true,
+    val greetingPeriod: GreetingPeriod = GreetingPeriod.MORNING,
+    val userFirstName: String? = null,
     val continueWatching: List<ContinueWatchingItem> = emptyList(),
     val trending: List<HomeDiscoverItem> = emptyList(),
     val recentMovies: List<HomeDiscoverItem> = emptyList(),

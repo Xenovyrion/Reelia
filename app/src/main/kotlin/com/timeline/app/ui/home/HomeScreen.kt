@@ -74,8 +74,16 @@ fun HomeScreen(
 
         LazyColumn(modifier = Modifier.fillMaxSize().padding(padding)) {
             item {
+                val periodRes = when (uiState.greetingPeriod) {
+                    GreetingPeriod.MORNING -> R.string.home_greeting_morning
+                    GreetingPeriod.AFTERNOON -> R.string.home_greeting_afternoon
+                    GreetingPeriod.EVENING -> R.string.home_greeting_evening
+                }
+                val greeting = uiState.userFirstName?.let {
+                    stringResource(R.string.home_greeting_with_name_format, stringResource(periodRes), it)
+                } ?: stringResource(periodRes)
                 Text(
-                    stringResource(R.string.home_greeting),
+                    greeting,
                     style = MaterialTheme.typography.headlineMedium,
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
                 )
@@ -166,17 +174,16 @@ private fun DiscoverPosterCard(item: HomeDiscoverItem, onClick: () -> Unit) {
         Text(
             item.title,
             style = MaterialTheme.typography.labelMedium,
+            minLines = 2,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.padding(top = 6.dp),
         )
-        item.year?.let {
-            Text(
-                it,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
+        Text(
+            item.year.orEmpty(),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }
 

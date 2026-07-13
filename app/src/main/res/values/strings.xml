@@ -68,7 +68,10 @@
 
     <!-- Home tab -->
     <string name="home_title">Home</string>
-    <string name="home_greeting">Hello</string>
+    <string name="home_greeting_morning">Good morning</string>
+    <string name="home_greeting_afternoon">Good afternoon</string>
+    <string name="home_greeting_evening">Good evening</string>
+    <string name="home_greeting_with_name_format">%1$s, %2$s</string>
     <string name="home_continue_watching_title">Continue Watching</string>
     <string name="home_trending_section_title">Trending Now</string>
     <string name="home_recent_movies_section_title">Latest Movie Releases</string>
@@ -184,6 +187,9 @@
     <string name="person_detail_biography_section_title">Biography</string>
     <string name="person_detail_filmography_section_title">Filmography</string>
     <string name="person_detail_no_filmography">No known movies or shows.</string>
+    <string name="person_detail_awards_section_title">Awards &amp; Nominations</string>
+    <string name="person_detail_award_won">Won</string>
+    <string name="person_detail_award_nominated">Nominated</string>
 
     <!-- Settings -->
     <string name="settings_language_section_title">Content language</string>

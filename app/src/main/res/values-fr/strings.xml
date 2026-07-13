@@ -68,7 +68,10 @@
 
     <!-- Home tab -->
     <string name="home_title">Accueil</string>
-    <string name="home_greeting">Bonjour</string>
+    <string name="home_greeting_morning">Bonjour</string>
+    <string name="home_greeting_afternoon">Bonjour</string>
+    <string name="home_greeting_evening">Bonsoir</string>
+    <string name="home_greeting_with_name_format">%1$s, %2$s</string>
     <string name="home_continue_watching_title">Continuer</string>
     <string name="home_trending_section_title">Tendances du moment</string>
     <string name="home_recent_movies_section_title">Derniers films sortis</string>
@@ -179,6 +182,9 @@
     <string name="person_detail_biography_section_title">Biographie</string>
     <string name="person_detail_filmography_section_title">Filmographie</string>
     <string name="person_detail_no_filmography">Aucun film ou série connu.</string>
+    <string name="person_detail_awards_section_title">Récompenses et nominations</string>
+    <string name="person_detail_award_won">Remporté</string>
+    <string name="person_detail_award_nominated">Nommé</string>
 
     <!-- Settings -->
     <string name="settings_language_section_title">Langue du contenu</string>

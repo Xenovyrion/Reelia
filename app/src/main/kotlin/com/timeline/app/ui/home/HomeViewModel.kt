@@ -2,6 +2,7 @@ package com.timeline.app.ui.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.timeline.app.data.auth.AuthRepository
 import com.timeline.app.data.local.dao.ShowEpisodeProgress
 import com.timeline.app.data.local.entity.EpisodeEntity
 import com.timeline.app.data.local.entity.TrackedMovieEntity
@@ -16,6 +17,7 @@ import com.timeline.app.domain.model.WatchStatus
 import com.timeline.app.ui.common.effectiveShowStatus
 import com.timeline.app.ui.common.format.toYearOrNull
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.time.LocalTime
 import javax.inject.Inject
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -24,6 +26,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -45,6 +48,7 @@ class HomeViewModel @Inject constructor(
     private val showRepository: ShowRepository,
     private val movieRepository: MovieRepository,
     private val metadataProviderRegistry: MetadataProviderRegistry,
+    private val authRepository: AuthRepository,
     private val imageUrlBuilder: TmdbImageUrlBuilder,
 ) : ViewModel() {
 
@@ -102,7 +106,11 @@ class HomeViewModel @Inject constructor(
         RawHomeData(shows, progress, unwatchedEpisodes)
     }
 
-    val uiState: StateFlow<HomeUiState> = combine(rawData, discoverData) { raw, discover ->
+    private val userFirstName = authRepository.currentUser.map { user ->
+        user?.displayName?.substringBefore(' ')?.takeIf { it.isNotBlank() }
+    }
+
+    val uiState: StateFlow<HomeUiState> = combine(rawData, discoverData, userFirstName) { raw, discover, firstName ->
         val progressByShowId = raw.progress.associateBy { it.showId }
         val nextEpisodeByShowId = raw.unwatchedEpisodes.groupBy { it.showId }.mapValues { it.value.first() }
 
@@ -124,8 +132,16 @@ class HomeViewModel @Inject constructor(
                 )
             }
 
+        val greetingPeriod = when (LocalTime.now().hour) {
+            in 5..11 -> GreetingPeriod.MORNING
+            in 12..17 -> GreetingPeriod.AFTERNOON
+            else -> GreetingPeriod.EVENING
+        }
+
         HomeUiState(
             isLoading = false,
+            greetingPeriod = greetingPeriod,
+            userFirstName = firstName,
             continueWatching = continueWatching,
             trending = discover.trending.map { it.toDiscoverItem() },
             recentMovies = discover.recentMovies.map { it.toDiscoverItem() },

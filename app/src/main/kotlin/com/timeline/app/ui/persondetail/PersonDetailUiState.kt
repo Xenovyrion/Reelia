@@ -12,6 +12,13 @@ data class PersonFilmographyItem(
     val year: String?,
 )
 
+data class PersonAward(
+    val name: String,
+    val won: Boolean,
+    val year: String?,
+    val forWork: String?,
+)
+
 data class PersonDetailUiState(
     val isLoading: Boolean = true,
     val name: String = "",
@@ -21,5 +28,6 @@ data class PersonDetailUiState(
     val deathday: String? = null,
     val placeOfBirth: String? = null,
     val filmography: List<PersonFilmographyItem> = emptyList(),
+    val awards: List<PersonAward> = emptyList(),
     @StringRes val errorMessageRes: Int? = null,
 )
