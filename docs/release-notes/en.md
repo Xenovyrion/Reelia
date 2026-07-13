@@ -9,6 +9,7 @@
 - Genre/network detail panels were capped in height and didn't show the full list — they now open full-screen, fully scrollable
 ### 🔧 Improved
 - Favorite genres ranking now shows 10 genres instead of 5
+- Detail lists (genre/network/status) are now sorted alphabetically
 
 ## 0.7.0 — July 13, 2026
 ### ✨ New

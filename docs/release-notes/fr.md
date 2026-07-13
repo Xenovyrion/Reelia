@@ -9,6 +9,7 @@
 - Les panneaux de détail par genre/chaîne étaient limités en hauteur et ne montraient pas toute la liste — ils s'ouvrent maintenant en plein écran, entièrement défilable
 ### 🔧 Améliorations
 - Le classement des genres préférés passe de 5 à 10 genres affichés
+- Les listes de détail (genre/chaîne/statut) sont maintenant triées par ordre alphabétique
 
 ## 0.7.0 — 13 juillet 2026
 ### ✨ Nouveautés
