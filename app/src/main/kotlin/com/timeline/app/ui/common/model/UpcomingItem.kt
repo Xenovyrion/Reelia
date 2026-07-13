@@ -24,7 +24,7 @@ data class UpcomingMovieItem(
     val daysUntil: Long,
 )
 
-fun buildUpcomingShowItems(
+suspend fun buildUpcomingShowItems(
     shows: List<TrackedShowEntity>,
     imageUrlBuilder: TmdbImageUrlBuilder,
     today: LocalDate = LocalDate.now(),
@@ -46,7 +46,7 @@ fun buildUpcomingShowItems(
 
 /** Unlike shows (which surface an already-aired next episode as "Aired"), movies only ever
  * show future releases — a past [releaseDate] just means the movie is already out. */
-fun buildUpcomingMovieItems(
+suspend fun buildUpcomingMovieItems(
     movies: List<TrackedMovieEntity>,
     imageUrlBuilder: TmdbImageUrlBuilder,
     today: LocalDate = LocalDate.now(),
