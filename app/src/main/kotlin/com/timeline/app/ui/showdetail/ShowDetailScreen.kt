@@ -248,22 +248,25 @@ fun ShowDetailScreen(
                     }
                 }
 
-                if (uiState.cast.isNotEmpty() || uiState.creatorNames != null) {
+                if (uiState.cast.isNotEmpty()) {
                     item {
                         Card(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)) {
                             Column(modifier = Modifier.padding(16.dp)) {
                                 SectionHeader(stringResource(R.string.preview_cast_section_title))
                                 Spacer(Modifier.padding(top = 12.dp))
-                                uiState.creatorNames?.let {
-                                    Text(
-                                        stringResource(R.string.show_detail_creators_format, it),
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        modifier = Modifier.padding(bottom = 12.dp),
-                                    )
-                                }
-                                if (uiState.cast.isNotEmpty()) {
-                                    CastRow(uiState.cast, onPersonClick = onPersonClick)
-                                }
+                                CastRow(uiState.cast, onPersonClick = onPersonClick)
+                            }
+                        }
+                    }
+                }
+
+                if (uiState.crew.isNotEmpty()) {
+                    item {
+                        Card(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)) {
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                SectionHeader(stringResource(R.string.preview_crew_section_title))
+                                Spacer(Modifier.padding(top = 12.dp))
+                                CastRow(uiState.crew, onPersonClick = onPersonClick)
                             }
                         }
                     }

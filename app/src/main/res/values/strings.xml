@@ -124,6 +124,7 @@
     <!-- Shared: show/movie detail + preview -->
     <string name="season_count_format">%1$d seasons</string>
     <string name="preview_cast_section_title">Cast</string>
+    <string name="preview_crew_section_title">Crew</string>
     <string name="preview_watch_providers_section_title">Where to Watch</string>
     <string name="preview_add_button">Add to my library</string>
     <string name="preview_added_button">Added ✓</string>
@@ -144,7 +145,6 @@
     <string name="show_detail_diffusion_section_title">Schedule</string>
     <string name="show_detail_next_episode_air_format">Next episode airs %1$s</string>
     <string name="show_detail_episode_runtime_format">~%1$d min per episode</string>
-    <string name="show_detail_creators_format">Created by %1$s</string>
 
     <!-- Movie Detail -->
     <string name="movie_detail_runtime_minutes_format">%1$d min</string>
@@ -152,7 +152,6 @@
     <string name="movie_detail_plan_to_watch_badge">To Watch</string>
     <string name="movie_detail_mark_watched_button">Mark as watched</string>
     <string name="movie_detail_watched_button">Watched ✓</string>
-    <string name="movie_detail_director_format">Directed by %1$s</string>
 
     <!-- Preview screens -->
     <string name="preview_error_load_show">Couldn\'t load this show\'s info.</string>

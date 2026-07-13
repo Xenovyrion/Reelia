@@ -166,21 +166,22 @@ fun MovieDetailScreen(
                 }
             }
 
-            if (uiState.cast.isNotEmpty() || uiState.directorNames != null) {
+            if (uiState.cast.isNotEmpty()) {
                 Card(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         SectionHeader(stringResource(R.string.preview_cast_section_title))
                         Spacer(Modifier.padding(top = 12.dp))
-                        uiState.directorNames?.let {
-                            Text(
-                                stringResource(R.string.movie_detail_director_format, it),
-                                style = MaterialTheme.typography.bodyMedium,
-                                modifier = Modifier.padding(bottom = 12.dp),
-                            )
-                        }
-                        if (uiState.cast.isNotEmpty()) {
-                            CastRow(uiState.cast, onPersonClick = onPersonClick)
-                        }
+                        CastRow(uiState.cast, onPersonClick = onPersonClick)
+                    }
+                }
+            }
+
+            if (uiState.crew.isNotEmpty()) {
+                Card(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        SectionHeader(stringResource(R.string.preview_crew_section_title))
+                        Spacer(Modifier.padding(top = 12.dp))
+                        CastRow(uiState.crew, onPersonClick = onPersonClick)
                     }
                 }
             }

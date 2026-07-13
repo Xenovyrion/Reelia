@@ -32,6 +32,7 @@ private data class ShowDetailExtras(
     val watchProvidersBuy: List<WatchProviderRowItem> = emptyList(),
     val trailerYoutubeKey: String? = null,
     val cast: List<CastRowItem> = emptyList(),
+    val crew: List<CastRowItem> = emptyList(),
 )
 
 @HiltViewModel
@@ -63,6 +64,14 @@ class ShowDetailViewModel @Inject constructor(
                             personId = it.id,
                             name = it.name,
                             character = it.character,
+                            photoUrl = imageUrlBuilder.posterUrl(it.profilePath, size = "w185"),
+                        )
+                    },
+                    crew = preview.crew.map {
+                        CastRowItem(
+                            personId = it.id,
+                            name = it.name,
+                            character = it.job,
                             photoUrl = imageUrlBuilder.posterUrl(it.profilePath, size = "w185"),
                         )
                     },
@@ -139,13 +148,13 @@ class ShowDetailViewModel @Inject constructor(
             watchProvidersBuy = extra.watchProvidersBuy,
             trailerYoutubeKey = extra.trailerYoutubeKey,
             cast = extra.cast,
+            crew = extra.crew,
             broadcastStatus = broadcastStatus,
             networkNames = details.show.networkNames,
             yearRange = yearRange,
             genreNames = genres.map { it.name },
             nextEpisodeAirDate = details.show.nextEpisodeToAirDate,
             averageEpisodeRuntimeMinutes = details.show.averageEpisodeRuntimeMinutes,
-            creatorNames = details.show.creatorNames,
             isFavorite = details.show.isFavorite,
         )
     }.stateIn(

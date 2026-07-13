@@ -47,12 +47,12 @@ data class ShowDetailUiState(
     val watchProvidersBuy: List<WatchProviderRowItem> = emptyList(),
     val trailerYoutubeKey: String? = null,
     val cast: List<CastRowItem> = emptyList(),
+    val crew: List<CastRowItem> = emptyList(),
     val broadcastStatus: ShowBroadcastStatus = ShowBroadcastStatus.UNKNOWN,
     val networkNames: String? = null,
     val yearRange: String? = null,
     val genreNames: List<String> = emptyList(),
     val nextEpisodeAirDate: String? = null,
     val averageEpisodeRuntimeMinutes: Int? = null,
-    val creatorNames: String? = null,
     val isFavorite: Boolean = false,
 )

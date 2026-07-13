@@ -138,8 +138,10 @@ private fun TmdbCreditsDto.toCastMembers(): List<CastMember> =
         CastMember(id = it.id, name = it.name, character = it.character, profilePath = it.profilePath)
     }
 
+private val RELEVANT_CREW_JOBS = setOf("Director", "Creator", "Original Music Composer", "Writer")
+
 private fun TmdbCreditsDto.toCrewMembers(): List<CrewMember> =
-    crew.filter { it.job == "Director" || it.job == "Creator" }.map {
+    crew.filter { it.job in RELEVANT_CREW_JOBS }.map {
         CrewMember(id = it.id, name = it.name, job = it.job, profilePath = it.profilePath)
     }
 

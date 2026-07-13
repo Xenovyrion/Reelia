@@ -23,11 +23,11 @@ import kotlinx.coroutines.launch
 
 private data class MovieDetailExtras(
     val cast: List<CastRowItem> = emptyList(),
+    val crew: List<CastRowItem> = emptyList(),
     val watchProvidersFlatrate: List<WatchProviderRowItem> = emptyList(),
     val watchProvidersRent: List<WatchProviderRowItem> = emptyList(),
     val watchProvidersBuy: List<WatchProviderRowItem> = emptyList(),
     val trailerYoutubeKey: String? = null,
-    val directorNames: String? = null,
 )
 
 @HiltViewModel
@@ -57,15 +57,18 @@ class MovieDetailViewModel @Inject constructor(
                             photoUrl = imageUrlBuilder.posterUrl(it.profilePath, size = "w185"),
                         )
                     },
+                    crew = preview.crew.map {
+                        CastRowItem(
+                            personId = it.id,
+                            name = it.name,
+                            character = it.job,
+                            photoUrl = imageUrlBuilder.posterUrl(it.profilePath, size = "w185"),
+                        )
+                    },
                     watchProvidersFlatrate = preview.watchProviders?.flatrate.orEmpty().toRowItems(),
                     watchProvidersRent = preview.watchProviders?.rent.orEmpty().toRowItems(),
                     watchProvidersBuy = preview.watchProviders?.buy.orEmpty().toRowItems(),
                     trailerYoutubeKey = preview.trailerYoutubeKey,
-                    directorNames = preview.crew
-                        .filter { it.job == "Director" }
-                        .map { it.name }
-                        .takeIf { it.isNotEmpty() }
-                        ?.joinToString(", "),
                 )
             } catch (e: Exception) {
                 // Live enrichment only — a network failure here must never block the
@@ -91,11 +94,11 @@ class MovieDetailViewModel @Inject constructor(
             voteAverage = movie.userRating,
             genreNames = genres.map { it.name },
             cast = extra.cast,
+            crew = extra.crew,
             watchProvidersFlatrate = extra.watchProvidersFlatrate,
             watchProvidersRent = extra.watchProvidersRent,
             watchProvidersBuy = extra.watchProvidersBuy,
             trailerYoutubeKey = extra.trailerYoutubeKey,
-            directorNames = extra.directorNames,
             isFavorite = movie.isFavorite,
         )
     }.stateIn(

@@ -17,10 +17,10 @@ data class MovieDetailUiState(
     val voteAverage: Float? = null,
     val genreNames: List<String> = emptyList(),
     val cast: List<CastRowItem> = emptyList(),
+    val crew: List<CastRowItem> = emptyList(),
     val watchProvidersFlatrate: List<WatchProviderRowItem> = emptyList(),
     val watchProvidersRent: List<WatchProviderRowItem> = emptyList(),
     val watchProvidersBuy: List<WatchProviderRowItem> = emptyList(),
     val trailerYoutubeKey: String? = null,
-    val directorNames: String? = null,
     val isFavorite: Boolean = false,
 )
