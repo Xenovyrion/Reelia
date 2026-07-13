@@ -15,7 +15,6 @@ import com.timeline.app.data.local.entity.TrackedShowEntity
 import com.timeline.app.data.local.prefs.LanguagePreferenceStore
 import com.timeline.app.data.metadata.MetadataProvider
 import com.timeline.app.data.metadata.MetadataProviderRegistry
-import com.timeline.app.data.remote.tmdb.TmdbImageUrlBuilder
 import com.timeline.app.data.repository.BasicStats
 import com.timeline.app.data.repository.MovieRepository
 import com.timeline.app.data.repository.SettingsRepository
@@ -49,7 +48,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
@@ -138,8 +136,6 @@ private data class ExtraStats(
     val weekday: List<TimeBucketEntry>,
 )
 
-data class GenreLibraryItem(val id: Int, val mediaType: MediaType, val title: String, val posterUrl: String?)
-
 data class DeleteAccountUiState(
     val isDeleting: Boolean = false,
     val errorMessage: String? = null,
@@ -160,7 +156,6 @@ class ProfileViewModel @Inject constructor(
     private val statsRepository: StatsRepository,
     private val showRepository: ShowRepository,
     private val movieRepository: MovieRepository,
-    private val imageUrlBuilder: TmdbImageUrlBuilder,
     metadataProviderRegistry: MetadataProviderRegistry,
 ) : ViewModel() {
 
@@ -229,7 +224,7 @@ class ProfileViewModel @Inject constructor(
             statsRepository.getBasicStats(mediaType),
             statsRepository.getWeeklyBreakdown(mediaType, periodsAgo = query.weeklyOffset),
             statsRepository.getMonthlyBreakdown(mediaType, periodsAgo = query.monthlyOffset),
-            statsRepository.getGenreBreakdown(mediaType, limit = 5),
+            statsRepository.getGenreBreakdown(mediaType, limit = 10),
             completionFlow(query.scope),
         ) { basic, weekly, monthly, genres, completion -> CoreStats(basic, weekly, monthly, genres, completion) }
 
@@ -343,68 +338,6 @@ class ProfileViewModel @Inject constructor(
 
     fun onMonthlyChartNext() {
         monthlyOffsetState.update { (it - 1).coerceAtLeast(0) }
-    }
-
-    // Genre drill-down bottom sheet: shows/movies matching whichever genre was tapped in the
-    // breakdown list, shown as a ModalBottomSheet overlay rather than a full navigation screen.
-    private val selectedGenreIdState = MutableStateFlow<Int?>(null)
-
-    val genreLibraryItems: StateFlow<List<GenreLibraryItem>> = selectedGenreIdState.flatMapLatest { genreId ->
-        if (genreId == null) {
-            flowOf(emptyList())
-        } else {
-            combine(
-                showRepository.getAllShows(),
-                showRepository.getShowGenreCrossRefs(),
-                movieRepository.getAllMovies(),
-                movieRepository.getMovieGenreCrossRefs(),
-            ) { shows, showCrossRefs, movies, movieCrossRefs ->
-                val showIds = showCrossRefs.filter { it.genreId == genreId }.map { it.showId }.toSet()
-                val movieIds = movieCrossRefs.filter { it.genreId == genreId }.map { it.movieId }.toSet()
-                val showItems = shows.filter { it.tmdbId in showIds }.map {
-                    GenreLibraryItem(it.tmdbId, MediaType.TV, it.name, imageUrlBuilder.posterUrl(it.posterPath))
-                }
-                val movieItems = movies.filter { it.tmdbId in movieIds }.map {
-                    GenreLibraryItem(it.tmdbId, MediaType.MOVIE, it.title, imageUrlBuilder.posterUrl(it.posterPath))
-                }
-                showItems + movieItems
-            }
-        }
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = emptyList(),
-    )
-
-    fun onGenreSelected(genreId: Int?) {
-        selectedGenreIdState.value = genreId
-    }
-
-    // Network drill-down bottom sheet — same idea as the genre one above, but shows only (movies
-    // have no network field) filtered by a case-insensitive match against the comma-separated
-    // networkNames string, since there's no cross-ref table for networks.
-    private val selectedNetworkState = MutableStateFlow<String?>(null)
-
-    val networkLibraryItems: StateFlow<List<GenreLibraryItem>> = selectedNetworkState.flatMapLatest { network ->
-        if (network == null) {
-            flowOf(emptyList())
-        } else {
-            showRepository.getAllShows().map { shows ->
-                shows.filter { show ->
-                    show.networkNames?.split(",").orEmpty().any { it.trim().equals(network, ignoreCase = true) }
-                }.map { show ->
-                    GenreLibraryItem(show.tmdbId, MediaType.TV, show.name, imageUrlBuilder.posterUrl(show.posterPath))
-                }
-            }
-        }
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = emptyList(),
-    )
-
-    fun onNetworkSelected(network: String?) {
-        selectedNetworkState.value = network
     }
 
     fun onSignOut() {

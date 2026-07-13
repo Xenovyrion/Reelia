@@ -22,6 +22,7 @@ import com.timeline.app.ui.profile.ProfileScreen
 import com.timeline.app.ui.search.SearchScreen
 import com.timeline.app.ui.releasenotes.ReleaseNotesScreen
 import com.timeline.app.ui.showdetail.ShowDetailScreen
+import com.timeline.app.ui.statsdetail.StatsDetailScreen
 import com.timeline.app.ui.tvtimeimport.TvTimeImportScreen
 
 private fun navigateToItem(navController: NavHostController, mediaType: MediaType, id: Int) {
@@ -66,9 +67,11 @@ fun TimeLineNavGraph(navController: NavHostController, modifier: Modifier = Modi
         }
         composable(Routes.PROFILE) {
             ProfileScreen(
-                onItemClick = { mediaType, id -> navigateToItem(navController, mediaType, id) },
                 onImportClick = { navController.navigate(Routes.TV_TIME_IMPORT) },
                 onReleaseNotesClick = { navController.navigate(Routes.RELEASE_NOTES) },
+                onStatsDetailClick = { filterType, filterId, filterLabel ->
+                    navController.navigate(Routes.statsDetail(filterType, filterId, filterLabel))
+                },
             )
         }
         composable(Routes.TV_TIME_IMPORT) {
@@ -76,6 +79,19 @@ fun TimeLineNavGraph(navController: NavHostController, modifier: Modifier = Modi
         }
         composable(Routes.RELEASE_NOTES) {
             ReleaseNotesScreen(onBack = { navController.popBackStack() })
+        }
+        composable(
+            route = Routes.STATS_DETAIL,
+            arguments = listOf(
+                navArgument("filterType") { type = NavType.StringType },
+                navArgument("filterId") { type = NavType.StringType },
+                navArgument("filterLabel") { type = NavType.StringType },
+            ),
+        ) {
+            StatsDetailScreen(
+                onBack = { navController.popBackStack() },
+                onItemClick = { mediaType, id -> navigateToItem(navController, mediaType, id) },
+            )
         }
 
         composable(

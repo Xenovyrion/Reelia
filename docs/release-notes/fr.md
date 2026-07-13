@@ -1,5 +1,15 @@
 # Notes de version
 
+## 0.8.0 — 13 juillet 2026
+### ✨ Nouveautés
+- Les graphiques (hebdo/mensuel/jour de la semaine) sont maintenant tapables pour afficher la valeur exacte d'une barre
+- La répartition "Séries par statut" s'ouvre maintenant en détail, comme les genres et les chaînes
+### 🐛 Corrections
+- Le thème suivait le réglage clair/sombre du téléphone au lieu de toujours utiliser le thème sombre "Aubergine" — sur un téléphone en mode clair, l'appli s'affichait dans des couleurs très différentes et inachevées
+- Les panneaux de détail par genre/chaîne étaient limités en hauteur et ne montraient pas toute la liste — ils s'ouvrent maintenant en plein écran, entièrement défilable
+### 🔧 Améliorations
+- Le classement des genres préférés passe de 5 à 10 genres affichés
+
 ## 0.7.0 — 13 juillet 2026
 ### ✨ Nouveautés
 - Bouton "Réinitialiser la bibliothèque" dans Profil > Compte

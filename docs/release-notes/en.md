@@ -1,5 +1,15 @@
 # Release notes
 
+## 0.8.0 — July 13, 2026
+### ✨ New
+- Charts (weekly/monthly/weekday) are now tappable to reveal a bar's exact value
+- The "Shows by status" breakdown now opens a detail view, same as genres and networks
+### 🐛 Fixed
+- The theme followed the phone's system light/dark setting instead of always using the dark "Aubergine" theme — on a phone in light mode, the app rendered in very different, unfinished-looking colors
+- Genre/network detail panels were capped in height and didn't show the full list — they now open full-screen, fully scrollable
+### 🔧 Improved
+- Favorite genres ranking now shows 10 genres instead of 5
+
 ## 0.7.0 — July 13, 2026
 ### ✨ New
 - "Reset library" button in Profile > Account

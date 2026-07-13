@@ -28,7 +28,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
@@ -57,13 +56,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.timeline.app.BuildConfig
 import com.timeline.app.R
 import com.timeline.app.data.local.prefs.LanguagePreferenceStore
-import com.timeline.app.domain.model.MediaType
 import com.timeline.app.domain.model.displayLabel
 import com.timeline.app.ui.common.components.BarChart
 import com.timeline.app.ui.common.components.CircularProgressRing
 import com.timeline.app.ui.common.components.GenreProgressBar
 import com.timeline.app.ui.common.components.GenreProgressItem
-import com.timeline.app.ui.common.components.MediaListRow
 import com.timeline.app.ui.common.components.SectionHeader
 import com.timeline.app.ui.common.components.StatCard
 import com.timeline.app.ui.settings.LANGUAGE_DISPLAY_NAME_RES
@@ -115,9 +112,9 @@ private fun formatWatchDuration(totalHours: Double): String {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
-    onItemClick: (MediaType, Int) -> Unit = { _, _ -> },
     onImportClick: () -> Unit = {},
     onReleaseNotesClick: () -> Unit = {},
+    onStatsDetailClick: (filterType: String, filterId: String, filterLabel: String) -> Unit = { _, _, _ -> },
     viewModel: ProfileViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -125,26 +122,12 @@ fun ProfileScreen(
     val updateUiState by viewModel.updateUiState.collectAsStateWithLifecycle()
     val deleteAccountUiState by viewModel.deleteAccountUiState.collectAsStateWithLifecycle()
     val resetLibraryUiState by viewModel.resetLibraryUiState.collectAsStateWithLifecycle()
-    val genreLibraryItems by viewModel.genreLibraryItems.collectAsStateWithLifecycle()
-    val networkLibraryItems by viewModel.networkLibraryItems.collectAsStateWithLifecycle()
 
     var apiKeyInput by remember { mutableStateOf("") }
     var showDeleteConfirmation by remember { mutableStateOf(false) }
     var showResetConfirmation by remember { mutableStateOf(false) }
-    var selectedGenre by remember { mutableStateOf<GenreProgressItem?>(null) }
-    var selectedNetwork by remember { mutableStateOf<NetworkStat?>(null) }
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
-
-    fun dismissGenreSheet() {
-        selectedGenre = null
-        viewModel.onGenreSelected(null)
-    }
-
-    fun dismissNetworkSheet() {
-        selectedNetwork = null
-        viewModel.onNetworkSelected(null)
-    }
 
     LaunchedEffect(uiState.apiKey) {
         uiState.apiKey?.let { apiKeyInput = it }
@@ -425,10 +408,7 @@ fun ProfileScreen(
                         statsUiState.genreBreakdown.forEach { genre ->
                             GenreProgressBar(
                                 item = genre,
-                                onClick = {
-                                    selectedGenre = genre
-                                    viewModel.onGenreSelected(genre.genreId)
-                                },
+                                onClick = { onStatsDetailClick("GENRE", genre.genreId.toString(), genre.name) },
                                 modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
                             )
                         }
@@ -463,13 +443,15 @@ fun ProfileScreen(
                         SectionHeader(stringResource(R.string.stats_broadcast_status_section_title))
                         Column(modifier = Modifier.padding(top = 16.dp)) {
                             statsUiState.showsByBroadcastStatus.forEachIndexed { index, stat ->
+                                val statusLabel = stat.status.displayLabel()
                                 GenreProgressBar(
                                     item = GenreProgressItem(
                                         genreId = index,
-                                        name = stat.status.displayLabel(),
+                                        name = statusLabel,
                                         fraction = stat.fraction,
                                         color = StatusPalette[index % StatusPalette.size],
                                     ),
+                                    onClick = { onStatsDetailClick("BROADCAST_STATUS", stat.status.name, statusLabel) },
                                     modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
                                 )
                             }
@@ -488,10 +470,7 @@ fun ProfileScreen(
                                         fraction = stat.fraction,
                                         color = StatusPalette[index % StatusPalette.size],
                                     ),
-                                    onClick = {
-                                        selectedNetwork = stat
-                                        viewModel.onNetworkSelected(stat.name)
-                                    },
+                                    onClick = { onStatsDetailClick("NETWORK", stat.name, stat.name) },
                                     modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
                                 )
                             }
@@ -680,72 +659,6 @@ fun ProfileScreen(
             )
             TextButton(onClick = onReleaseNotesClick, modifier = Modifier.padding(top = 4.dp)) {
                 Text(stringResource(R.string.settings_release_notes_button))
-            }
-        }
-    }
-
-    selectedGenre?.let { genre ->
-        ModalBottomSheet(onDismissRequest = { dismissGenreSheet() }) {
-            Column(modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)) {
-                Text(
-                    genre.name,
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
-                )
-                if (genreLibraryItems.isEmpty()) {
-                    Text(
-                        stringResource(R.string.chart_no_data),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(horizontal = 16.dp),
-                    )
-                } else {
-                    genreLibraryItems.forEach { item ->
-                        MediaListRow(
-                            title = item.title,
-                            subtitle = null,
-                            posterUrl = item.posterUrl,
-                            modifier = Modifier.padding(horizontal = 16.dp),
-                            onClick = {
-                                onItemClick(item.mediaType, item.id)
-                                dismissGenreSheet()
-                            },
-                        )
-                    }
-                }
-            }
-        }
-    }
-
-    selectedNetwork?.let { network ->
-        ModalBottomSheet(onDismissRequest = { dismissNetworkSheet() }) {
-            Column(modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)) {
-                Text(
-                    network.name,
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
-                )
-                if (networkLibraryItems.isEmpty()) {
-                    Text(
-                        stringResource(R.string.chart_no_data),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(horizontal = 16.dp),
-                    )
-                } else {
-                    networkLibraryItems.forEach { item ->
-                        MediaListRow(
-                            title = item.title,
-                            subtitle = null,
-                            posterUrl = item.posterUrl,
-                            modifier = Modifier.padding(horizontal = 16.dp),
-                            onClick = {
-                                onItemClick(item.mediaType, item.id)
-                                dismissNetworkSheet()
-                            },
-                        )
-                    }
-                }
             }
         }
     }

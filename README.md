@@ -5,7 +5,7 @@
 ![minSdk](https://img.shields.io/badge/minSdk-26-3DDC84?logo=android&logoColor=white)
 ![targetSdk](https://img.shields.io/badge/targetSdk-35-3DDC84?logo=android&logoColor=white)
 ![Firebase](https://img.shields.io/badge/Firebase-Auth%20%2B%20Firestore-FFCA28?logo=firebase&logoColor=black)
-![Version](https://img.shields.io/badge/version-0.1.0-8C8FFF)
+![Version](https://img.shields.io/badge/version-0.8.0-8C8FFF)
 ![Android CI](https://github.com/Xenovyrion/TimeLine/actions/workflows/android-build.yml/badge.svg)
 
 Reelia est une application Android personnelle de suivi de séries et films — un
@@ -15,13 +15,20 @@ remplaçant de TV Time, avec une bibliothèque synchronisée entre plusieurs app
 
 - **Bibliothèque** — ajout de séries/films via recherche TMDB (poster, synopsis,
   saisons/épisodes récupérés automatiquement), suivi épisode par épisode.
+- **Import depuis TV Time** — reprend l'export de données TV Time (séries, films,
+  historique de visionnage) et l'ajoute automatiquement à la bibliothèque via
+  correspondance TMDB.
 - **Statuts fonctionnels** — en cours, terminé, à voir, en pause, abandonné — plus un
   drapeau **favori** indépendant du statut de visionnage.
-- **Statistiques** — temps regardé, nombre d'épisodes/films vus, répartition par genre,
-  historique par semaine/mois.
+- **Statistiques** — temps regardé (avec équivalent mois/jours/heures), nombre
+  d'épisodes/films vus, graphiques hebdo/mensuel/jour-de-la-semaine tapables pour voir
+  la valeur exacte, répartition par genre/chaîne/statut de diffusion — chaque
+  répartition s'ouvre en plein écran pour voir la liste complète des titres concernés.
 - **Synchronisation multi-appareils** — via un compte (email/mot de passe ou Google),
   la bibliothèque, les statuts vu/non-vu et la clé API TMDB se synchronisent
   automatiquement entre deux appareils via Firebase.
+- **Réinitialisation de bibliothèque** et **notes de version** consultables directement
+  dans l'appli (Profil > Compte).
 - **Français / English** — l'interface est entièrement traduite dans les deux langues.
 
 Voir [`docs/GUIDE.md`](docs/GUIDE.md) pour le guide d'utilisation détaillé (premiers
@@ -71,5 +78,7 @@ récent en tant que [release "debug-latest"](https://github.com/Xenovyrion/TimeL
 ## État actuel
 
 Application fonctionnelle de bout en bout : ajout de séries/films, suivi épisode par
-épisode, statistiques, synchronisation complète (bibliothèque, statuts, journal de
-visionnage, clé API) entre appareils via compte Firebase.
+épisode, import depuis TV Time, statistiques détaillées, synchronisation complète
+(bibliothèque, statuts, journal de visionnage, clé API) entre appareils via compte
+Firebase. Voir [`docs/release-notes/fr.md`](docs/release-notes/fr.md) pour le détail
+des versions.
