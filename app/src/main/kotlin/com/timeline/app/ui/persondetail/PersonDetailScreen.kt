@@ -193,14 +193,20 @@ private fun FilmographyPoster(item: PersonFilmographyItem, onClick: () -> Unit) 
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.padding(top = 6.dp),
         )
-        val subtitle = listOfNotNull(item.character, item.year).joinToString(" • ")
-        if (subtitle.isNotBlank()) {
+        item.character?.let {
             Text(
-                subtitle,
+                it,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
+            )
+        }
+        item.year?.let {
+            Text(
+                it,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
     }
