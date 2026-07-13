@@ -1,7 +1,6 @@
 package com.timeline.app.ui.theme
 
 import android.os.Build
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
@@ -43,7 +42,10 @@ private val LightColorScheme = lightColorScheme(
 
 @Composable
 fun TimeLineTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    // Reelia has one deliberately-designed dark "Aubergine" look — it doesn't follow the
+    // device's system light/dark setting, otherwise a phone in light mode falls back to the
+    // much less finished LightColorScheme below and renders completely differently.
+    darkTheme: Boolean = true,
     dynamicColor: Boolean = false,
     content: @Composable () -> Unit,
 ) {
