@@ -1,18 +1,20 @@
 package com.timeline.app.ui.home
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -37,13 +39,12 @@ import com.timeline.app.domain.model.MediaType
 import com.timeline.app.domain.model.statusColor
 import com.timeline.app.ui.common.components.CircularProgressRing
 import com.timeline.app.ui.common.components.EpisodeCodeBadge
-import com.timeline.app.ui.common.components.PosterCard
 import com.timeline.app.ui.common.components.SectionHeader
 
 @Composable
 fun HomeScreen(
     onShowClick: (Int) -> Unit,
-    onItemClick: (MediaType, Int) -> Unit,
+    onDiscoverItemClick: (MediaType, Int) -> Unit,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -56,7 +57,12 @@ fun HomeScreen(
             return@Scaffold
         }
 
-        if (uiState.continueWatching.isEmpty() && uiState.libraryItems.isEmpty()) {
+        val isEmpty = uiState.continueWatching.isEmpty() &&
+            uiState.trending.isEmpty() &&
+            uiState.recentMovies.isEmpty() &&
+            uiState.recentShows.isEmpty() &&
+            uiState.suggestions.isEmpty()
+        if (isEmpty) {
             Box(Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
                 Text(
                     stringResource(R.string.home_empty_state),
@@ -94,30 +100,82 @@ fun HomeScreen(
                 }
             }
 
-            item {
-                SectionHeader(
-                    stringResource(R.string.home_library_section_title),
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                )
+            discoverSection(
+                titleRes = R.string.home_suggestions_section_title,
+                items = uiState.suggestions,
+                onItemClick = onDiscoverItemClick,
+            )
+            discoverSection(
+                titleRes = R.string.home_trending_section_title,
+                items = uiState.trending,
+                onItemClick = onDiscoverItemClick,
+            )
+            discoverSection(
+                titleRes = R.string.home_recent_movies_section_title,
+                items = uiState.recentMovies,
+                onItemClick = onDiscoverItemClick,
+            )
+            discoverSection(
+                titleRes = R.string.home_recent_shows_section_title,
+                items = uiState.recentShows,
+                onItemClick = onDiscoverItemClick,
+            )
+
+            item { Box(Modifier.padding(bottom = 16.dp)) }
+        }
+    }
+}
+
+private fun LazyListScope.discoverSection(
+    @StringRes titleRes: Int,
+    items: List<HomeDiscoverItem>,
+    onItemClick: (MediaType, Int) -> Unit,
+) {
+    if (items.isEmpty()) return
+    item {
+        SectionHeader(
+            stringResource(titleRes),
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+        )
+    }
+    item {
+        LazyRow(
+            contentPadding = PaddingValues(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            items(items, key = { "${it.mediaType}_${it.tmdbId}" }) { item ->
+                DiscoverPosterCard(item, onClick = { onItemClick(item.mediaType, item.tmdbId) })
             }
-            items(uiState.libraryItems.chunked(3), key = { row -> "grid_${row.first().mediaType}_${row.first().id}" }) { row ->
-                Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 4.dp)) {
-                    row.forEach { item ->
-                        PosterCard(
-                            title = item.title,
-                            posterUrl = item.posterUrl,
-                            status = item.status,
-                            progress = item.progress,
-                            isFavorite = item.isFavorite,
-                            onClick = { onItemClick(item.mediaType, item.id) },
-                            modifier = Modifier.weight(1f).padding(end = 4.dp),
-                        )
-                    }
-                    repeat(3 - row.size) {
-                        Box(modifier = Modifier.weight(1f))
-                    }
-                }
-            }
+        }
+    }
+}
+
+@Composable
+private fun DiscoverPosterCard(item: HomeDiscoverItem, onClick: () -> Unit) {
+    Column(modifier = Modifier.width(110.dp).clickable(onClick = onClick)) {
+        AsyncImage(
+            model = item.posterUrl,
+            contentDescription = item.title,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(2f / 3f)
+                .clip(MaterialTheme.shapes.medium)
+                .background(MaterialTheme.colorScheme.surfaceVariant),
+        )
+        Text(
+            item.title,
+            style = MaterialTheme.typography.labelMedium,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.padding(top = 6.dp),
+        )
+        item.year?.let {
+            Text(
+                it,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
     }
 }

@@ -15,6 +15,7 @@ import com.timeline.app.domain.model.MediaType
 import com.timeline.app.domain.model.TmdbSearchResult
 import com.timeline.app.domain.model.WatchProviderOption
 import com.timeline.app.domain.model.WatchProviders
+import java.time.LocalDate
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.async
@@ -36,6 +37,24 @@ class TmdbMetadataProvider @Inject constructor(
 
     override suspend fun getTrendingFeed(): List<MediaPreview> =
         tmdbApi.getTrending().results.mapNotNull { it.toMediaPreviewOrNull() }
+
+    override suspend fun getRecentMoviesFeed(): List<MediaPreview> =
+        tmdbApi.discoverMovies(releaseDateLte = LocalDate.now().toString())
+            .results
+            .mapNotNull { it.toMediaPreviewOrNull(MediaType.MOVIE) }
+
+    override suspend fun getRecentShowsFeed(): List<MediaPreview> =
+        tmdbApi.discoverTv(firstAirDateLte = LocalDate.now().toString())
+            .results
+            .mapNotNull { it.toMediaPreviewOrNull(MediaType.TV) }
+
+    override suspend fun getRecommendationsFeed(mediaType: MediaType, tmdbId: Int): List<MediaPreview> {
+        val results = when (mediaType) {
+            MediaType.MOVIE -> tmdbApi.getMovieRecommendations(tmdbId).results
+            MediaType.TV -> tmdbApi.getTvRecommendations(tmdbId).results
+        }
+        return results.mapNotNull { it.toMediaPreviewOrNull(mediaType) }
+    }
 
     override suspend fun getShowPreview(tmdbId: Int): MediaPreview = coroutineScope {
         val detailsDeferred = async { tmdbApi.getTvDetails(tmdbId) }
@@ -95,8 +114,8 @@ class TmdbMetadataProvider @Inject constructor(
     }
 }
 
-private fun TmdbTrendingItemDto.toMediaPreviewOrNull(): MediaPreview? {
-    val type = when (mediaType) {
+private fun TmdbTrendingItemDto.toMediaPreviewOrNull(forcedType: MediaType? = null): MediaPreview? {
+    val type = forcedType ?: when (mediaType) {
         "tv" -> MediaType.TV
         "movie" -> MediaType.MOVIE
         else -> return null

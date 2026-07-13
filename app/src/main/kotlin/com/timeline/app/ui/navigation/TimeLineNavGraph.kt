@@ -32,6 +32,15 @@ private fun navigateToItem(navController: NavHostController, mediaType: MediaTyp
     }
 }
 
+/** For TMDB items not necessarily already in the library (search results, Home's discovery
+ * rows) — routes through the preview screen instead of assuming a Room entity exists. */
+private fun navigateToPreview(navController: NavHostController, mediaType: MediaType, id: Int) {
+    when (mediaType) {
+        MediaType.TV -> navController.navigate(Routes.showPreview(id))
+        MediaType.MOVIE -> navController.navigate(Routes.moviePreview(id))
+    }
+}
+
 @Composable
 fun TimeLineNavGraph(navController: NavHostController, modifier: Modifier = Modifier) {
     NavHost(
@@ -46,7 +55,7 @@ fun TimeLineNavGraph(navController: NavHostController, modifier: Modifier = Modi
         composable(Routes.HOME) {
             HomeScreen(
                 onShowClick = { navController.navigate(Routes.showDetail(it)) },
-                onItemClick = { mediaType, id -> navigateToItem(navController, mediaType, id) },
+                onDiscoverItemClick = { mediaType, id -> navigateToPreview(navController, mediaType, id) },
             )
         }
         composable(Routes.LIBRARY) {
@@ -57,12 +66,7 @@ fun TimeLineNavGraph(navController: NavHostController, modifier: Modifier = Modi
         }
         composable(Routes.SEARCH) {
             SearchScreen(
-                onItemClick = { mediaType, id ->
-                    when (mediaType) {
-                        MediaType.TV -> navController.navigate(Routes.showPreview(id))
-                        MediaType.MOVIE -> navController.navigate(Routes.moviePreview(id))
-                    }
-                },
+                onItemClick = { mediaType, id -> navigateToPreview(navController, mediaType, id) },
             )
         }
         composable(Routes.PROFILE) {

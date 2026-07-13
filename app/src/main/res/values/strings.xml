@@ -70,7 +70,10 @@
     <string name="home_title">Home</string>
     <string name="home_greeting">Hello</string>
     <string name="home_continue_watching_title">Continue Watching</string>
-    <string name="home_library_section_title">Your Library</string>
+    <string name="home_trending_section_title">Trending Now</string>
+    <string name="home_recent_movies_section_title">Latest Movie Releases</string>
+    <string name="home_recent_shows_section_title">Latest Show Releases</string>
+    <string name="home_suggestions_section_title">Suggested For You</string>
     <string name="home_empty_state">Add a show or movie from Search to get started.</string>
 
     <!-- Search tab -->

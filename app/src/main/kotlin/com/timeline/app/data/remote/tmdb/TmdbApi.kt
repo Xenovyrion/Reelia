@@ -51,6 +51,28 @@ interface TmdbApi {
         @Path("timeWindow") timeWindow: String = "week",
     ): TmdbPagedResponseDto<TmdbTrendingItemDto>
 
+    /** [releaseDateLte] excludes future/unreleased titles; [minVoteCount] filters out
+     * low-signal/obscure entries so the feed reads as genuine recent releases. */
+    @GET("discover/movie")
+    suspend fun discoverMovies(
+        @Query("sort_by") sortBy: String = "primary_release_date.desc",
+        @Query("primary_release_date.lte") releaseDateLte: String,
+        @Query("vote_count.gte") minVoteCount: Int = 20,
+    ): TmdbPagedResponseDto<TmdbTrendingItemDto>
+
+    @GET("discover/tv")
+    suspend fun discoverTv(
+        @Query("sort_by") sortBy: String = "first_air_date.desc",
+        @Query("first_air_date.lte") firstAirDateLte: String,
+        @Query("vote_count.gte") minVoteCount: Int = 20,
+    ): TmdbPagedResponseDto<TmdbTrendingItemDto>
+
+    @GET("movie/{id}/recommendations")
+    suspend fun getMovieRecommendations(@Path("id") id: Int): TmdbPagedResponseDto<TmdbTrendingItemDto>
+
+    @GET("tv/{id}/recommendations")
+    suspend fun getTvRecommendations(@Path("id") id: Int): TmdbPagedResponseDto<TmdbTrendingItemDto>
+
     @GET("tv/{id}")
     suspend fun getTvDetails(@Path("id") id: Int): TmdbTvDetailsDto
 

@@ -1,7 +1,7 @@
 package com.timeline.app.ui.home
 
+import com.timeline.app.domain.model.MediaType
 import com.timeline.app.domain.model.WatchStatus
-import com.timeline.app.ui.library.LibraryItem
 
 data class ContinueWatchingItem(
     val showId: Int,
@@ -14,8 +14,19 @@ data class ContinueWatchingItem(
     val status: WatchStatus,
 )
 
+data class HomeDiscoverItem(
+    val tmdbId: Int,
+    val mediaType: MediaType,
+    val title: String,
+    val posterUrl: String?,
+    val year: String?,
+)
+
 data class HomeUiState(
     val isLoading: Boolean = true,
     val continueWatching: List<ContinueWatchingItem> = emptyList(),
-    val libraryItems: List<LibraryItem> = emptyList(),
+    val trending: List<HomeDiscoverItem> = emptyList(),
+    val recentMovies: List<HomeDiscoverItem> = emptyList(),
+    val recentShows: List<HomeDiscoverItem> = emptyList(),
+    val suggestions: List<HomeDiscoverItem> = emptyList(),
 )
