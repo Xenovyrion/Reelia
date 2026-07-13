@@ -78,7 +78,7 @@ fun ShowDetailScreen(
     var expandedEpisodes by remember { mutableStateOf(setOf<String>()) }
     var selectedTab by remember { mutableIntStateOf(0) }
 
-    Scaffold(containerColor = Color.Transparent) { padding ->
+    Scaffold(containerColor = Color.Transparent, contentColor = MaterialTheme.colorScheme.onBackground) { padding ->
         if (uiState.isLoading) {
             Box(Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator()

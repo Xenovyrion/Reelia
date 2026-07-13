@@ -162,6 +162,7 @@ fun ProfileScreen(onItemClick: (MediaType, Int) -> Unit = { _, _ -> }, viewModel
 
     Scaffold(
         containerColor = Color.Transparent,
+        contentColor = MaterialTheme.colorScheme.onBackground,
         topBar = { TopAppBar(title = { Text(stringResource(R.string.nav_profile)) }, colors = timeLineTopAppBarColors()) },
         snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { padding ->

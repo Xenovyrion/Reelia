@@ -75,6 +75,7 @@ private fun TimeLineAppContent() {
 
     Scaffold(
         containerColor = Color.Transparent,
+        contentColor = MaterialTheme.colorScheme.onBackground,
         topBar = { UpdateBanner() },
         bottomBar = {
             val showBottomBar = BottomNavItem.entries.any { item ->
