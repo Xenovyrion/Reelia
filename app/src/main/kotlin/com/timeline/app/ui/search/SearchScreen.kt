@@ -26,13 +26,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -51,8 +48,10 @@ import com.timeline.app.R
 import com.timeline.app.domain.model.MediaType
 import com.timeline.app.ui.common.components.GenreFilterBottomSheet
 import com.timeline.app.ui.common.components.SectionHeader
+import com.timeline.app.ui.common.components.TopToastHost
 import com.timeline.app.ui.common.format.toYearOrNull
 import com.timeline.app.ui.theme.timeLineTopAppBarColors
+import kotlinx.coroutines.flow.map
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -61,15 +60,8 @@ fun SearchScreen(
     viewModel: SearchViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val snackbarHostState = remember { SnackbarHostState() }
     val addedConfirmationFormat = stringResource(R.string.search_add_confirmation)
     var showFilterSheet by remember { mutableStateOf(false) }
-
-    LaunchedEffect(Unit) {
-        viewModel.addedEvent.collect { title ->
-            snackbarHostState.showSnackbar(String.format(addedConfirmationFormat, title))
-        }
-    }
 
     val titleRes = when (uiState.lockedMediaType) {
         MediaType.TV -> R.string.search_title_series
@@ -94,9 +86,10 @@ fun SearchScreen(
                 },
             )
         },
-        snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
+            TopToastHost(events = viewModel.addedEvent.map { String.format(addedConfirmationFormat, it) })
+
             OutlinedTextField(
                 value = uiState.query,
                 onValueChange = viewModel::onQueryChange,
