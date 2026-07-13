@@ -191,6 +191,24 @@
     <string name="profile_delete_account_dialog_confirm">Supprimer</string>
     <string name="profile_delete_account_dialog_cancel">Annuler</string>
     <string name="profile_delete_account_recent_login_error">Pour des raisons de sécurité, déconnecte-toi puis reconnecte-toi avant de réessayer de supprimer ton compte.</string>
+    <string name="settings_tvtime_import_button">Importer depuis TV Time</string>
+
+    <string name="tvtime_import_title">Importer depuis TV Time</string>
+    <string name="tvtime_import_pick_file_explanation">Choisis le fichier ZIP de ton export de données TV Time (Réglages → Demander mes données sur tvtime.com), ou l\'un des fichiers CSV extraits.</string>
+    <string name="tvtime_import_pick_file_button">Choisir un fichier</string>
+    <string name="tvtime_import_parsing">Lecture du fichier d\'export…</string>
+    <string name="tvtime_import_parse_failed">Aucune donnée exploitable trouvée dans ce fichier. Vérifie que tu as bien choisi le ZIP d\'export TV Time, ou un CSV extrait de celui-ci.</string>
+    <string name="tvtime_import_try_again_button">Réessayer</string>
+    <string name="tvtime_import_ready_summary">%1$d séries et %2$d films trouvés.</string>
+    <string name="tvtime_import_ready_explanation">L\'import recherche chaque titre sur TMDB et l\'ajoute à ta bibliothèque avec son historique de visionnage. Cela peut prendre quelques minutes et nécessite une connexion réseau.</string>
+    <string name="tvtime_import_start_button">Lancer l\'import</string>
+    <string name="tvtime_import_progress_format">Import en cours… %1$d / %2$d</string>
+    <string name="tvtime_import_done_title">Import terminé</string>
+    <string name="tvtime_import_done_summary">%1$d séries (%2$d épisodes) et %3$d films importés.</string>
+    <string name="tvtime_import_unmatched_shows_title">Séries introuvables sur TMDB (%1$d)</string>
+    <string name="tvtime_import_unmatched_movies_title">Films introuvables sur TMDB (%1$d)</string>
+    <string name="tvtime_import_unmatched_explanation">Tu peux les ajouter manuellement depuis la recherche.</string>
+    <string name="tvtime_import_finish_button">Terminer</string>
 
     <!-- Mises à jour de l'app (auto-hébergées, via GitHub Releases) -->
     <string name="update_banner_title">Mise à jour disponible</string>

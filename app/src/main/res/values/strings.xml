@@ -196,6 +196,24 @@
     <string name="profile_delete_account_dialog_confirm">Delete</string>
     <string name="profile_delete_account_dialog_cancel">Cancel</string>
     <string name="profile_delete_account_recent_login_error">For security, please sign out, sign back in, then try deleting your account again.</string>
+    <string name="settings_tvtime_import_button">Import from TV Time</string>
+
+    <string name="tvtime_import_title">Import from TV Time</string>
+    <string name="tvtime_import_pick_file_explanation">Choose the ZIP file from your TV Time data export (Settings → Request my data on tvtime.com), or one of the extracted CSV files.</string>
+    <string name="tvtime_import_pick_file_button">Choose file</string>
+    <string name="tvtime_import_parsing">Reading the export file…</string>
+    <string name="tvtime_import_parse_failed">Couldn\'t find any usable data in this file. Make sure you picked the TV Time export ZIP, or an extracted CSV from it.</string>
+    <string name="tvtime_import_try_again_button">Try again</string>
+    <string name="tvtime_import_ready_summary">Found %1$d shows and %2$d movies.</string>
+    <string name="tvtime_import_ready_explanation">Importing looks up each title on TMDB and adds it to your library with its watch history. This can take a few minutes and needs a network connection.</string>
+    <string name="tvtime_import_start_button">Start import</string>
+    <string name="tvtime_import_progress_format">Importing… %1$d / %2$d</string>
+    <string name="tvtime_import_done_title">Import complete</string>
+    <string name="tvtime_import_done_summary">%1$d shows (%2$d episodes) and %3$d movies imported.</string>
+    <string name="tvtime_import_unmatched_shows_title">Shows not found on TMDB (%1$d)</string>
+    <string name="tvtime_import_unmatched_movies_title">Movies not found on TMDB (%1$d)</string>
+    <string name="tvtime_import_unmatched_explanation">You can add these manually from the search tab.</string>
+    <string name="tvtime_import_finish_button">Done</string>
 
     <!-- App updates (self-hosted, GitHub Releases based) -->
     <string name="update_banner_title">Update available</string>

@@ -21,6 +21,7 @@ import com.timeline.app.ui.preview.ShowPreviewScreen
 import com.timeline.app.ui.profile.ProfileScreen
 import com.timeline.app.ui.search.SearchScreen
 import com.timeline.app.ui.showdetail.ShowDetailScreen
+import com.timeline.app.ui.tvtimeimport.TvTimeImportScreen
 
 private fun navigateToItem(navController: NavHostController, mediaType: MediaType, id: Int) {
     when (mediaType) {
@@ -63,7 +64,13 @@ fun TimeLineNavGraph(navController: NavHostController, modifier: Modifier = Modi
             )
         }
         composable(Routes.PROFILE) {
-            ProfileScreen(onItemClick = { mediaType, id -> navigateToItem(navController, mediaType, id) })
+            ProfileScreen(
+                onItemClick = { mediaType, id -> navigateToItem(navController, mediaType, id) },
+                onImportClick = { navController.navigate(Routes.TV_TIME_IMPORT) },
+            )
+        }
+        composable(Routes.TV_TIME_IMPORT) {
+            TvTimeImportScreen(onBack = { navController.popBackStack() })
         }
 
         composable(

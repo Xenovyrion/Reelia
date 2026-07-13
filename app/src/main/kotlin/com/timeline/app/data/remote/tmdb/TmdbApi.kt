@@ -2,6 +2,7 @@ package com.timeline.app.data.remote.tmdb
 
 import com.timeline.app.data.remote.tmdb.dto.TmdbConfigurationDto
 import com.timeline.app.data.remote.tmdb.dto.TmdbCreditsDto
+import com.timeline.app.data.remote.tmdb.dto.TmdbFindResponseDto
 import com.timeline.app.data.remote.tmdb.dto.TmdbMovieDetailsDto
 import com.timeline.app.data.remote.tmdb.dto.TmdbPagedResponseDto
 import com.timeline.app.data.remote.tmdb.dto.TmdbPersonDetailsDto
@@ -28,6 +29,20 @@ interface TmdbApi {
         @Query("query") query: String,
         @Query("include_adult") includeAdult: Boolean = false,
     ): TmdbSearchResponseDto
+
+    @GET("search/movie")
+    suspend fun searchMovies(
+        @Query("query") query: String,
+        @Query("include_adult") includeAdult: Boolean = false,
+    ): TmdbSearchResponseDto
+
+    /** Resolves an external id (e.g. a TheTVDB show id, as used by TV Time's export) to its
+     * TMDB match. Used by the TV Time import feature for exact show matching. */
+    @GET("find/{externalId}")
+    suspend fun findByExternalId(
+        @Path("externalId") externalId: Int,
+        @Query("external_source") externalSource: String = "tvdb_id",
+    ): TmdbFindResponseDto
 
     @GET("trending/{mediaType}/{timeWindow}")
     suspend fun getTrending(

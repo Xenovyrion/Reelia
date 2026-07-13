@@ -12,6 +12,9 @@ interface WatchLogDao {
     @Insert
     suspend fun insert(entry: WatchLogEntryEntity)
 
+    @Insert
+    suspend fun insertAll(entries: List<WatchLogEntryEntity>)
+
     @Query("SELECT COUNT(*) FROM watch_log WHERE syncId = :syncId")
     suspend fun countBySyncId(syncId: String): Int
 

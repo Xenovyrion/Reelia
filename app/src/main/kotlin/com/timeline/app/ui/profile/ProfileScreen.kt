@@ -96,7 +96,11 @@ private fun StatsScope.label(): String = stringResource(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen(onItemClick: (MediaType, Int) -> Unit = { _, _ -> }, viewModel: ProfileViewModel = hiltViewModel()) {
+fun ProfileScreen(
+    onItemClick: (MediaType, Int) -> Unit = { _, _ -> },
+    onImportClick: () -> Unit = {},
+    viewModel: ProfileViewModel = hiltViewModel(),
+) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val statsUiState by viewModel.statsUiState.collectAsStateWithLifecycle()
     val updateUiState by viewModel.updateUiState.collectAsStateWithLifecycle()
@@ -211,6 +215,9 @@ fun ProfileScreen(onItemClick: (MediaType, Int) -> Unit = { _, _ -> }, viewModel
                 deleteAccountUiState.errorMessage?.let {
                     Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(top = 8.dp))
                 }
+            }
+            OutlinedButton(onClick = onImportClick, modifier = Modifier.padding(top = 12.dp)) {
+                Text(stringResource(R.string.settings_tvtime_import_button))
             }
 
             HorizontalDivider(modifier = Modifier.padding(top = 24.dp))
