@@ -138,7 +138,7 @@ class HomeViewModel @Inject constructor(
         initialValue = HomeUiState(),
     )
 
-    private fun MediaPreview.toDiscoverItem(): HomeDiscoverItem = HomeDiscoverItem(
+    private suspend fun MediaPreview.toDiscoverItem(): HomeDiscoverItem = HomeDiscoverItem(
         tmdbId = tmdbId,
         mediaType = mediaType,
         title = title,
