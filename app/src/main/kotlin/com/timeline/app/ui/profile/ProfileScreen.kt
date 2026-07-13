@@ -105,11 +105,13 @@ fun ProfileScreen(
     val statsUiState by viewModel.statsUiState.collectAsStateWithLifecycle()
     val updateUiState by viewModel.updateUiState.collectAsStateWithLifecycle()
     val deleteAccountUiState by viewModel.deleteAccountUiState.collectAsStateWithLifecycle()
+    val resetLibraryUiState by viewModel.resetLibraryUiState.collectAsStateWithLifecycle()
     val genreLibraryItems by viewModel.genreLibraryItems.collectAsStateWithLifecycle()
     val networkLibraryItems by viewModel.networkLibraryItems.collectAsStateWithLifecycle()
 
     var apiKeyInput by remember { mutableStateOf("") }
     var showDeleteConfirmation by remember { mutableStateOf(false) }
+    var showResetConfirmation by remember { mutableStateOf(false) }
     var selectedGenre by remember { mutableStateOf<GenreProgressItem?>(null) }
     var selectedNetwork by remember { mutableStateOf<NetworkStat?>(null) }
     val snackbarHostState = remember { SnackbarHostState() }
@@ -158,6 +160,29 @@ fun ProfileScreen(
             dismissButton = {
                 TextButton(onClick = { showDeleteConfirmation = false }) {
                     Text(stringResource(R.string.profile_delete_account_dialog_cancel))
+                }
+            },
+        )
+    }
+
+    if (showResetConfirmation) {
+        AlertDialog(
+            onDismissRequest = { showResetConfirmation = false },
+            title = { Text(stringResource(R.string.settings_reset_library_dialog_title)) },
+            text = { Text(stringResource(R.string.settings_reset_library_dialog_message)) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showResetConfirmation = false
+                        viewModel.onResetLibraryConfirmed()
+                    },
+                ) {
+                    Text(stringResource(R.string.settings_reset_library_dialog_confirm), color = MaterialTheme.colorScheme.error)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showResetConfirmation = false }) {
+                    Text(stringResource(R.string.settings_reset_library_dialog_cancel))
                 }
             },
         )
@@ -216,8 +241,28 @@ fun ProfileScreen(
                     Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(top = 8.dp))
                 }
             }
-            OutlinedButton(onClick = onImportClick, modifier = Modifier.padding(top = 12.dp)) {
-                Text(stringResource(R.string.settings_tvtime_import_button))
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.padding(top = 12.dp)) {
+                OutlinedButton(onClick = onImportClick) {
+                    Text(stringResource(R.string.settings_tvtime_import_button))
+                }
+                OutlinedButton(
+                    onClick = { showResetConfirmation = true },
+                    enabled = !resetLibraryUiState.isResetting,
+                ) {
+                    if (resetLibraryUiState.isResetting) {
+                        CircularProgressIndicator(modifier = Modifier.padding(2.dp), strokeWidth = 2.dp)
+                    } else {
+                        Text(stringResource(R.string.settings_reset_library_button), color = MaterialTheme.colorScheme.error)
+                    }
+                }
+            }
+            resetLibraryUiState.errorMessage?.let {
+                Text(
+                    stringResource(R.string.settings_reset_library_error, it),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(top = 8.dp),
+                )
             }
 
             HorizontalDivider(modifier = Modifier.padding(top = 24.dp))

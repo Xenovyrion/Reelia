@@ -210,6 +210,14 @@
     <string name="tvtime_import_unmatched_movies_title">Films introuvables sur TMDB (%1$d)</string>
     <string name="tvtime_import_unmatched_explanation">Tu peux les ajouter manuellement depuis la recherche.</string>
     <string name="tvtime_import_finish_button">Terminer</string>
+    <string name="tvtime_import_failed">Une erreur est survenue pendant l\'import : %1$s</string>
+
+    <string name="settings_reset_library_button">Réinitialiser la bibliothèque</string>
+    <string name="settings_reset_library_dialog_title">Réinitialiser ta bibliothèque ?</string>
+    <string name="settings_reset_library_dialog_message">Ceci supprime définitivement toutes tes séries et films, tout l\'historique de visionnage et les statistiques — en local et sur ton autre appareil synchronisé. Ton compte et tes réglages (clé TMDB, langue) sont conservés. Action irréversible.</string>
+    <string name="settings_reset_library_dialog_confirm">Réinitialiser</string>
+    <string name="settings_reset_library_dialog_cancel">Annuler</string>
+    <string name="settings_reset_library_error">Impossible de réinitialiser la bibliothèque : %1$s</string>
 
     <!-- Mises à jour de l'app (auto-hébergées, via GitHub Releases) -->
     <string name="update_banner_title">Mise à jour disponible</string>

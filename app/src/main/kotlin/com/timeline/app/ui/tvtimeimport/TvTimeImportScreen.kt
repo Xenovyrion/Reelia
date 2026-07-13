@@ -2,12 +2,16 @@ package com.timeline.app.ui.tvtimeimport
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -24,13 +28,17 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.timeline.app.R
 import com.timeline.app.ui.theme.timeLineTopAppBarColors
+import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -60,11 +68,20 @@ fun TvTimeImportScreen(onBack: () -> Unit, viewModel: TvTimeImportViewModel = hi
                 .padding(16.dp)
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             when (val state = uiState) {
                 is TvTimeImportUiState.PickFile -> {
-                    Text(stringResource(R.string.tvtime_import_pick_file_step1), style = MaterialTheme.typography.bodyMedium)
-                    Text(stringResource(R.string.tvtime_import_pick_file_step2), style = MaterialTheme.typography.bodyMedium)
+                    Text(
+                        stringResource(R.string.tvtime_import_pick_file_step1),
+                        style = MaterialTheme.typography.bodyMedium,
+                        textAlign = TextAlign.Center,
+                    )
+                    Text(
+                        stringResource(R.string.tvtime_import_pick_file_step2),
+                        style = MaterialTheme.typography.bodyMedium,
+                        textAlign = TextAlign.Center,
+                    )
                     Button(onClick = { launcher.launch("*/*") }) {
                         Text(stringResource(R.string.tvtime_import_pick_file_button))
                     }
@@ -74,7 +91,11 @@ fun TvTimeImportScreen(onBack: () -> Unit, viewModel: TvTimeImportViewModel = hi
                     Text(stringResource(R.string.tvtime_import_parsing), style = MaterialTheme.typography.bodyMedium)
                 }
                 is TvTimeImportUiState.ParseFailed -> {
-                    Text(stringResource(R.string.tvtime_import_parse_failed), style = MaterialTheme.typography.bodyMedium)
+                    Text(
+                        stringResource(R.string.tvtime_import_parse_failed),
+                        style = MaterialTheme.typography.bodyMedium,
+                        textAlign = TextAlign.Center,
+                    )
                     Button(onClick = viewModel::reset) {
                         Text(stringResource(R.string.tvtime_import_try_again_button))
                     }
@@ -83,19 +104,49 @@ fun TvTimeImportScreen(onBack: () -> Unit, viewModel: TvTimeImportViewModel = hi
                     Text(
                         stringResource(R.string.tvtime_import_ready_summary, state.data.shows.size, state.data.movies.size),
                         style = MaterialTheme.typography.titleMedium,
+                        textAlign = TextAlign.Center,
                     )
-                    Text(stringResource(R.string.tvtime_import_ready_explanation), style = MaterialTheme.typography.bodyMedium)
+                    Text(
+                        stringResource(R.string.tvtime_import_ready_explanation),
+                        style = MaterialTheme.typography.bodyMedium,
+                        textAlign = TextAlign.Center,
+                    )
                     Button(onClick = viewModel::startImport) {
                         Text(stringResource(R.string.tvtime_import_start_button))
                     }
                 }
                 is TvTimeImportUiState.Importing -> {
-                    val progress = if (state.total > 0) state.done.toFloat() / state.total else 0f
-                    LinearProgressIndicator(progress = { progress }, modifier = Modifier.fillMaxWidth())
+                    val targetProgress = if (state.total > 0) state.done.toFloat() / state.total else 0f
+                    val animatedProgress by animateFloatAsState(targetValue = targetProgress, label = "tvtime_import_progress")
+                    Text(
+                        "${(animatedProgress * 100).roundToInt()}%",
+                        style = MaterialTheme.typography.displaySmall,
+                    )
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(14.dp)
+                            .clip(RoundedCornerShape(7.dp)),
+                    ) {
+                        LinearProgressIndicator(
+                            progress = { animatedProgress },
+                            modifier = Modifier.fillMaxSize(),
+                        )
+                    }
                     Text(
                         stringResource(R.string.tvtime_import_progress_format, state.done, state.total),
                         style = MaterialTheme.typography.bodyMedium,
                     )
+                }
+                is TvTimeImportUiState.ImportFailed -> {
+                    Text(
+                        stringResource(R.string.tvtime_import_failed, state.message.orEmpty()),
+                        style = MaterialTheme.typography.bodyMedium,
+                        textAlign = TextAlign.Center,
+                    )
+                    Button(onClick = viewModel::reset) {
+                        Text(stringResource(R.string.tvtime_import_try_again_button))
+                    }
                 }
                 is TvTimeImportUiState.Done -> {
                     Text(stringResource(R.string.tvtime_import_done_title), style = MaterialTheme.typography.titleMedium)
@@ -107,26 +158,29 @@ fun TvTimeImportScreen(onBack: () -> Unit, viewModel: TvTimeImportViewModel = hi
                             state.report.importedMovieCount,
                         ),
                         style = MaterialTheme.typography.bodyMedium,
+                        textAlign = TextAlign.Center,
                     )
                     if (state.report.unmatchedShowNames.isNotEmpty() || state.report.unmatchedMovieNames.isNotEmpty()) {
-                        HorizontalDivider()
-                        Text(stringResource(R.string.tvtime_import_unmatched_explanation), style = MaterialTheme.typography.bodySmall)
-                        if (state.report.unmatchedShowNames.isNotEmpty()) {
-                            Text(
-                                stringResource(R.string.tvtime_import_unmatched_shows_title, state.report.unmatchedShowNames.size),
-                                style = MaterialTheme.typography.titleSmall,
-                            )
-                            state.report.unmatchedShowNames.forEach { name ->
-                                Text("• $name", style = MaterialTheme.typography.bodySmall)
+                        Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                            HorizontalDivider()
+                            Text(stringResource(R.string.tvtime_import_unmatched_explanation), style = MaterialTheme.typography.bodySmall)
+                            if (state.report.unmatchedShowNames.isNotEmpty()) {
+                                Text(
+                                    stringResource(R.string.tvtime_import_unmatched_shows_title, state.report.unmatchedShowNames.size),
+                                    style = MaterialTheme.typography.titleSmall,
+                                )
+                                state.report.unmatchedShowNames.forEach { name ->
+                                    Text("• $name", style = MaterialTheme.typography.bodySmall)
+                                }
                             }
-                        }
-                        if (state.report.unmatchedMovieNames.isNotEmpty()) {
-                            Text(
-                                stringResource(R.string.tvtime_import_unmatched_movies_title, state.report.unmatchedMovieNames.size),
-                                style = MaterialTheme.typography.titleSmall,
-                            )
-                            state.report.unmatchedMovieNames.forEach { name ->
-                                Text("• $name", style = MaterialTheme.typography.bodySmall)
+                            if (state.report.unmatchedMovieNames.isNotEmpty()) {
+                                Text(
+                                    stringResource(R.string.tvtime_import_unmatched_movies_title, state.report.unmatchedMovieNames.size),
+                                    style = MaterialTheme.typography.titleSmall,
+                                )
+                                state.report.unmatchedMovieNames.forEach { name ->
+                                    Text("• $name", style = MaterialTheme.typography.bodySmall)
+                                }
                             }
                         }
                     }

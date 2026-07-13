@@ -146,6 +146,11 @@ data class DeleteAccountUiState(
     val requiresRecentLogin: Boolean = false,
 )
 
+data class ResetLibraryUiState(
+    val isResetting: Boolean = false,
+    val errorMessage: String? = null,
+)
+
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository,
@@ -492,5 +497,25 @@ class ProfileViewModel @Inject constructor(
 
     fun onDeleteAccountErrorDismissed() {
         _deleteAccountUiState.update { it.copy(errorMessage = null, requiresRecentLogin = false) }
+    }
+
+    // Library reset
+    private val _resetLibraryUiState = MutableStateFlow(ResetLibraryUiState())
+    val resetLibraryUiState: StateFlow<ResetLibraryUiState> = _resetLibraryUiState.asStateFlow()
+
+    fun onResetLibraryConfirmed() {
+        viewModelScope.launch {
+            _resetLibraryUiState.update { it.copy(isResetting = true, errorMessage = null) }
+            try {
+                firestoreSyncRepository.resetLibrary()
+                _resetLibraryUiState.update { it.copy(isResetting = false) }
+            } catch (e: Exception) {
+                _resetLibraryUiState.update { it.copy(isResetting = false, errorMessage = e.message) }
+            }
+        }
+    }
+
+    fun onResetLibraryErrorDismissed() {
+        _resetLibraryUiState.update { it.copy(errorMessage = null) }
     }
 }

@@ -214,6 +214,14 @@
     <string name="tvtime_import_unmatched_shows_title">Shows not found on TMDB (%1$d)</string>
     <string name="tvtime_import_unmatched_movies_title">Movies not found on TMDB (%1$d)</string>
     <string name="tvtime_import_unmatched_explanation">You can add these manually from the search tab.</string>
+    <string name="tvtime_import_failed">Something went wrong during the import: %1$s</string>
+
+    <string name="settings_reset_library_button">Reset library</string>
+    <string name="settings_reset_library_dialog_title">Reset your library?</string>
+    <string name="settings_reset_library_dialog_message">This permanently deletes every show and movie in your library, all watch history, and stats — locally and on your other synced device. Your account and settings (TMDB key, language) are kept. This can\'t be undone.</string>
+    <string name="settings_reset_library_dialog_confirm">Reset</string>
+    <string name="settings_reset_library_dialog_cancel">Cancel</string>
+    <string name="settings_reset_library_error">Couldn\'t reset the library: %1$s</string>
     <string name="tvtime_import_finish_button">Done</string>
 
     <!-- App updates (self-hosted, GitHub Releases based) -->

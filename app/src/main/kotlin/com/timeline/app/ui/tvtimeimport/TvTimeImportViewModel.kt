@@ -49,10 +49,14 @@ class TvTimeImportViewModel @Inject constructor(
         val total = ready.data.shows.size + ready.data.movies.size
         _uiState.value = TvTimeImportUiState.Importing(0, total)
         viewModelScope.launch {
-            val report = importRepository.import(ready.data) { progress: TvTimeImportProgress ->
-                _uiState.value = TvTimeImportUiState.Importing(progress.done, progress.total)
+            try {
+                val report = importRepository.import(ready.data) { progress: TvTimeImportProgress ->
+                    _uiState.value = TvTimeImportUiState.Importing(progress.done, progress.total)
+                }
+                _uiState.value = TvTimeImportUiState.Done(report)
+            } catch (e: Exception) {
+                _uiState.value = TvTimeImportUiState.ImportFailed(e.message)
             }
-            _uiState.value = TvTimeImportUiState.Done(report)
         }
     }
 

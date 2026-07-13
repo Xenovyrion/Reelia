@@ -9,5 +9,6 @@ sealed interface TvTimeImportUiState {
     data class ParseFailed(val message: String?) : TvTimeImportUiState
     data class ReadyToImport(val data: TvTimeImportData) : TvTimeImportUiState
     data class Importing(val done: Int, val total: Int) : TvTimeImportUiState
+    data class ImportFailed(val message: String?) : TvTimeImportUiState
     data class Done(val report: TvTimeImportReport) : TvTimeImportUiState
 }

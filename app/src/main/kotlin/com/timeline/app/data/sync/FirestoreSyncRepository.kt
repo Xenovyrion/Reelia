@@ -82,6 +82,14 @@ class FirestoreSyncRepository @Inject constructor(
         _lastSyncedAt.value = Instant.now()
     }
 
+    /** Fire-and-forget variant of [pushPendingChanges] for bulk local writes (e.g. TV Time
+     * import) where the outbox can hold hundreds of entries — blocking the caller on that many
+     * sequential Firestore writes would hang whatever screen is waiting on it. Runs on this
+     * repository's own long-lived scope so it keeps going after the caller moves on. */
+    fun pushPendingChangesInBackground() {
+        syncScope.launch { runCatching { pushPendingChanges() } }
+    }
+
     private suspend fun pushShow(uid: String, tmdbId: Int) {
         val show = showDao.getShowOnce(tmdbId) ?: return
         val episodes = episodeDao.getEpisodesForShowOnce(tmdbId)
@@ -179,6 +187,25 @@ class FirestoreSyncRepository @Inject constructor(
 
     private suspend fun deleteAllDocuments(collectionPath: String) {
         firestore.collection(collectionPath).get().await().documents.forEach { it.reference.delete().await() }
+    }
+
+    /**
+     * Wipes all library data — tracked shows/movies, episodes, watch log — locally and (if
+     * signed in) in Firestore, without touching the account itself or app settings (TMDB key,
+     * language). Used by the "reset library" action in Settings, e.g. to redo a botched import.
+     */
+    suspend fun resetLibrary() {
+        val uid = firebaseAuth.currentUser?.uid
+        // Stopped first, same as deleteAccountAndAllData — otherwise a live snapshot listener
+        // can race the wipe and re-insert a show/movie right as its Firestore doc is deleted.
+        stopListening()
+        if (uid != null) {
+            deleteAllDocuments("users/$uid/shows")
+            deleteAllDocuments("users/$uid/movies")
+            deleteAllDocuments("users/$uid/watchLog")
+        }
+        withContext(Dispatchers.IO) { appDatabase.clearAllTables() }
+        if (uid != null) startListening()
     }
 
     fun startListening() {

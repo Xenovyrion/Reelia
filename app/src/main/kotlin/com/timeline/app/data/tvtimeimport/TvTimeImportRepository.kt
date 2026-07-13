@@ -80,7 +80,9 @@ class TvTimeImportRepository @Inject constructor(
             (showJobs + movieJobs).awaitAll()
         }
 
-        firestoreSyncRepository.pushPendingChanges()
+        // Fire-and-forget: hundreds of sequential Firestore writes would otherwise hang this
+        // screen well after the local import (the part the user is actually waiting on) is done.
+        firestoreSyncRepository.pushPendingChangesInBackground()
 
         return TvTimeImportReport(
             importedShowCount = importedShowCount.get(),
