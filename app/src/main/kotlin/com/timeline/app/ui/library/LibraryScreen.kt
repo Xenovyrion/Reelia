@@ -24,7 +24,6 @@ import androidx.compose.material.icons.filled.ViewList
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -32,6 +31,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -62,6 +62,7 @@ import com.timeline.app.ui.theme.timeLineTopAppBarColors
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LibraryScreen(
+    fixedMediaType: MediaType,
     onItemClick: (MediaType, Int) -> Unit,
     onSearchClick: () -> Unit,
     viewModel: LibraryViewModel = hiltViewModel(),
@@ -69,10 +70,28 @@ fun LibraryScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var showFilterSheet by remember { mutableStateOf(false) }
 
+    LaunchedEffect(fixedMediaType) {
+        viewModel.onTypeFilterSelected(
+            when (fixedMediaType) {
+                MediaType.TV -> LibraryTypeFilter.SERIES
+                MediaType.MOVIE -> LibraryTypeFilter.FILMS
+            },
+        )
+    }
+
+    val titleRes = when (fixedMediaType) {
+        MediaType.TV -> R.string.series_title
+        MediaType.MOVIE -> R.string.films_title
+    }
+    val emptyStateRes = when (fixedMediaType) {
+        MediaType.TV -> R.string.series_empty_state
+        MediaType.MOVIE -> R.string.films_empty_state
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.library_title)) },
+                title = { Text(stringResource(titleRes)) },
                 colors = timeLineTopAppBarColors(),
                 actions = {
                     IconButton(onClick = onSearchClick) {
@@ -98,26 +117,6 @@ fun LibraryScreen(
         },
     ) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
-            Row(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-                FilterChip(
-                    selected = uiState.typeFilter == LibraryTypeFilter.ALL,
-                    onClick = { viewModel.onTypeFilterSelected(LibraryTypeFilter.ALL) },
-                    label = { Text(stringResource(R.string.library_type_filter_all)) },
-                    modifier = Modifier.padding(end = 8.dp),
-                )
-                FilterChip(
-                    selected = uiState.typeFilter == LibraryTypeFilter.SERIES,
-                    onClick = { viewModel.onTypeFilterSelected(LibraryTypeFilter.SERIES) },
-                    label = { Text(stringResource(R.string.library_type_filter_series)) },
-                    modifier = Modifier.padding(end = 8.dp),
-                )
-                FilterChip(
-                    selected = uiState.typeFilter == LibraryTypeFilter.FILMS,
-                    onClick = { viewModel.onTypeFilterSelected(LibraryTypeFilter.FILMS) },
-                    label = { Text(stringResource(R.string.library_type_filter_films)) },
-                )
-            }
-
             val isEmpty = uiState.groupedItems.isEmpty() && uiState.upcomingShows.isEmpty() && uiState.upcomingMovies.isEmpty()
             if (uiState.isLoading) {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -126,7 +125,7 @@ fun LibraryScreen(
             } else if (isEmpty) {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text(
-                        stringResource(R.string.library_empty_state),
+                        stringResource(emptyStateRes),
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }

@@ -5,7 +5,6 @@
     <!-- Bottom navigation -->
     <string name="nav_series">Séries</string>
     <string name="nav_films">Films</string>
-    <string name="nav_search">Rechercher</string>
     <string name="nav_profile">Profil</string>
 
     <!-- WatchStatus display labels -->
@@ -58,12 +57,7 @@
     <string name="films_title">Films</string>
     <string name="films_empty_state">Ajoute un film depuis l\'onglet Rechercher.</string>
 
-    <!-- Library tab (fusion Séries + Films) -->
-    <string name="library_title">Bibliothèque</string>
-    <string name="library_type_filter_all">Tout</string>
-    <string name="library_type_filter_series">Séries</string>
-    <string name="library_type_filter_films">Films</string>
-    <string name="library_empty_state">Ajoute une série ou un film depuis Rechercher.</string>
+    <!-- Séries/Films tabs (search entry point) -->
     <string name="library_search_content_description">Rechercher</string>
 
     <!-- Home tab -->

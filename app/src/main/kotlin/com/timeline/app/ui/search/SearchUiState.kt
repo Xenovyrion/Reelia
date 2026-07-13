@@ -18,6 +18,7 @@ data class SearchUiState(
     val results: List<SearchResultItem> = emptyList(),
     val trendingFeed: List<SearchResultItem> = emptyList(),
     val hasApiKey: Boolean = true,
+    val lockedMediaType: MediaType? = null,
     @StringRes val errorMessageRes: Int? = null,
 ) {
     val displayedItems: List<SearchResultItem>

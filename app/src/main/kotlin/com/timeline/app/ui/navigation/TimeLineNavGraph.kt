@@ -58,13 +58,30 @@ fun TimeLineNavGraph(navController: NavHostController, modifier: Modifier = Modi
                 onDiscoverItemClick = { mediaType, id -> navigateToPreview(navController, mediaType, id) },
             )
         }
-        composable(Routes.LIBRARY) {
+        composable(Routes.SERIES) {
             LibraryScreen(
+                fixedMediaType = MediaType.TV,
                 onItemClick = { mediaType, id -> navigateToItem(navController, mediaType, id) },
-                onSearchClick = { navController.navigate(Routes.SEARCH) },
+                onSearchClick = { navController.navigate(Routes.search(MediaType.TV)) },
             )
         }
-        composable(Routes.SEARCH) {
+        composable(Routes.FILMS) {
+            LibraryScreen(
+                fixedMediaType = MediaType.MOVIE,
+                onItemClick = { mediaType, id -> navigateToItem(navController, mediaType, id) },
+                onSearchClick = { navController.navigate(Routes.search(MediaType.MOVIE)) },
+            )
+        }
+        composable(
+            route = Routes.SEARCH,
+            arguments = listOf(
+                navArgument("mediaType") {
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = null
+                },
+            ),
+        ) {
             SearchScreen(
                 onItemClick = { mediaType, id -> navigateToPreview(navController, mediaType, id) },
             )

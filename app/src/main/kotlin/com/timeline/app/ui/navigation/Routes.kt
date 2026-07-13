@@ -1,11 +1,13 @@
 package com.timeline.app.ui.navigation
 
 import android.net.Uri
+import com.timeline.app.domain.model.MediaType
 
 object Routes {
     const val HOME = "home"
-    const val LIBRARY = "library"
-    const val SEARCH = "search"
+    const val SERIES = "series"
+    const val FILMS = "films"
+    const val SEARCH = "search?mediaType={mediaType}"
     const val PROFILE = "profile"
     const val SHOW_DETAIL = "show_detail/{showId}"
     const val MOVIE_DETAIL = "movie_detail/{movieId}"
@@ -16,6 +18,7 @@ object Routes {
     const val RELEASE_NOTES = "release_notes"
     const val STATS_DETAIL = "stats_detail/{filterType}/{filterId}/{filterLabel}"
 
+    fun search(mediaType: MediaType? = null) = if (mediaType != null) "search?mediaType=${mediaType.name}" else "search"
     fun showDetail(showId: Int) = "show_detail/$showId"
     fun movieDetail(movieId: Int) = "movie_detail/$movieId"
     fun showPreview(tmdbId: Int) = "show_preview/$tmdbId"

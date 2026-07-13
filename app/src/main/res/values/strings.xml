@@ -5,7 +5,6 @@
     <!-- Bottom navigation -->
     <string name="nav_series">Series</string>
     <string name="nav_films">Movies</string>
-    <string name="nav_search">Search</string>
     <string name="nav_profile">Profile</string>
 
     <!-- WatchStatus display labels -->
@@ -58,12 +57,7 @@
     <string name="films_title">Movies</string>
     <string name="films_empty_state">Add a movie from the Search tab.</string>
 
-    <!-- Library tab (merged Séries + Films) -->
-    <string name="library_title">Library</string>
-    <string name="library_type_filter_all">All</string>
-    <string name="library_type_filter_series">Series</string>
-    <string name="library_type_filter_films">Movies</string>
-    <string name="library_empty_state">Add a show or movie from Search.</string>
+    <!-- Séries/Films tabs (search entry point) -->
     <string name="library_search_content_description">Search</string>
 
     <!-- Home tab -->

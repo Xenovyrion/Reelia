@@ -1,5 +1,6 @@
 package com.timeline.app.ui.search
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.timeline.app.R
@@ -28,6 +29,7 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
     private val metadataProviderRegistry: MetadataProviderRegistry,
     private val showRepository: ShowRepository,
     private val movieRepository: MovieRepository,
@@ -35,7 +37,9 @@ class SearchViewModel @Inject constructor(
     private val imageUrlBuilder: TmdbImageUrlBuilder,
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(SearchUiState())
+    private val lockedMediaType: MediaType? = savedStateHandle.get<String>("mediaType")?.let { MediaType.valueOf(it) }
+
+    private val _uiState = MutableStateFlow(SearchUiState(lockedMediaType = lockedMediaType))
     val uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
 
     private var searchJob: Job? = null
@@ -57,7 +61,7 @@ class SearchViewModel @Inject constructor(
             _uiState.update { it.copy(isLoadingFeed = true) }
             try {
                 val provider = metadataProviderRegistry.activeProvider.first()
-                val feed = provider.getTrendingFeed().map { it.toResultItem() }
+                val feed = provider.getTrendingFeed().map { it.toResultItem() }.filterByLockedType()
                 _uiState.update { it.copy(trendingFeed = feed, isLoadingFeed = false) }
             } catch (e: MissingTmdbApiKeyException) {
                 _uiState.update { it.copy(isLoadingFeed = false) }
@@ -81,7 +85,7 @@ class SearchViewModel @Inject constructor(
             _uiState.update { it.copy(isSearching = true, errorMessageRes = null) }
             try {
                 val provider = metadataProviderRegistry.activeProvider.first()
-                val results = provider.search(query).map { it.toResultItem() }
+                val results = provider.search(query).map { it.toResultItem() }.filterByLockedType()
                 _uiState.update { it.copy(results = results, isSearching = false) }
             } catch (e: MissingTmdbApiKeyException) {
                 _uiState.update { it.copy(isSearching = false, hasApiKey = false) }
@@ -90,6 +94,9 @@ class SearchViewModel @Inject constructor(
             }
         }
     }
+
+    private fun List<SearchResultItem>.filterByLockedType(): List<SearchResultItem> =
+        lockedMediaType?.let { type -> filter { it.mediaType == type } } ?: this
 
     fun onAddClicked(item: SearchResultItem) {
         viewModelScope.launch {
