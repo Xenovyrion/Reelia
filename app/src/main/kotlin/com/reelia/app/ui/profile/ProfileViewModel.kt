@@ -158,6 +158,7 @@ data class AppCheckTokenUiState(
     val token: String? = null,
     val errorMessage: String? = null,
     val isRateLimited: Boolean = false,
+    val isBlocked: Boolean = false,
     val isFetching: Boolean = false,
     val cooldownSecondsRemaining: Int = 0,
 )
@@ -507,13 +508,20 @@ class ProfileViewModel @Inject constructor(
     fun onFetchAppCheckDebugTokenClicked() {
         if (_appCheckTokenUiState.value.cooldownSecondsRemaining > 0) return
         viewModelScope.launch {
-            _appCheckTokenUiState.update { it.copy(isFetching = true, errorMessage = null, isRateLimited = false) }
+            _appCheckTokenUiState.update {
+                it.copy(isFetching = true, errorMessage = null, isRateLimited = false, isBlocked = false)
+            }
             try {
                 val token = Firebase.appCheck.getAppCheckToken(false).await().token
                 _appCheckTokenUiState.update { it.copy(isFetching = false, token = token) }
             } catch (e: Exception) {
                 _appCheckTokenUiState.update {
-                    it.copy(isFetching = false, errorMessage = e.message, isRateLimited = isAppCheckRateLimited(e))
+                    it.copy(
+                        isFetching = false,
+                        errorMessage = e.message,
+                        isRateLimited = isAppCheckRateLimited(e),
+                        isBlocked = isAppCheckBlocked(e),
+                    )
                 }
                 startAppCheckCooldown()
             }
@@ -533,6 +541,14 @@ class ProfileViewModel @Inject constructor(
     private fun isAppCheckRateLimited(e: Exception): Boolean {
         val raw = e.message.orEmpty()
         return listOf("429", "too many", "resource_exhausted", "quota").any { raw.contains(it, ignoreCase = true) }
+    }
+
+    /** Distinct from rate limiting: this means the Firebase App Check API itself is disabled or
+     * restricted for the project in Google Cloud Console, so no amount of waiting fixes it —
+     * the user has to enable/allow it there. */
+    private fun isAppCheckBlocked(e: Exception): Boolean {
+        val raw = e.message.orEmpty()
+        return listOf("blocked", "403", "permission_denied", "disabled").any { raw.contains(it, ignoreCase = true) }
     }
 
     fun onAppCheckDebugTokenDismissed() {

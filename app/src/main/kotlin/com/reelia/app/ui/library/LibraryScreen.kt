@@ -2,16 +2,18 @@ package com.reelia.app.ui.library
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ViewList
 import androidx.compose.material.icons.filled.FilterList
@@ -62,9 +64,12 @@ fun LibraryScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var showFilterSheet by remember { mutableStateOf(false) }
     val listState = rememberLazyListState()
+    val gridState = rememberLazyGridState()
     val route = if (fixedMediaType == MediaType.TV) Routes.SERIES else Routes.FILMS
 
-    ScrollToTopOnTabReselect(route) { listState.animateScrollToItem(0) }
+    ScrollToTopOnTabReselect(route) {
+        if (uiState.viewMode == ViewMode.GRID) gridState.scrollToItem(0) else listState.scrollToItem(0)
+    }
 
     LaunchedEffect(fixedMediaType) {
         viewModel.onTypeFilterSelected(
@@ -112,71 +117,92 @@ fun LibraryScreen(
             )
         },
     ) { padding ->
-        Column(modifier = Modifier.fillMaxSize().padding(padding)) {
-            val isEmpty = uiState.sections.isEmpty() && uiState.upcomingShows.isEmpty() && uiState.upcomingMovies.isEmpty()
-            if (uiState.isLoading) {
-                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
-                }
-            } else if (isEmpty) {
-                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(
-                        stringResource(emptyStateRes),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-            } else {
-                LazyColumn(state = listState, modifier = Modifier.fillMaxSize()) {
-                    if (uiState.upcomingShows.isNotEmpty() || uiState.upcomingMovies.isNotEmpty()) {
-                        item { SectionHeader(stringResource(R.string.section_upcoming), modifier = Modifier.padding(16.dp)) }
-                        item {
-                            LazyRow(
-                                contentPadding = PaddingValues(horizontal = 16.dp),
-                                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                            ) {
-                                items(uiState.upcomingShows, key = { "show_${it.showId}" }) { UpcomingShowCard(it) }
-                                items(uiState.upcomingMovies, key = { "movie_${it.movieId}" }) { UpcomingMovieCard(it) }
-                            }
+        val isEmpty = uiState.sections.isEmpty() && uiState.upcomingShows.isEmpty() && uiState.upcomingMovies.isEmpty()
+        if (uiState.isLoading) {
+            Box(Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
+        } else if (isEmpty) {
+            Box(Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
+                Text(
+                    stringResource(emptyStateRes),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        } else if (uiState.viewMode == ViewMode.LIST) {
+            LazyColumn(state = listState, modifier = Modifier.fillMaxSize().padding(padding)) {
+                if (uiState.upcomingShows.isNotEmpty() || uiState.upcomingMovies.isNotEmpty()) {
+                    item { SectionHeader(stringResource(R.string.section_upcoming), modifier = Modifier.padding(16.dp)) }
+                    item {
+                        LazyRow(
+                            contentPadding = PaddingValues(horizontal = 16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        ) {
+                            items(uiState.upcomingShows, key = { "show_${it.showId}" }) { UpcomingShowCard(it) }
+                            items(uiState.upcomingMovies, key = { "movie_${it.movieId}" }) { UpcomingMovieCard(it) }
                         }
                     }
+                }
 
-                    uiState.sections.forEach { section ->
-                        val sectionItems = section.items
-                        section.header?.let { header ->
-                            item(key = "header_$header") {
-                                SectionHeader(header.label(), modifier = Modifier.padding(16.dp))
-                            }
+                uiState.sections.forEach { section ->
+                    section.header?.let { header ->
+                        item(key = "header_$header") {
+                            SectionHeader(header.label(), modifier = Modifier.padding(16.dp))
                         }
-                        if (uiState.viewMode == ViewMode.LIST) {
-                            items(sectionItems, key = { "list_${it.mediaType}_${it.id}" }) { item ->
-                                MediaListRow(
-                                    title = item.title,
-                                    subtitle = libraryItemSubtitle(item),
-                                    posterUrl = item.posterUrl,
-                                    episodeCode = item.nextEpisodeCode,
-                                    onClick = { onItemClick(item.mediaType, item.id) },
-                                )
-                            }
-                        } else {
-                            items(sectionItems.chunked(3), key = { row -> "grid_${row.first().mediaType}_${row.first().id}" }) { row ->
-                                Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 4.dp)) {
-                                    row.forEach { item ->
-                                        PosterCard(
-                                            title = item.title,
-                                            posterUrl = item.posterUrl,
-                                            status = item.status,
-                                            progress = item.progress,
-                                            isFavorite = item.isFavorite,
-                                            onClick = { onItemClick(item.mediaType, item.id) },
-                                            modifier = Modifier.weight(1f).padding(end = 4.dp),
-                                        )
-                                    }
-                                    repeat(3 - row.size) {
-                                        Box(modifier = Modifier.weight(1f))
-                                    }
-                                }
-                            }
+                    }
+                    items(section.items, key = { "list_${it.mediaType}_${it.id}" }) { item ->
+                        MediaListRow(
+                            title = item.title,
+                            subtitle = libraryItemSubtitle(item),
+                            posterUrl = item.posterUrl,
+                            episodeCode = item.nextEpisodeCode,
+                            onClick = { onItemClick(item.mediaType, item.id) },
+                        )
+                    }
+                }
+            }
+        } else {
+            // A real grid (rather than manually chunking rows into a LazyColumn) lets Compose
+            // window and key each poster individually, so small filter/sort changes only
+            // recompose the cells that actually moved instead of whole 3-item rows.
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(3),
+                state = gridState,
+                modifier = Modifier.fillMaxSize().padding(padding),
+                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                if (uiState.upcomingShows.isNotEmpty() || uiState.upcomingMovies.isNotEmpty()) {
+                    item(span = { GridItemSpan(maxLineSpan) }) {
+                        SectionHeader(stringResource(R.string.section_upcoming), modifier = Modifier.padding(vertical = 12.dp))
+                    }
+                    item(span = { GridItemSpan(maxLineSpan) }) {
+                        LazyRow(
+                            contentPadding = PaddingValues(horizontal = 4.dp),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        ) {
+                            items(uiState.upcomingShows, key = { "show_${it.showId}" }) { UpcomingShowCard(it) }
+                            items(uiState.upcomingMovies, key = { "movie_${it.movieId}" }) { UpcomingMovieCard(it) }
                         }
+                    }
+                }
+
+                uiState.sections.forEach { section ->
+                    section.header?.let { header ->
+                        item(span = { GridItemSpan(maxLineSpan) }, key = "header_$header") {
+                            SectionHeader(header.label(), modifier = Modifier.padding(vertical = 12.dp))
+                        }
+                    }
+                    items(section.items, key = { "grid_${it.mediaType}_${it.id}" }) { item ->
+                        PosterCard(
+                            title = item.title,
+                            posterUrl = item.posterUrl,
+                            status = item.status,
+                            progress = item.progress,
+                            isFavorite = item.isFavorite,
+                            onClick = { onItemClick(item.mediaType, item.id) },
+                        )
                     }
                 }
             }
@@ -203,6 +229,7 @@ private fun LibrarySectionHeader.label(): String = when (this) {
     is LibrarySectionHeader.Status -> status.displayLabel()
     is LibrarySectionHeader.Genre -> name
     is LibrarySectionHeader.NoGenre -> stringResource(R.string.library_sort_genre_other)
+    is LibrarySectionHeader.Alpha -> letter
 }
 
 @Composable

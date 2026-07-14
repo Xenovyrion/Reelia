@@ -20,6 +20,7 @@ data class LibraryItem(
     val status: WatchStatus,
     val isFavorite: Boolean,
     val addedAt: Instant,
+    val lastWatchedAt: Instant? = null,
     val nextEpisodeCode: String? = null,
     val nextEpisodeName: String? = null,
     val runtimeMinutes: Int? = null,
@@ -29,11 +30,14 @@ data class LibraryItem(
 /** Kept as a discriminated header rather than a pre-resolved string — [Status]'s label needs
  * [com.reelia.app.domain.model.displayLabel], a @Composable string-resource lookup the ViewModel
  * can't call, so the screen resolves the final text. Null for sort modes that don't group into
- * sections (alphabetical, recently added), which render no header at all. */
+ * sections (recently added, recently watched), which render no header at all. */
 sealed class LibrarySectionHeader {
     data class Status(val status: WatchStatus) : LibrarySectionHeader()
     data class Genre(val name: String) : LibrarySectionHeader()
     data object NoGenre : LibrarySectionHeader()
+    /** [letter] is an uppercase A-Z or the "0-9" bucket for titles starting with a digit — the
+     * alphabetical sort's visual index, akin to a contacts app's section list. */
+    data class Alpha(val letter: String) : LibrarySectionHeader()
 }
 
 data class LibrarySection(val header: LibrarySectionHeader?, val items: List<LibraryItem>)

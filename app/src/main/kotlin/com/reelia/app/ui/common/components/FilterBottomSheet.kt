@@ -5,8 +5,11 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
@@ -28,7 +31,9 @@ import com.reelia.app.domain.model.displayLabel
 
 data class GenreOption(val id: Int, val name: String)
 
-enum class LibrarySortOption { STATUS, ALPHABETICAL, GENRE, RECENTLY_ADDED }
+enum class LibrarySortOption { STATUS, ALPHABETICAL, GENRE, RECENTLY_ADDED, RECENTLY_WATCHED }
+
+private val DEFAULT_SORT_OPTION = LibrarySortOption.STATUS
 
 @Composable
 private fun LibrarySortOption.label(): String = stringResource(
@@ -37,6 +42,7 @@ private fun LibrarySortOption.label(): String = stringResource(
         LibrarySortOption.ALPHABETICAL -> R.string.library_sort_alphabetical
         LibrarySortOption.GENRE -> R.string.library_sort_genre
         LibrarySortOption.RECENTLY_ADDED -> R.string.library_sort_recently_added
+        LibrarySortOption.RECENTLY_WATCHED -> R.string.library_sort_recently_watched
     },
 )
 
@@ -57,51 +63,62 @@ fun FilterBottomSheet(
     var genreIds by remember { mutableStateOf(selectedGenreIds) }
     var sort by remember { mutableStateOf(sortOption) }
 
+    // Fixed max height + an internally scrolling content column, so the Reset/Appliquer row
+    // always stays reachable at the bottom instead of requiring a scroll past every chip section.
     ModalBottomSheet(onDismissRequest = onDismiss) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(stringResource(R.string.library_sort_content_description), style = MaterialTheme.typography.titleMedium)
-            FlowRow(modifier = Modifier.padding(top = 8.dp, bottom = 16.dp)) {
-                LibrarySortOption.entries.forEach { option ->
-                    FilterChip(
-                        selected = sort == option,
-                        onClick = { sort = option },
-                        label = { Text(option.label()) },
-                        modifier = Modifier.padding(end = 8.dp, bottom = 8.dp),
-                    )
-                }
-            }
-            Text(stringResource(R.string.filter_status_label), style = MaterialTheme.typography.titleMedium)
-            FlowRow(modifier = Modifier.padding(top = 8.dp, bottom = 16.dp)) {
-                WatchStatus.entries.forEach { status ->
-                    FilterChip(
-                        selected = status in statuses,
-                        onClick = {
-                            statuses = if (status in statuses) statuses - status else statuses + status
-                        },
-                        label = { Text(status.displayLabel()) },
-                        modifier = Modifier.padding(end = 8.dp, bottom = 8.dp),
-                    )
-                }
-            }
-            if (availableGenres.isNotEmpty()) {
-                Text(stringResource(R.string.filter_genre_label), style = MaterialTheme.typography.titleMedium)
+        Column(modifier = Modifier.fillMaxWidth().fillMaxHeight(0.85f)) {
+            Column(
+                modifier = Modifier
+                    .weight(1f, fill = false)
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 16.dp)
+                    .padding(top = 16.dp),
+            ) {
+                Text(stringResource(R.string.library_sort_content_description), style = MaterialTheme.typography.titleMedium)
                 FlowRow(modifier = Modifier.padding(top = 8.dp, bottom = 16.dp)) {
-                    availableGenres.forEach { genre ->
+                    LibrarySortOption.entries.forEach { option ->
                         FilterChip(
-                            selected = genre.id in genreIds,
-                            onClick = {
-                                genreIds = if (genre.id in genreIds) genreIds - genre.id else genreIds + genre.id
-                            },
-                            label = { Text(genre.name) },
+                            selected = sort == option,
+                            onClick = { sort = option },
+                            label = { Text(option.label()) },
                             modifier = Modifier.padding(end = 8.dp, bottom = 8.dp),
                         )
                     }
                 }
+                Text(stringResource(R.string.filter_status_label), style = MaterialTheme.typography.titleMedium)
+                FlowRow(modifier = Modifier.padding(top = 8.dp, bottom = 16.dp)) {
+                    WatchStatus.entries.forEach { status ->
+                        FilterChip(
+                            selected = status in statuses,
+                            onClick = {
+                                statuses = if (status in statuses) statuses - status else statuses + status
+                            },
+                            label = { Text(status.displayLabel()) },
+                            modifier = Modifier.padding(end = 8.dp, bottom = 8.dp),
+                        )
+                    }
+                }
+                if (availableGenres.isNotEmpty()) {
+                    Text(stringResource(R.string.filter_genre_label), style = MaterialTheme.typography.titleMedium)
+                    FlowRow(modifier = Modifier.padding(top = 8.dp, bottom = 16.dp)) {
+                        availableGenres.forEach { genre ->
+                            FilterChip(
+                                selected = genre.id in genreIds,
+                                onClick = {
+                                    genreIds = if (genre.id in genreIds) genreIds - genre.id else genreIds + genre.id
+                                },
+                                label = { Text(genre.name) },
+                                modifier = Modifier.padding(end = 8.dp, bottom = 8.dp),
+                            )
+                        }
+                    }
+                }
             }
-            Row(modifier = Modifier.fillMaxWidth()) {
+            Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp)) {
                 TextButton(onClick = {
                     statuses = emptySet()
                     genreIds = emptySet()
+                    sort = DEFAULT_SORT_OPTION
                 }) {
                     Text(stringResource(R.string.filter_reset_button))
                 }
@@ -127,21 +144,29 @@ fun GenreFilterBottomSheet(
     var genreIds by remember { mutableStateOf(selectedGenreIds) }
 
     ModalBottomSheet(onDismissRequest = onDismiss) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(stringResource(R.string.filter_genre_label), style = MaterialTheme.typography.titleMedium)
-            FlowRow(modifier = Modifier.padding(top = 8.dp, bottom = 16.dp)) {
-                availableGenres.forEach { genre ->
-                    FilterChip(
-                        selected = genre.id in genreIds,
-                        onClick = {
-                            genreIds = if (genre.id in genreIds) genreIds - genre.id else genreIds + genre.id
-                        },
-                        label = { Text(genre.name) },
-                        modifier = Modifier.padding(end = 8.dp, bottom = 8.dp),
-                    )
+        Column(modifier = Modifier.fillMaxWidth().fillMaxHeight(0.85f)) {
+            Column(
+                modifier = Modifier
+                    .weight(1f, fill = false)
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 16.dp)
+                    .padding(top = 16.dp),
+            ) {
+                Text(stringResource(R.string.filter_genre_label), style = MaterialTheme.typography.titleMedium)
+                FlowRow(modifier = Modifier.padding(top = 8.dp, bottom = 16.dp)) {
+                    availableGenres.forEach { genre ->
+                        FilterChip(
+                            selected = genre.id in genreIds,
+                            onClick = {
+                                genreIds = if (genre.id in genreIds) genreIds - genre.id else genreIds + genre.id
+                            },
+                            label = { Text(genre.name) },
+                            modifier = Modifier.padding(end = 8.dp, bottom = 8.dp),
+                        )
+                    }
                 }
             }
-            Row(modifier = Modifier.fillMaxWidth()) {
+            Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp)) {
                 TextButton(onClick = { genreIds = emptySet() }) {
                     Text(stringResource(R.string.filter_reset_button))
                 }

@@ -60,6 +60,7 @@
     <string name="library_sort_alphabetical">Alphabétique</string>
     <string name="library_sort_genre">Genre</string>
     <string name="library_sort_recently_added">Ajout récent</string>
+    <string name="library_sort_recently_watched">Dernier vu</string>
     <string name="library_sort_genre_other">Autres</string>
     <string name="section_upcoming">À venir</string>
     <string name="days_until_aired">Diffusé</string>
@@ -299,6 +300,7 @@
     <string name="profile_appcheck_fetch_button">Récupérer le token App Check</string>
     <string name="profile_appcheck_cooldown_format">Réessaie dans %1$ds</string>
     <string name="profile_appcheck_error_rate_limited">Trop de tentatives — patiente une minute avant de réessayer.</string>
+    <string name="profile_appcheck_error_blocked">L\'API Firebase App Check semble désactivée ou restreinte pour ce projet. Dans la console Google Cloud, vérifie que \"Firebase App Check API\" est activée (APIs &amp; Services &gt; Bibliothèque) et, si la clé API Android a des restrictions d\'API, qu\'elle y est bien autorisée.</string>
     <string name="profile_appcheck_error_format">Erreur : %1$s</string>
     <string name="profile_appcheck_dialog_title">Token App Check</string>
     <string name="profile_appcheck_copy_button">Copier</string>

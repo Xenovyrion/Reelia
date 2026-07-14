@@ -30,6 +30,10 @@ interface WatchLogDao {
     @Query("SELECT watchedAt, runtimeMinutes FROM watch_log WHERE (:mediaType IS NULL OR mediaType = :mediaType)")
     fun getAllEntriesForBreakdown(mediaType: MediaType?): Flow<List<WatchLogTimeEntry>>
 
+    /** Latest watch timestamp per tracked title, used to sort the library by "recently watched". */
+    @Query("SELECT mediaType, tmdbId, MAX(watchedAt) AS watchedAt FROM watch_log GROUP BY mediaType, tmdbId")
+    fun getLastWatchedPerMedia(): Flow<List<LastWatchedEntry>>
+
     @Query(
         """
         SELECT genreId, genreName, COALESCE(SUM(runtimeMinutes), 0) AS totalMinutes FROM (

@@ -1,6 +1,7 @@
 package com.reelia.app.data.repository
 
 import com.reelia.app.data.local.dao.GenreStat
+import com.reelia.app.data.local.dao.LastWatchedEntry
 import com.reelia.app.data.local.dao.WatchLogDao
 import com.reelia.app.domain.model.MediaType
 import java.time.Instant
@@ -34,6 +35,8 @@ class StatsRepository @Inject constructor(
         combine(watchLogDao.totalMinutesWatched(mediaType), watchLogDao.countEntries(mediaType)) { minutes, count ->
             BasicStats(totalMinutesWatched = minutes, totalWatchedCount = count)
         }
+
+    fun getLastWatchedPerMedia(): Flow<List<LastWatchedEntry>> = watchLogDao.getLastWatchedPerMedia()
 
     /** [periodsAgo] shifts the visible window back by that many weeks — 0 shows the most recent
      * [count] weeks (oldest first, ending with the current week); 1 shifts the whole window back

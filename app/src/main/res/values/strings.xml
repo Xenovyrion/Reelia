@@ -60,6 +60,7 @@
     <string name="library_sort_alphabetical">Alphabetical</string>
     <string name="library_sort_genre">Genre</string>
     <string name="library_sort_recently_added">Recently added</string>
+    <string name="library_sort_recently_watched">Recently watched</string>
     <string name="library_sort_genre_other">Other</string>
     <string name="section_upcoming">Upcoming</string>
     <string name="days_until_aired">Aired</string>
@@ -303,6 +304,7 @@
     <string name="profile_appcheck_fetch_button">Fetch App Check token</string>
     <string name="profile_appcheck_cooldown_format">Retry in %1$ds</string>
     <string name="profile_appcheck_error_rate_limited">Too many attempts — please wait a minute before retrying.</string>
+    <string name="profile_appcheck_error_blocked">The Firebase App Check API seems disabled or restricted for this project. In Google Cloud Console, check that \"Firebase App Check API\" is enabled (APIs &amp; Services &gt; Library) and, if the Android API key has API restrictions, that it\'s allowed there.</string>
     <string name="profile_appcheck_error_format">Error: %1$s</string>
     <string name="profile_appcheck_dialog_title">App Check token</string>
     <string name="profile_appcheck_copy_button">Copy</string>

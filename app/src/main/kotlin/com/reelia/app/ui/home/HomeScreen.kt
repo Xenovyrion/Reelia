@@ -64,7 +64,7 @@ fun HomeScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val listState = rememberLazyListState()
-    ScrollToTopOnTabReselect(Routes.HOME) { listState.animateScrollToItem(0) }
+    ScrollToTopOnTabReselect(Routes.HOME) { listState.scrollToItem(0) }
 
     Scaffold { padding ->
         if (uiState.isLoading) {

@@ -12,6 +12,7 @@ import com.reelia.app.data.local.entity.TrackedShowEntity
 import com.reelia.app.data.remote.tmdb.TmdbImageUrlBuilder
 import com.reelia.app.data.repository.MovieRepository
 import com.reelia.app.data.repository.ShowRepository
+import com.reelia.app.data.repository.StatsRepository
 import com.reelia.app.domain.model.MediaType
 import com.reelia.app.domain.model.WatchStatus
 import com.reelia.app.domain.model.displayLabel
@@ -23,6 +24,7 @@ import com.reelia.app.ui.common.components.ViewMode
 import com.reelia.app.ui.common.model.buildUpcomingMovieItems
 import com.reelia.app.ui.common.model.buildUpcomingShowItems
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.time.Instant
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -58,6 +60,7 @@ class LibraryViewModel @Inject constructor(
     private val showRepository: ShowRepository,
     private val movieRepository: MovieRepository,
     private val imageUrlBuilder: TmdbImageUrlBuilder,
+    private val statsRepository: StatsRepository,
 ) : ViewModel() {
 
     private val filterState = MutableStateFlow(LibraryFilterState())
@@ -82,7 +85,10 @@ class LibraryViewModel @Inject constructor(
         rawShowData,
         rawMovieData,
         filterState,
-    ) { showData, movieData, filter ->
+        statsRepository.getLastWatchedPerMedia(),
+    ) { showData, movieData, filter, lastWatchedEntries ->
+        val lastWatchedByKey: Map<Pair<MediaType, Int>, Instant> =
+            lastWatchedEntries.associate { (it.mediaType to it.tmdbId) to it.watchedAt }
         val genreIdsByShowId = showData.crossRefs.groupBy({ it.showId }, { it.genreId })
         val genreIdsByMovieId = movieData.crossRefs.groupBy({ it.movieId }, { it.genreId })
         val showGenreNameById = showData.genres.associateBy { it.tmdbId }
@@ -113,6 +119,7 @@ class LibraryViewModel @Inject constructor(
                         status = status,
                         isFavorite = show.isFavorite,
                         addedAt = show.addedAt,
+                        lastWatchedAt = lastWatchedByKey[MediaType.TV to show.tmdbId],
                         nextEpisodeCode = nextEpisode?.let { "S${it.seasonNumber} · E${it.episodeNumber}" },
                         nextEpisodeName = nextEpisode?.name,
                         genreNames = genreIdsByShowId[show.tmdbId].orEmpty().mapNotNull { showGenreNameById[it]?.name },
@@ -141,6 +148,7 @@ class LibraryViewModel @Inject constructor(
                         status = status,
                         isFavorite = movie.isFavorite,
                         addedAt = movie.addedAt,
+                        lastWatchedAt = lastWatchedByKey[MediaType.MOVIE to movie.tmdbId],
                         runtimeMinutes = movie.runtimeMinutes,
                         genreNames = genreIdsByMovieId[movie.tmdbId].orEmpty().mapNotNull { movieGenreNameById[it]?.name },
                     )
@@ -199,24 +207,44 @@ class LibraryViewModel @Inject constructor(
 
 }
 
+private fun alphaSorted(items: List<LibraryItem>): List<LibraryItem> = items.sortedBy { it.title.lowercase() }
+
+/** First-letter index bucket for the alphabetical sort, e.g. a contacts app's section list —
+ * digits fold into one "0-9" bucket rather than one section per digit. */
+private fun LibraryItem.alphaBucket(): String {
+    val firstChar = title.trim().firstOrNull() ?: return "#"
+    return if (firstChar.isDigit()) "0-9" else firstChar.uppercaseChar().toString()
+}
+
 private fun buildSections(items: List<LibraryItem>, sortOption: LibrarySortOption): List<LibrarySection> =
     when (sortOption) {
         LibrarySortOption.STATUS -> WatchStatus.entries
             .mapNotNull { status ->
-                val statusItems = items.filter { it.status == status }
+                val statusItems = alphaSorted(items.filter { it.status == status })
                 statusItems.takeIf { it.isNotEmpty() }?.let { LibrarySection(LibrarySectionHeader.Status(status), it) }
             }
-        LibrarySortOption.ALPHABETICAL -> listOf(
-            LibrarySection(header = null, items = items.sortedBy { it.title.lowercase() }),
-        )
+        LibrarySortOption.ALPHABETICAL -> alphaSorted(items)
+            .groupBy { it.alphaBucket() }
+            .map { (letter, bucketItems) -> LibrarySection(LibrarySectionHeader.Alpha(letter), bucketItems) }
         LibrarySortOption.RECENTLY_ADDED -> listOf(
-            LibrarySection(header = null, items = items.sortedByDescending { it.addedAt }),
+            LibrarySection(
+                header = null,
+                items = items.sortedWith(compareByDescending<LibraryItem> { it.addedAt }.thenBy { it.title.lowercase() }),
+            ),
+        )
+        LibrarySortOption.RECENTLY_WATCHED -> listOf(
+            LibrarySection(
+                header = null,
+                items = items.sortedWith(
+                    compareByDescending<LibraryItem> { it.lastWatchedAt ?: Instant.MIN }.thenBy { it.title.lowercase() },
+                ),
+            ),
         )
         LibrarySortOption.GENRE -> items
             .groupBy { it.genreNames.firstOrNull() }
             .toSortedMap(compareBy { it ?: "￿" }) // null (no genre) bucket sorts last
             .map { (genreName, genreItems) ->
                 val header = genreName?.let { LibrarySectionHeader.Genre(it) } ?: LibrarySectionHeader.NoGenre
-                LibrarySection(header, genreItems.sortedBy { it.title.lowercase() })
+                LibrarySection(header, alphaSorted(genreItems))
             }
     }

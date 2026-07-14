@@ -166,8 +166,8 @@ fun ProfileScreen(
 
     ScrollToTopOnTabReselect(Routes.PROFILE) {
         when (selectedTab) {
-            ProfileSubTab.SETTINGS -> settingsScrollState.animateScrollTo(0)
-            ProfileSubTab.STATS -> statsScrollState.animateScrollTo(0)
+            ProfileSubTab.SETTINGS -> settingsScrollState.scrollTo(0)
+            ProfileSubTab.STATS -> statsScrollState.scrollTo(0)
         }
     }
 
@@ -592,10 +592,10 @@ private fun ProfileSettingsContent(
                 }
             }
             appCheckState.errorMessage?.let { raw ->
-                val displayMessage = if (appCheckState.isRateLimited) {
-                    stringResource(R.string.profile_appcheck_error_rate_limited)
-                } else {
-                    stringResource(R.string.profile_appcheck_error_format, raw)
+                val displayMessage = when {
+                    appCheckState.isRateLimited -> stringResource(R.string.profile_appcheck_error_rate_limited)
+                    appCheckState.isBlocked -> stringResource(R.string.profile_appcheck_error_blocked)
+                    else -> stringResource(R.string.profile_appcheck_error_format, raw)
                 }
                 Text(
                     displayMessage,
