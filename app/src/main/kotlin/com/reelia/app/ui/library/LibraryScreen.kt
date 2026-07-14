@@ -33,6 +33,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -78,6 +79,15 @@ fun LibraryScreen(
     val listState = rememberLazyListState()
     val gridState = rememberLazyGridState()
     val route = if (fixedMediaType == MediaType.TV) Routes.SERIES else Routes.FILMS
+
+    // The ViewModel survives a tab switch (Compose Navigation's saveState/restoreState keeps it
+    // alive so scroll position etc. persist), but this composable's local state doesn't — so a
+    // search left active while navigating to a detail screen or another tab would keep silently
+    // filtering the list on return, with no visible search field to explain why. Clearing it here
+    // means leaving this screen for any reason always resets the search.
+    DisposableEffect(Unit) {
+        onDispose { viewModel.onSearchQueryChanged("") }
+    }
 
     ScrollToTopOnTabReselect(route) {
         if (uiState.viewMode == ViewMode.GRID) gridState.scrollToItem(0) else listState.scrollToItem(0)
