@@ -9,7 +9,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 
 private const val ANNOUNCEMENT_URL =
-    "https://raw.githubusercontent.com/Xenovyrion/TimeLine/main/docs/announcement.json"
+    "https://raw.githubusercontent.com/Xenovyrion/reelia-content/main/docs/announcement.json"
 
 /**
  * Fetches docs/announcement.json straight from GitHub, same "no app update needed" approach as

@@ -16,7 +16,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 
 private const val LATEST_RELEASE_URL =
-    "https://api.github.com/repos/Xenovyrion/TimeLine/releases/latest"
+    "https://api.github.com/repos/Xenovyrion/reelia-content/releases/latest"
 
 /**
  * Checks GitHub's latest tagged release (e.g. `v0.13.0`) for a version newer than this build's

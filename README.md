@@ -6,7 +6,7 @@
 ![targetSdk](https://img.shields.io/badge/targetSdk-35-3DDC84?logo=android&logoColor=white)
 ![Firebase](https://img.shields.io/badge/Firebase-Auth%20%2B%20Firestore-FFCA28?logo=firebase&logoColor=black)
 ![Version](https://img.shields.io/badge/version-0.12.0-8C8FFF)
-![Android CI](https://github.com/Xenovyrion/TimeLine/actions/workflows/android-build.yml/badge.svg)
+![Android CI](https://github.com/Xenovyrion/Reelia/actions/workflows/android-build.yml/badge.svg)
 
 Reelia est une application Android personnelle de suivi de séries et films — un
 remplaçant de TV Time, avec une bibliothèque synchronisée entre plusieurs appareils.
@@ -51,9 +51,16 @@ remplaçant de TV Time, avec une bibliothèque synchronisée entre plusieurs app
 - **Français / English** — l'interface est entièrement traduite dans les deux langues,
   y compris le format des dates selon la région.
 
-Voir [`docs/guide/fr.md`](docs/guide/fr.md) ([`en`](docs/guide/en.md)) pour le guide
+Voir [`docs/guide/fr.md`](https://github.com/Xenovyrion/reelia-content/blob/main/docs/guide/fr.md)
+([`en`](https://github.com/Xenovyrion/reelia-content/blob/main/docs/guide/en.md)) pour le guide
 d'utilisation détaillé (premiers pas, fonctionnement de la synchro, confidentialité) — le
 même contenu que l'écran Aide de l'appli.
+
+Le code source de l'appli vit ici ; les notes de version, le guide, les annonces in-app et
+les APK publiés vivent dans [`reelia-content`](https://github.com/Xenovyrion/reelia-content),
+un dépôt public séparé — ça permet à ce dépôt-ci de passer privé sans casser la mise à jour
+auto, les notes de version, le guide ou les annonces (qui vont tous chercher leur contenu sur
+GitHub sans authentification, donc ont besoin d'un dépôt public).
 
 ## Stack technique
 
@@ -85,7 +92,13 @@ modification locale n'est perdue si l'appareil est hors-ligne au moment du chang
   committée dans le repo).
 - Un projet Firebase (offre gratuite Spark) avec Authentication (Email/Password, et
   Google si tu veux ce mode de connexion) et Cloud Firestore activés. Le
-  `google-services.json` du projet doit être placé dans `app/`.
+  `google-services.json` du projet doit être placé dans `app/`. App Check (Play
+  Integrity en release, provider debug en debug) protège Auth/Firestore contre les
+  clients non légitimes — le token debug se récupère directement dans l'appli
+  (Profil > App Check, uniquement en debug) pour l'enregistrer côté console Firebase.
+- Pour que la CI publie les releases sur `reelia-content` : un secret de dépôt
+  `CONTENT_REPO_TOKEN` (PAT fine-grained, accès limité à `reelia-content`,
+  permission Contents: Read and write).
 
 ## Build
 
@@ -94,12 +107,15 @@ modification locale n'est perdue si l'appareil est hors-ligne au moment du chang
 ```
 
 La CI GitHub Actions compile chaque push/PR vers `main` et publie l'APK debug le plus
-récent en tant que [release "debug-latest"](https://github.com/Xenovyrion/TimeLine/releases/tag/debug-latest).
+récent en tant que [release "debug-latest"](https://github.com/Xenovyrion/reelia-content/releases/tag/debug-latest)
+sur `reelia-content`. Un tag `vX.Y.Z` poussé sur ce dépôt publie en plus une vraie
+release versionnée (non-prerelease) au même endroit, que l'appli détecte via son
+vérificateur de mise à jour intégré.
 
 ## État actuel
 
 Application fonctionnelle de bout en bout : ajout de séries/films, suivi épisode par
 épisode, import depuis TV Time, statistiques détaillées, synchronisation complète
 (bibliothèque, statuts, journal de visionnage, clé API) entre appareils via compte
-Firebase. Voir [`docs/release-notes/fr.md`](docs/release-notes/fr.md) pour le détail
-des versions.
+Firebase. Voir [`docs/release-notes/fr.md`](https://github.com/Xenovyrion/reelia-content/blob/main/docs/release-notes/fr.md)
+pour le détail des versions.

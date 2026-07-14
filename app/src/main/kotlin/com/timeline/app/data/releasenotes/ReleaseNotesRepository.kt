@@ -8,7 +8,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 
 private const val RELEASE_NOTES_BASE_URL =
-    "https://raw.githubusercontent.com/Xenovyrion/TimeLine/main/docs/release-notes"
+    "https://raw.githubusercontent.com/Xenovyrion/reelia-content/main/docs/release-notes"
 
 /**
  * Fetches the release notes Markdown straight from the repo on GitHub — rather than bundling

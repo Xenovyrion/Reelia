@@ -8,7 +8,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 
 private const val GUIDE_BASE_URL =
-    "https://raw.githubusercontent.com/Xenovyrion/TimeLine/main/docs/guide"
+    "https://raw.githubusercontent.com/Xenovyrion/reelia-content/main/docs/guide"
 
 /**
  * Fetches the user guide Markdown straight from the repo on GitHub, same reasoning as

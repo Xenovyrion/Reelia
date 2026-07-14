@@ -42,14 +42,16 @@ jobs:
         if: github.ref == 'refs/heads/main' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'push')
         uses: softprops/action-gh-release@v2
         with:
+          repository: Xenovyrion/reelia-content
+          token: ${{ secrets.CONTENT_REPO_TOKEN }}
           tag_name: debug-latest
-          target_commitish: ${{ github.sha }}
+          target_commitish: main
           name: "Reelia — latest debug build"
           body: >
-            Automated debug APK build from the latest CI run on
-            `${{ github.ref_name }}` (${{ github.sha }}). Not signed for
-            release — for local testing only, and unrelated to versioned
-            releases (see the "Latest" release for those).
+            Automated debug APK build from source commit `${{ github.sha }}`
+            (Xenovyrion/Reelia@${{ github.sha }}). Not signed for release —
+            for local testing only, and unrelated to versioned releases
+            (see the "Latest" release for those).
           prerelease: true
           files: app/build/outputs/apk/debug/*.apk
 
@@ -67,9 +69,13 @@ jobs:
       - name: Publish versioned GitHub Release
         uses: softprops/action-gh-release@v2
         with:
+          repository: Xenovyrion/reelia-content
+          token: ${{ secrets.CONTENT_REPO_TOKEN }}
           tag_name: ${{ github.ref_name }}
+          target_commitish: main
           name: "Reelia ${{ github.ref_name }}"
           body: >
+            Version ${{ github.ref_name }}, buildée depuis Xenovyrion/Reelia@${{ github.sha }}.
             Notes de version complètes dans l'appli (Profil > Notes de version)
             ou docs/release-notes/fr.md (docs/release-notes/en.md en anglais).
           prerelease: false
