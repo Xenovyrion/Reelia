@@ -24,7 +24,7 @@ fun gitCommitSha(): String = try {
 }
 
 android {
-    namespace = "com.timeline.app"
+    namespace = "com.reelia.app"
     compileSdk = 35
 
     defaultConfig {

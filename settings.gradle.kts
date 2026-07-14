@@ -14,5 +14,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "TimeLine"
+rootProject.name = "Reelia"
 include(":app")
