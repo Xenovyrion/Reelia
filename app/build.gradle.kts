@@ -81,7 +81,7 @@ android {
     // once it shows up as a GitHub Release asset. Captured into locals before entering
     // outputs.all { } since that inner lambda's `this` shadows the outer variant.
     applicationVariants.all {
-        val apkName = "reelia-$versionName-${buildType.name}.apk"
+        val apkName = "reelia-$versionName.apk"
         outputs.all {
             this as com.android.build.gradle.internal.api.BaseVariantOutputImpl
             outputFileName = apkName
