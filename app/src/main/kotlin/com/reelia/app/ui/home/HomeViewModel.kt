@@ -56,6 +56,7 @@ class HomeViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val discoverData = MutableStateFlow(DiscoverData())
+    private val discoverLoading = MutableStateFlow(true)
 
     init {
         // One-time backfill: status used to only ever be set once at add-time, so anything
@@ -100,6 +101,8 @@ class HomeViewModel @Inject constructor(
             } catch (e: Exception) {
                 // Discovery rows are supplementary — a network failure here must never block
                 // the Room-backed core UI (continue watching), so they just stay empty.
+            } finally {
+                discoverLoading.value = false
             }
         }
     }
@@ -117,7 +120,12 @@ class HomeViewModel @Inject constructor(
         user?.displayName?.substringBefore(' ')?.takeIf { it.isNotBlank() }
     }
 
-    val uiState: StateFlow<HomeUiState> = combine(rawData, discoverData, userFirstName) { raw, discover, firstName ->
+    val uiState: StateFlow<HomeUiState> = combine(
+        rawData,
+        discoverData,
+        userFirstName,
+        discoverLoading,
+    ) { raw, discover, firstName, isDiscoverLoading ->
         val progressByShowId = raw.progress.associateBy { it.showId }
         val nextEpisodeByShowId = raw.unwatchedEpisodes.groupBy { it.showId }.mapValues { it.value.first() }
 
@@ -147,6 +155,7 @@ class HomeViewModel @Inject constructor(
 
         HomeUiState(
             isLoading = false,
+            isDiscoverLoading = isDiscoverLoading,
             greetingPeriod = greetingPeriod,
             userFirstName = firstName,
             continueWatching = continueWatching,

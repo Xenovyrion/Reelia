@@ -76,6 +76,14 @@ fun HomeScreen(
             uiState.recentMovies.isEmpty() &&
             uiState.recentShows.isEmpty() &&
             uiState.suggestions.isEmpty()
+        if (isEmpty && uiState.isDiscoverLoading) {
+            // The discovery feeds (trending/recent/suggestions) are still in flight — show the
+            // spinner rather than a premature "empty library" message that would just flash by.
+            Box(Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
+            return@Scaffold
+        }
         if (isEmpty) {
             Box(Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
                 Text(

@@ -28,6 +28,7 @@ enum class GreetingPeriod { MORNING, AFTERNOON, EVENING }
 
 data class HomeUiState(
     val isLoading: Boolean = true,
+    val isDiscoverLoading: Boolean = true,
     val greetingPeriod: GreetingPeriod = GreetingPeriod.MORNING,
     val userFirstName: String? = null,
     val continueWatching: List<ContinueWatchingItem> = emptyList(),

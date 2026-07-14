@@ -150,6 +150,7 @@ data class ResetLibraryUiState(
     val errorMessage: String? = null,
 )
 
+@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository,

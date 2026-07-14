@@ -28,6 +28,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
@@ -77,6 +78,7 @@ import java.util.Date
 import java.util.Locale
 import kotlin.math.roundToInt
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.Autorenew
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.ChevronLeft
@@ -85,7 +87,6 @@ import androidx.compose.material.icons.filled.HourglassBottom
 import androidx.compose.material.icons.filled.Inventory2
 import androidx.compose.material.icons.filled.LiveTv
 import androidx.compose.material.icons.filled.Schedule
-import androidx.compose.material.icons.filled.TrendingUp
 
 private val StatusPalette = listOf(StatusWatchingCompleted, StatusWantToWatch, StatusPlanned, StatusFavorite)
 
@@ -369,7 +370,7 @@ fun ProfileScreen(
                     modifier = Modifier.weight(1f).fillMaxHeight(),
                 )
                 StatCard(
-                    icon = Icons.Filled.TrendingUp,
+                    icon = Icons.AutoMirrored.Filled.TrendingUp,
                     value = String.format(Locale.getDefault(), "%.1f", statsUiState.averageHoursPerWeek),
                     unitLabel = stringResource(R.string.stats_hours_unit_label),
                     caption = stringResource(R.string.stats_weekly_average_caption),
@@ -551,7 +552,7 @@ fun ProfileScreen(
                     readOnly = true,
                     label = { Text(stringResource(R.string.settings_language_field_label)) },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = languageMenuExpanded) },
-                    modifier = Modifier.fillMaxWidth().menuAnchor(),
+                    modifier = Modifier.fillMaxWidth().menuAnchor(MenuAnchorType.PrimaryNotEditable),
                 )
                 DropdownMenu(
                     expanded = languageMenuExpanded,
