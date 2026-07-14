@@ -69,9 +69,12 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val provider = metadataProviderRegistry.activeProvider.first()
-                val trendingDeferred = async { provider.getTrendingFeed() }
-                val recentMoviesDeferred = async { provider.getRecentMoviesFeed() }
-                val recentShowsDeferred = async { provider.getRecentShowsFeed() }
+                // Each wrapped independently (not just by the outer try/catch) so one failing
+                // feed — e.g. no TMDB API key configured yet on a fresh install — can't take
+                // down the other two, or the whole coroutine, along with it.
+                val trendingDeferred = async { runCatching { provider.getTrendingFeed() }.getOrDefault(emptyList()) }
+                val recentMoviesDeferred = async { runCatching { provider.getRecentMoviesFeed() }.getOrDefault(emptyList()) }
+                val recentShowsDeferred = async { runCatching { provider.getRecentShowsFeed() }.getOrDefault(emptyList()) }
 
                 val shows = showRepository.getAllShows().first()
                 val movies = movieRepository.getAllMovies().first()
