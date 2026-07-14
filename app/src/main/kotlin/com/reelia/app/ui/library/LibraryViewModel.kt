@@ -14,6 +14,7 @@ import com.reelia.app.data.repository.MovieRepository
 import com.reelia.app.data.repository.ShowRepository
 import com.reelia.app.domain.model.MediaType
 import com.reelia.app.domain.model.WatchStatus
+import com.reelia.app.domain.model.displayLabel
 import com.reelia.app.ui.common.effectiveMovieStatus
 import com.reelia.app.ui.common.effectiveShowStatus
 import com.reelia.app.ui.common.components.GenreOption
@@ -46,6 +47,7 @@ private data class RawMovieData(
 private data class LibraryFilterState(
     val viewMode: ViewMode = ViewMode.GRID,
     val typeFilter: LibraryTypeFilter = LibraryTypeFilter.ALL,
+    val sortOption: LibrarySortOption = LibrarySortOption.STATUS,
     val selectedStatuses: Set<WatchStatus> = emptySet(),
     val selectedGenreIds: Set<Int> = emptySet(),
 )
@@ -82,6 +84,7 @@ class LibraryViewModel @Inject constructor(
     ) { showData, movieData, filter ->
         val genreIdsByShowId = showData.crossRefs.groupBy({ it.showId }, { it.genreId })
         val genreIdsByMovieId = movieData.crossRefs.groupBy({ it.movieId }, { it.genreId })
+        val showGenreNameById = showData.genres.associateBy { it.tmdbId }
         val movieGenreNameById = movieData.genres.associateBy { it.tmdbId }
         val progressByShowId = showData.progress.associateBy { it.showId }
         val nextEpisodeByShowId = showData.unwatchedEpisodes.groupBy { it.showId }.mapValues { it.value.first() }
@@ -111,6 +114,7 @@ class LibraryViewModel @Inject constructor(
                         addedAt = show.addedAt,
                         nextEpisodeCode = nextEpisode?.let { "S${it.seasonNumber} · E${it.episodeNumber}" },
                         nextEpisodeName = nextEpisode?.name,
+                        genreNames = genreIdsByShowId[show.tmdbId].orEmpty().mapNotNull { showGenreNameById[it]?.name },
                     )
                 }
         }
@@ -143,9 +147,7 @@ class LibraryViewModel @Inject constructor(
         }
 
         val combinedItems = showItems + movieItems
-        val grouped = WatchStatus.entries
-            .associateWith { status -> combinedItems.filter { it.status == status } }
-            .filterValues { it.isNotEmpty() }
+        val sections = buildSections(combinedItems, filter.sortOption)
 
         val upcomingShows = if (filter.typeFilter == LibraryTypeFilter.FILMS) {
             emptyList()
@@ -168,7 +170,8 @@ class LibraryViewModel @Inject constructor(
             isLoading = false,
             viewMode = filter.viewMode,
             typeFilter = filter.typeFilter,
-            groupedItems = grouped,
+            sortOption = filter.sortOption,
+            sections = sections,
             upcomingShows = upcomingShows,
             upcomingMovies = upcomingMovies,
             availableGenres = availableGenres,
@@ -192,4 +195,30 @@ class LibraryViewModel @Inject constructor(
     fun onFiltersApplied(statuses: Set<WatchStatus>, genreIds: Set<Int>) {
         filterState.update { it.copy(selectedStatuses = statuses, selectedGenreIds = genreIds) }
     }
+
+    fun onSortOptionSelected(sortOption: LibrarySortOption) {
+        filterState.update { it.copy(sortOption = sortOption) }
+    }
 }
+
+private fun buildSections(items: List<LibraryItem>, sortOption: LibrarySortOption): List<LibrarySection> =
+    when (sortOption) {
+        LibrarySortOption.STATUS -> WatchStatus.entries
+            .mapNotNull { status ->
+                val statusItems = items.filter { it.status == status }
+                statusItems.takeIf { it.isNotEmpty() }?.let { LibrarySection(LibrarySectionHeader.Status(status), it) }
+            }
+        LibrarySortOption.ALPHABETICAL -> listOf(
+            LibrarySection(header = null, items = items.sortedBy { it.title.lowercase() }),
+        )
+        LibrarySortOption.RECENTLY_ADDED -> listOf(
+            LibrarySection(header = null, items = items.sortedByDescending { it.addedAt }),
+        )
+        LibrarySortOption.GENRE -> items
+            .groupBy { it.genreNames.firstOrNull() }
+            .toSortedMap(compareBy { it ?: "￿" }) // null (no genre) bucket sorts last
+            .map { (genreName, genreItems) ->
+                val header = genreName?.let { LibrarySectionHeader.Genre(it) } ?: LibrarySectionHeader.NoGenre
+                LibrarySection(header, genreItems.sortedBy { it.title.lowercase() })
+            }
+    }

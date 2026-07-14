@@ -32,6 +32,7 @@ import com.reelia.app.ui.announcement.AnnouncementBanner
 import com.reelia.app.ui.auth.AuthGateViewModel
 import com.reelia.app.ui.auth.LoginScreen
 import com.reelia.app.ui.navigation.BottomNavItem
+import com.reelia.app.ui.navigation.BottomNavScrollToTop
 import com.reelia.app.ui.navigation.TimeLineNavGraph
 import com.reelia.app.ui.theme.TimeLineTheme
 import com.reelia.app.ui.update.UpdateBanner
@@ -93,6 +94,7 @@ private fun TimeLineAppContent() {
                                     launchSingleTop = true
                                     restoreState = true
                                 }
+                                BottomNavScrollToTop.requestScrollToTop(item.route)
                             },
                             icon = {
                                 Icon(

@@ -19,6 +19,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -30,6 +31,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -51,6 +53,8 @@ import com.reelia.app.ui.common.components.EpisodeCodeBadge
 import com.reelia.app.ui.common.components.SectionHeader
 import com.reelia.app.ui.common.components.UpcomingMovieCard
 import com.reelia.app.ui.common.components.UpcomingShowCard
+import com.reelia.app.ui.navigation.BottomNavScrollToTop
+import com.reelia.app.ui.navigation.Routes
 
 @Composable
 fun HomeScreen(
@@ -60,6 +64,12 @@ fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val listState = rememberLazyListState()
+    LaunchedEffect(Unit) {
+        BottomNavScrollToTop.events.collect { route ->
+            if (route == Routes.HOME) listState.animateScrollToItem(0)
+        }
+    }
 
     Scaffold { padding ->
         if (uiState.isLoading) {
@@ -96,7 +106,7 @@ fun HomeScreen(
             return@Scaffold
         }
 
-        LazyColumn(modifier = Modifier.fillMaxSize().padding(padding)) {
+        LazyColumn(state = listState, modifier = Modifier.fillMaxSize().padding(padding)) {
             item {
                 val periodRes = when (uiState.greetingPeriod) {
                     GreetingPeriod.MORNING -> R.string.home_greeting_morning

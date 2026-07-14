@@ -55,7 +55,9 @@ class LanguagePreferenceStore @Inject constructor(
 
     companion object {
         const val FALLBACK_LANGUAGE = "en-US"
-        val SUPPORTED_LANGUAGES = listOf("fr-FR", "en-US", "en-GB", "es-ES", "de-DE", "it-IT", "ja-JP")
+        // Only French and English UI text actually exists (see uiLocaleTagFor) — other TMDB
+        // content languages were listed here but never had a real translated UI to back them.
+        val SUPPORTED_LANGUAGES = listOf("fr-FR", "en-US")
 
         /** The app's own UI text is only translated for French and English — everything else falls
          * back to English resources automatically via normal Android resource resolution. This maps

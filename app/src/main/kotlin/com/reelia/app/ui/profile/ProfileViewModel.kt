@@ -420,7 +420,17 @@ class ProfileViewModel @Inject constructor(
     private val _deleteAccountUiState = MutableStateFlow(DeleteAccountUiState())
     val deleteAccountUiState: StateFlow<DeleteAccountUiState> = _deleteAccountUiState.asStateFlow()
 
-    fun onDeleteAccountConfirmed() {
+    /** Always asks for reauthentication before touching any data — [FirestoreSyncRepository.deleteAccountAndAllData]
+     * has to wipe Firestore/local data before it can delete the Firebase Auth user (deleting the
+     * user first would invalidate the session those data-deletion calls need), so if a stale
+     * session were only caught reactively at the very end, the data would already be gone by the
+     * time Firebase complained. Requiring a fresh reauth up front instead means nothing is
+     * deleted until identity is proven, regardless of how long the session had been idle. */
+    fun onDeleteAccountIntentConfirmed() {
+        _deleteAccountUiState.update { it.copy(requiresRecentLogin = true, errorMessage = null) }
+    }
+
+    private fun onDeleteAccountConfirmed() {
         viewModelScope.launch {
             _deleteAccountUiState.update { it.copy(isDeleting = true, errorMessage = null, requiresRecentLogin = false) }
             try {

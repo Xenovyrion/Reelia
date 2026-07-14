@@ -11,12 +11,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ViewList
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.GridView
-import androidx.compose.material.icons.automirrored.filled.ViewList
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Sort
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -46,6 +51,8 @@ import com.reelia.app.ui.common.components.SectionHeader
 import com.reelia.app.ui.common.components.UpcomingMovieCard
 import com.reelia.app.ui.common.components.UpcomingShowCard
 import com.reelia.app.ui.common.components.ViewMode
+import com.reelia.app.ui.navigation.BottomNavScrollToTop
+import com.reelia.app.ui.navigation.Routes
 import com.reelia.app.ui.theme.timeLineTopAppBarColors
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -58,6 +65,15 @@ fun LibraryScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var showFilterSheet by remember { mutableStateOf(false) }
+    var showSortMenu by remember { mutableStateOf(false) }
+    val listState = rememberLazyListState()
+    val route = if (fixedMediaType == MediaType.TV) Routes.SERIES else Routes.FILMS
+
+    LaunchedEffect(route) {
+        BottomNavScrollToTop.events.collect { tappedRoute ->
+            if (tappedRoute == route) listState.animateScrollToItem(0)
+        }
+    }
 
     LaunchedEffect(fixedMediaType) {
         viewModel.onTypeFilterSelected(
@@ -95,6 +111,30 @@ fun LibraryScreen(
                             contentDescription = stringResource(R.string.action_filter_content_description),
                         )
                     }
+                    Box {
+                        IconButton(onClick = { showSortMenu = true }) {
+                            Icon(
+                                Icons.Filled.Sort,
+                                contentDescription = stringResource(R.string.library_sort_content_description),
+                            )
+                        }
+                        DropdownMenu(expanded = showSortMenu, onDismissRequest = { showSortMenu = false }) {
+                            LibrarySortOption.entries.forEach { option ->
+                                DropdownMenuItem(
+                                    text = { Text(option.label()) },
+                                    onClick = {
+                                        viewModel.onSortOptionSelected(option)
+                                        showSortMenu = false
+                                    },
+                                    trailingIcon = {
+                                        if (uiState.sortOption == option) {
+                                            Icon(Icons.Filled.Check, contentDescription = null)
+                                        }
+                                    },
+                                )
+                            }
+                        }
+                    }
                     IconButton(onClick = viewModel::onViewModeToggled) {
                         Icon(
                             if (uiState.viewMode == ViewMode.GRID) Icons.AutoMirrored.Filled.ViewList else Icons.Filled.GridView,
@@ -106,7 +146,7 @@ fun LibraryScreen(
         },
     ) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
-            val isEmpty = uiState.groupedItems.isEmpty() && uiState.upcomingShows.isEmpty() && uiState.upcomingMovies.isEmpty()
+            val isEmpty = uiState.sections.isEmpty() && uiState.upcomingShows.isEmpty() && uiState.upcomingMovies.isEmpty()
             if (uiState.isLoading) {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator()
@@ -119,7 +159,7 @@ fun LibraryScreen(
                     )
                 }
             } else {
-                LazyColumn(modifier = Modifier.fillMaxSize()) {
+                LazyColumn(state = listState, modifier = Modifier.fillMaxSize()) {
                     if (uiState.upcomingShows.isNotEmpty() || uiState.upcomingMovies.isNotEmpty()) {
                         item { SectionHeader(stringResource(R.string.section_upcoming), modifier = Modifier.padding(16.dp)) }
                         item {
@@ -133,9 +173,12 @@ fun LibraryScreen(
                         }
                     }
 
-                    uiState.groupedItems.forEach { (status, sectionItems) ->
-                        item(key = "header_$status") {
-                            SectionHeader(status.displayLabel(), modifier = Modifier.padding(16.dp))
+                    uiState.sections.forEach { section ->
+                        val sectionItems = section.items
+                        section.header?.let { header ->
+                            item(key = "header_$header") {
+                                SectionHeader(header.label(), modifier = Modifier.padding(16.dp))
+                            }
                         }
                         if (uiState.viewMode == ViewMode.LIST) {
                             items(sectionItems, key = { "list_${it.mediaType}_${it.id}" }) { item ->
@@ -185,6 +228,23 @@ fun LibraryScreen(
             onDismiss = { showFilterSheet = false },
         )
     }
+}
+
+@Composable
+private fun LibrarySortOption.label(): String = stringResource(
+    when (this) {
+        LibrarySortOption.STATUS -> R.string.library_sort_status
+        LibrarySortOption.ALPHABETICAL -> R.string.library_sort_alphabetical
+        LibrarySortOption.GENRE -> R.string.library_sort_genre
+        LibrarySortOption.RECENTLY_ADDED -> R.string.library_sort_recently_added
+    },
+)
+
+@Composable
+private fun LibrarySectionHeader.label(): String = when (this) {
+    is LibrarySectionHeader.Status -> status.displayLabel()
+    is LibrarySectionHeader.Genre -> name
+    is LibrarySectionHeader.NoGenre -> stringResource(R.string.library_sort_genre_other)
 }
 
 @Composable

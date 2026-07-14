@@ -46,8 +46,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.reelia.app.R
+import com.reelia.app.ui.about.AboutScreen
 import com.reelia.app.ui.common.components.PasswordField
-import com.reelia.app.ui.guide.GuideScreen
 import com.reelia.app.ui.theme.AppBackground
 import com.reelia.app.ui.theme.StatusFavorite
 import com.reelia.app.ui.theme.StatusWantToWatch
@@ -58,12 +58,12 @@ fun LoginScreen(viewModel: LoginViewModel = hiltViewModel()) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
-    var showGuide by remember { mutableStateOf(false) }
+    var showAbout by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) { viewModel.onScreenEntered() }
 
-    if (showGuide) {
-        GuideScreen(onBack = { showGuide = false })
+    if (showAbout) {
+        AboutScreen(onBack = { showAbout = false })
         return
     }
 
@@ -200,7 +200,7 @@ fun LoginScreen(viewModel: LoginViewModel = hiltViewModel()) {
                 }
 
                 TextButton(
-                    onClick = { showGuide = true },
+                    onClick = { showAbout = true },
                     modifier = Modifier.padding(top = 16.dp),
                 ) {
                     Text(stringResource(R.string.login_learn_more_button))

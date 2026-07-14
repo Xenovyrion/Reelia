@@ -70,7 +70,7 @@ jobs:
           token: ${{ secrets.CONTENT_REPO_TOKEN }}
           tag_name: ${{ steps.tag.outputs.name }}
           target_commitish: main
-          name: "Reelia"
+          name: "Reelia ${{ steps.tag.outputs.name }}"
           body: "Notes de version disponibles dans l'application (Profil > Notes de version)."
           prerelease: false
           files: dist/*.apk

@@ -27,9 +27,8 @@ class AuthRepository @Inject constructor(
 
     suspend fun signUp(email: String, password: String) {
         firebaseAuth.createUserWithEmailAndPassword(email, password).await()
-        // Best-effort welcome/confirmation signal — Firebase's own built-in email, no backend
-        // needed. Must never block account creation if it fails to send.
-        runCatching { firebaseAuth.currentUser?.sendEmailVerification()?.await() }
+        // Verification emails were landing in spam (Firebase's default sender has no custom
+        // domain) — disabled until that's set up. See sendEmailVerification's call site history.
     }
 
     suspend fun signInWithGoogleIdToken(idToken: String) {

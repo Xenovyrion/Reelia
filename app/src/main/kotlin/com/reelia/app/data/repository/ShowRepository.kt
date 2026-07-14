@@ -112,7 +112,11 @@ class ShowRepository @Inject constructor(
         seasonDao.upsertSeasons(details.toSeasonEntities())
         persistGenres(details.toGenreEntities(), tmdbId)
 
-        val seasonNumbers = details.seasons.map { it.seasonNumber }.filter { it > 0 }
+        // Includes season 0 ("Specials") — TMDB uses it for extras like making-ofs, which the
+        // user can track like any other episode. It's excluded from completion/progress math
+        // (see EpisodeDao's progress queries) so a special left unwatched never blocks a show
+        // from reading as 100% watched.
+        val seasonNumbers = details.seasons.map { it.seasonNumber }
         val defaultRuntimeMinutes = details.episodeRunTime.firstOrNull()
         seasonNumbers
             .map { seasonNumber -> async { ensureSeasonEpisodesLoaded(tmdbId, seasonNumber, defaultRuntimeMinutes) } }

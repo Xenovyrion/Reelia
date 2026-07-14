@@ -10,6 +10,8 @@ import java.time.Instant
 
 enum class LibraryTypeFilter { ALL, SERIES, FILMS }
 
+enum class LibrarySortOption { STATUS, ALPHABETICAL, GENRE, RECENTLY_ADDED }
+
 data class LibraryItem(
     val id: Int,
     val mediaType: MediaType,
@@ -25,11 +27,24 @@ data class LibraryItem(
     val genreNames: List<String> = emptyList(),
 )
 
+/** Kept as a discriminated header rather than a pre-resolved string — [Status]'s label needs
+ * [com.reelia.app.domain.model.displayLabel], a @Composable string-resource lookup the ViewModel
+ * can't call, so the screen resolves the final text. Null for sort modes that don't group into
+ * sections (alphabetical, recently added), which render no header at all. */
+sealed class LibrarySectionHeader {
+    data class Status(val status: WatchStatus) : LibrarySectionHeader()
+    data class Genre(val name: String) : LibrarySectionHeader()
+    data object NoGenre : LibrarySectionHeader()
+}
+
+data class LibrarySection(val header: LibrarySectionHeader?, val items: List<LibraryItem>)
+
 data class LibraryUiState(
     val isLoading: Boolean = true,
     val viewMode: ViewMode = ViewMode.GRID,
     val typeFilter: LibraryTypeFilter = LibraryTypeFilter.ALL,
-    val groupedItems: Map<WatchStatus, List<LibraryItem>> = emptyMap(),
+    val sortOption: LibrarySortOption = LibrarySortOption.STATUS,
+    val sections: List<LibrarySection> = emptyList(),
     val upcomingShows: List<UpcomingShowItem> = emptyList(),
     val upcomingMovies: List<UpcomingMovieItem> = emptyList(),
     val availableGenres: List<GenreOption> = emptyList(),

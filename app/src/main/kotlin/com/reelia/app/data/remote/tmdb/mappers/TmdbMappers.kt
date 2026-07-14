@@ -37,7 +37,6 @@ fun TmdbTvDetailsDto.toEntity(status: WatchStatus, addedAt: Instant): TrackedSho
 
 fun TmdbTvDetailsDto.toSeasonEntities(): List<SeasonEntity> =
     seasons
-        .filter { it.seasonNumber > 0 }
         .map { season ->
             SeasonEntity(
                 showId = id,

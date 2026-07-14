@@ -6,6 +6,8 @@
     <string name="nav_series">Séries</string>
     <string name="nav_films">Films</string>
     <string name="nav_profile">Profil</string>
+    <string name="profile_tab_settings">Paramètres</string>
+    <string name="profile_tab_stats">Statistiques</string>
 
     <!-- Announcement banner/popup -->
     <string name="announcement_dialog_title">Information</string>
@@ -52,6 +54,12 @@
     <!-- Shared: Séries/Films tabs -->
     <string name="action_filter_content_description">Filtrer</string>
     <string name="action_toggle_view_content_description">Changer l\'affichage</string>
+    <string name="library_sort_content_description">Trier</string>
+    <string name="library_sort_status">Statut</string>
+    <string name="library_sort_alphabetical">Alphabétique</string>
+    <string name="library_sort_genre">Genre</string>
+    <string name="library_sort_recently_added">Ajout récent</string>
+    <string name="library_sort_genre_other">Autres</string>
     <string name="section_upcoming">À venir</string>
     <string name="days_until_aired">Diffusé</string>
     <string name="days_until_today">Aujourd\'hui</string>
@@ -291,7 +299,8 @@
     <string name="profile_appcheck_copy_button">Copier</string>
     <string name="profile_appcheck_close_button">Fermer</string>
     <string name="guide_title">Aide</string>
-    <string name="guide_error">Impossible de charger le guide. Vérifie ta connexion et réessaie plus tard.</string>
+    <string name="about_title">À propos</string>
+    <string name="markdown_doc_load_error">Impossible de charger ce contenu. Vérifie ta connexion et réessaie plus tard.</string>
     <string name="release_notes_title">Notes de version</string>
     <string name="release_notes_error">Impossible de charger les notes de version. Vérifie ta connexion et réessaie plus tard.</string>
     <string name="release_notes_version_format">Version %1$s</string>

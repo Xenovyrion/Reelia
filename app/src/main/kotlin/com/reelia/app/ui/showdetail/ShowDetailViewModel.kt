@@ -96,7 +96,9 @@ class ShowDetailViewModel @Inject constructor(
     ) { details, extra, genres ->
         val episodesBySeason = details.episodes.groupBy { it.seasonNumber }
         val seasons = details.seasons
-            .sortedBy { it.seasonNumber }
+            // Specials (season 0) sort last, matching how most streaming apps place them —
+            // TMDB itself numbers them 0, which would otherwise put them first.
+            .sortedBy { if (it.seasonNumber == 0) Int.MAX_VALUE else it.seasonNumber }
             .map { season ->
                 SeasonUi(
                     seasonNumber = season.seasonNumber,
@@ -118,14 +120,17 @@ class ShowDetailViewModel @Inject constructor(
                         },
                 )
             }
-        val nextUnwatchedEpisode = seasons
+        // Specials (season 0) are excluded from "next episode"/completion — an unwatched
+        // making-of must never surface as what to watch next or block a show from reading 100%.
+        val regularSeasons = seasons.filterNot { it.seasonNumber == 0 }
+        val nextUnwatchedEpisode = regularSeasons
             .flatMap { season -> season.episodes.map { season.seasonNumber to it } }
             .firstOrNull { (_, episode) -> !episode.watched }
             ?.let { (seasonNumber, episode) ->
                 NextEpisodeUi(seasonNumber, episode.episodeNumber, episode.name, episode.stillUrl)
             }
-        val watchedEpisodeCount = seasons.sumOf { season -> season.episodes.count { it.watched } }
-        val totalEpisodeCount = seasons.sumOf { it.episodeCount }
+        val watchedEpisodeCount = regularSeasons.sumOf { season -> season.episodes.count { it.watched } }
+        val totalEpisodeCount = regularSeasons.sumOf { it.episodeCount }
         val broadcastStatus = parseShowBroadcastStatus(details.show.broadcastStatus)
         val firstYear = details.show.firstAirDate.toYearOrNull()
         val lastYear = details.show.lastAirDate.toYearOrNull()

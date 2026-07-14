@@ -54,11 +54,19 @@ private val GuideAccentPalette = listOf(StatusWatchingCompleted, StatusWantToWat
 @Composable
 fun GuideScreen(onBack: () -> Unit, viewModel: GuideViewModel = hiltViewModel()) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    MarkdownDocScreen(title = stringResource(R.string.guide_title), onBack = onBack, uiState = uiState)
+}
 
+/** Shared by [GuideScreen] and [com.reelia.app.ui.about.AboutScreen] — same "colored section
+ * cards" rendering for any Markdown doc that follows the intro + `## ` sections convention (see
+ * [com.reelia.app.data.guide.GuideParser]), just with a different title and content source. */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MarkdownDocScreen(title: String, onBack: () -> Unit, uiState: GuideUiState) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.guide_title)) },
+                title = { Text(title) },
                 navigationIcon = { BackButton(onClick = onBack, modifier = Modifier.padding(start = 8.dp)) },
                 colors = timeLineTopAppBarColors(),
             )
@@ -72,7 +80,7 @@ fun GuideScreen(onBack: () -> Unit, viewModel: GuideViewModel = hiltViewModel())
             }
             is GuideUiState.Error -> {
                 Text(
-                    stringResource(R.string.guide_error),
+                    stringResource(R.string.markdown_doc_load_error),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.error,
                     modifier = Modifier.padding(padding).padding(16.dp),

@@ -31,13 +31,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.reelia.app.R
+import com.reelia.app.ui.common.openInExternalBrowser
 import com.reelia.app.ui.common.components.BackButton
 import com.reelia.app.ui.theme.timeLineTopAppBarColors
 import kotlin.math.roundToInt
@@ -49,7 +50,7 @@ fun TvTimeImportScreen(onBack: () -> Unit, viewModel: TvTimeImportViewModel = hi
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         uri?.let(viewModel::onFileSelected)
     }
-    val uriHandler = LocalUriHandler.current
+    val context = LocalContext.current
     val gdprUrl = stringResource(R.string.tvtime_import_gdpr_url)
     var showDetails by remember { mutableStateOf(false) }
 
@@ -78,7 +79,7 @@ fun TvTimeImportScreen(onBack: () -> Unit, viewModel: TvTimeImportViewModel = hi
                         style = MaterialTheme.typography.bodyMedium,
                         textAlign = TextAlign.Center,
                     )
-                    TextButton(onClick = { uriHandler.openUri(gdprUrl) }) {
+                    TextButton(onClick = { openInExternalBrowser(context, gdprUrl) }) {
                         Text(stringResource(R.string.tvtime_import_open_gdpr_button))
                     }
                     Text(

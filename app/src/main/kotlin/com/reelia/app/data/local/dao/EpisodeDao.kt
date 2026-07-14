@@ -35,15 +35,21 @@ interface EpisodeDao {
     @Query("SELECT * FROM episodes WHERE showId = :showId AND seasonNumber = :seasonNumber AND episodeNumber = :episodeNumber")
     suspend fun getEpisode(showId: Int, seasonNumber: Int, episodeNumber: Int): EpisodeEntity?
 
-    @Query("SELECT showId, COUNT(*) AS total, SUM(watched) AS watchedCount FROM episodes GROUP BY showId")
+    // seasonNumber != 0 excludes TMDB "Specials" from progress/completion — a special left
+    // unwatched must never keep a show from reading as 100% watched.
+    @Query("SELECT showId, COUNT(*) AS total, SUM(watched) AS watchedCount FROM episodes WHERE seasonNumber != 0 GROUP BY showId")
     fun getEpisodeProgressByShow(): Flow<List<ShowEpisodeProgress>>
 
-    @Query("SELECT showId, COUNT(*) AS total, SUM(watched) AS watchedCount FROM episodes WHERE showId = :showId GROUP BY showId")
+    @Query(
+        "SELECT showId, COUNT(*) AS total, SUM(watched) AS watchedCount FROM episodes " +
+            "WHERE showId = :showId AND seasonNumber != 0 GROUP BY showId",
+    )
     suspend fun getEpisodeProgressForShowOnce(showId: Int): ShowEpisodeProgress?
 
     /** Ordered so the first row per showId (grouped in-memory) is that show's next
-     * unwatched episode — libraries here are small, no need for fancier per-group SQL. */
-    @Query("SELECT * FROM episodes WHERE watched = 0 ORDER BY showId, seasonNumber, episodeNumber")
+     * unwatched episode — libraries here are small, no need for fancier per-group SQL.
+     * Specials (season 0) are excluded so they never surface as the "next episode" to watch. */
+    @Query("SELECT * FROM episodes WHERE watched = 0 AND seasonNumber != 0 ORDER BY showId, seasonNumber, episodeNumber")
     fun getAllUnwatchedEpisodesOrdered(): Flow<List<EpisodeEntity>>
 
     @Query(
