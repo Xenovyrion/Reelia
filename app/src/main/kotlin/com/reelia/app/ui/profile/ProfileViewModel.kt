@@ -95,6 +95,7 @@ data class ProfileUiState(
     val selectedProviderId: String = "tmdb",
     val accountEmail: String? = null,
     val lastSyncedAt: Instant? = null,
+    val isPasswordAccount: Boolean = true,
 )
 
 data class ProfileStatsUiState(
@@ -143,6 +144,8 @@ data class DeleteAccountUiState(
     val isDeleting: Boolean = false,
     val errorMessage: String? = null,
     val requiresRecentLogin: Boolean = false,
+    val isReauthenticating: Boolean = false,
+    val reauthErrorMessage: String? = null,
 )
 
 data class ResetLibraryUiState(
@@ -178,6 +181,7 @@ class ProfileViewModel @Inject constructor(
             selectedProviderId = providerId,
             accountEmail = user?.email,
             lastSyncedAt = lastSyncedAt,
+            isPasswordAccount = authRepository.isPasswordAccount(user),
         )
     }.stateIn(
         scope = viewModelScope,
@@ -434,6 +438,39 @@ class ProfileViewModel @Inject constructor(
 
     fun onDeleteAccountErrorDismissed() {
         _deleteAccountUiState.update { it.copy(errorMessage = null, requiresRecentLogin = false) }
+    }
+
+    /** Re-proves identity (password or a fresh Google credential, whichever the account uses)
+     * then immediately retries the deletion that triggered [FirebaseAuthRecentLoginRequiredException]
+     * in the first place — no need to make the user re-navigate to "Supprimer" a second time. */
+    fun onReauthenticateWithPassword(password: String) {
+        viewModelScope.launch {
+            _deleteAccountUiState.update { it.copy(isReauthenticating = true, reauthErrorMessage = null) }
+            try {
+                authRepository.reauthenticateWithPassword(password)
+                _deleteAccountUiState.update { it.copy(isReauthenticating = false, requiresRecentLogin = false) }
+                onDeleteAccountConfirmed()
+            } catch (e: Exception) {
+                _deleteAccountUiState.update { it.copy(isReauthenticating = false, reauthErrorMessage = e.message) }
+            }
+        }
+    }
+
+    fun onReauthenticateWithGoogle(idToken: String) {
+        viewModelScope.launch {
+            _deleteAccountUiState.update { it.copy(isReauthenticating = true, reauthErrorMessage = null) }
+            try {
+                authRepository.reauthenticateWithGoogleIdToken(idToken)
+                _deleteAccountUiState.update { it.copy(isReauthenticating = false, requiresRecentLogin = false) }
+                onDeleteAccountConfirmed()
+            } catch (e: Exception) {
+                _deleteAccountUiState.update { it.copy(isReauthenticating = false, reauthErrorMessage = e.message) }
+            }
+        }
+    }
+
+    fun onReauthenticationDismissed() {
+        _deleteAccountUiState.update { it.copy(requiresRecentLogin = false, reauthErrorMessage = null) }
     }
 
     // App Check debug token (debug builds only — see ProfileScreen's BuildConfig.DEBUG gate).

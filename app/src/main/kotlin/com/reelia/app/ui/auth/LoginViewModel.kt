@@ -2,6 +2,7 @@ package com.reelia.app.ui.auth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.reelia.app.R
 import com.reelia.app.data.auth.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -20,24 +21,35 @@ class LoginViewModel @Inject constructor(
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
 
     fun onEmailChanged(email: String) {
-        _uiState.update { it.copy(email = email, errorMessage = null) }
+        _uiState.update { it.copy(email = email, errorMessage = null, errorMessageRes = null) }
     }
 
     fun onPasswordChanged(password: String) {
-        _uiState.update { it.copy(password = password, errorMessage = null) }
+        _uiState.update { it.copy(password = password, errorMessage = null, errorMessageRes = null) }
     }
 
     fun onToggleMode() {
         _uiState.update {
-            it.copy(isSignUpMode = !it.isSignUpMode, email = "", password = "", errorMessage = null)
+            it.copy(isSignUpMode = !it.isSignUpMode, email = "", password = "", errorMessage = null, errorMessageRes = null)
         }
+    }
+
+    /** Resets any state left over from a previous session — this screen's ViewModel is scoped to
+     * the Activity, not to composition, so it survives sign-out/account-deletion and would
+     * otherwise keep showing the last-typed email/password when the login screen reappears. */
+    fun onScreenEntered() {
+        _uiState.value = LoginUiState()
     }
 
     fun onSubmit() {
         val state = _uiState.value
         if (state.email.isBlank() || state.password.isBlank()) return
+        if (state.isSignUpMode && evaluatePasswordStrength(state.password) == PasswordStrength.TOO_SHORT) {
+            _uiState.update { it.copy(errorMessageRes = R.string.login_password_too_short_error) }
+            return
+        }
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+            _uiState.update { it.copy(isLoading = true, errorMessage = null, errorMessageRes = null) }
             try {
                 if (state.isSignUpMode) {
                     authRepository.signUp(state.email, state.password)

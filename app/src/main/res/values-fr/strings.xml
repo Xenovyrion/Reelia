@@ -187,6 +187,15 @@
     <string name="login_or_divider">ou</string>
     <string name="login_google_button">Continuer avec Google</string>
     <string name="login_learn_more_button">En savoir plus</string>
+    <string name="login_password_too_short_error">Le mot de passe doit contenir au moins 8 caractères.</string>
+
+    <!-- Password field / strength -->
+    <string name="password_show_content_description">Afficher le mot de passe</string>
+    <string name="password_hide_content_description">Masquer le mot de passe</string>
+    <string name="password_strength_too_short">Trop court</string>
+    <string name="password_strength_weak">Faible</string>
+    <string name="password_strength_medium">Moyen</string>
+    <string name="password_strength_strong">Fort</string>
 
     <!-- Person Detail -->
     <string name="person_detail_error_load">Impossible de charger les informations de cette personne.</string>
@@ -219,8 +228,15 @@
     <string name="profile_delete_account_dialog_message">Ceci supprime définitivement ton compte et toutes tes données synchronisées (bibliothèque, historique, réglages). Action irréversible.</string>
     <string name="profile_delete_account_dialog_confirm">Supprimer</string>
     <string name="profile_delete_account_dialog_cancel">Annuler</string>
-    <string name="profile_delete_account_recent_login_error">Pour des raisons de sécurité, déconnecte-toi puis reconnecte-toi avant de réessayer de supprimer ton compte.</string>
     <string name="settings_tvtime_import_button">Importer depuis TV Time</string>
+
+    <!-- Reauthentification (exigée par Firebase avant une action sensible comme la suppression de compte) -->
+    <string name="profile_reauth_dialog_title">Confirme ton identité</string>
+    <string name="profile_reauth_dialog_message_password">Pour des raisons de sécurité, saisis ton mot de passe pour confirmer la suppression du compte.</string>
+    <string name="profile_reauth_dialog_message_google">Pour des raisons de sécurité, reconnecte-toi avec Google pour confirmer la suppression du compte.</string>
+    <string name="profile_reauth_confirm_button">Confirmer</string>
+    <string name="profile_reauth_google_button">Se connecter avec Google</string>
+    <string name="profile_reauth_cancel_button">Annuler</string>
 
     <string name="tvtime_import_title">Importer depuis TV Time</string>
     <string name="tvtime_import_pick_file_step1">1. Demande ton export de données sur TV Time.</string>

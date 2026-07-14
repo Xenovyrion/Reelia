@@ -46,6 +46,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -60,10 +61,12 @@ import com.reelia.app.BuildConfig
 import com.reelia.app.R
 import com.reelia.app.data.local.prefs.LanguagePreferenceStore
 import com.reelia.app.domain.model.displayLabel
+import com.reelia.app.ui.auth.fetchGoogleIdToken
 import com.reelia.app.ui.common.components.BarChart
 import com.reelia.app.ui.common.components.CircularProgressRing
 import com.reelia.app.ui.common.components.GenreProgressBar
 import com.reelia.app.ui.common.components.GenreProgressItem
+import com.reelia.app.ui.common.components.PasswordField
 import com.reelia.app.ui.common.components.SectionHeader
 import com.reelia.app.ui.common.components.StatCard
 import com.reelia.app.ui.settings.LANGUAGE_DISPLAY_NAME_RES
@@ -77,6 +80,7 @@ import java.text.NumberFormat
 import java.util.Date
 import java.util.Locale
 import kotlin.math.roundToInt
+import kotlinx.coroutines.launch
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.Autorenew
@@ -204,6 +208,17 @@ fun ProfileScreen(
         )
     }
 
+    if (deleteAccountUiState.requiresRecentLogin) {
+        ReauthDialog(
+            isPasswordAccount = uiState.isPasswordAccount,
+            isLoading = deleteAccountUiState.isReauthenticating,
+            errorMessage = deleteAccountUiState.reauthErrorMessage,
+            onPasswordConfirm = viewModel::onReauthenticateWithPassword,
+            onGoogleConfirm = viewModel::onReauthenticateWithGoogle,
+            onDismiss = viewModel::onReauthenticationDismissed,
+        )
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -271,17 +286,8 @@ fun ProfileScreen(
                     }
                 }
             }
-            if (deleteAccountUiState.requiresRecentLogin) {
-                Text(
-                    stringResource(R.string.profile_delete_account_recent_login_error),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.padding(top = 8.dp),
-                )
-            } else {
-                deleteAccountUiState.errorMessage?.let {
-                    Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(top = 8.dp))
-                }
+            deleteAccountUiState.errorMessage?.let {
+                Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(top = 8.dp))
             }
             Row(
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -734,4 +740,87 @@ fun ProfileScreen(
             }
         }
     }
+}
+
+/** Firebase requires a "recent" sign-in before honoring account deletion — rather than force a
+ * full sign-out/sign-in round trip, this re-proves identity in place: a password prompt for
+ * email/password accounts, or a fresh Google credential for Google accounts. Deletion is
+ * automatically retried by the ViewModel once reauthentication succeeds. */
+@Composable
+private fun ReauthDialog(
+    isPasswordAccount: Boolean,
+    isLoading: Boolean,
+    errorMessage: String?,
+    onPasswordConfirm: (String) -> Unit,
+    onGoogleConfirm: (String) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    var password by remember { mutableStateOf("") }
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.profile_reauth_dialog_title)) },
+        text = {
+            Column {
+                Text(
+                    stringResource(
+                        if (isPasswordAccount) R.string.profile_reauth_dialog_message_password else R.string.profile_reauth_dialog_message_google,
+                    ),
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                if (isPasswordAccount) {
+                    PasswordField(
+                        value = password,
+                        onValueChange = { password = it },
+                        label = stringResource(R.string.login_password_label),
+                        modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
+                    )
+                }
+                errorMessage?.let {
+                    Text(
+                        it,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.padding(top = 8.dp),
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(
+                enabled = !isLoading && (!isPasswordAccount || password.isNotBlank()),
+                onClick = {
+                    if (isPasswordAccount) {
+                        onPasswordConfirm(password)
+                    } else {
+                        coroutineScope.launch {
+                            try {
+                                onGoogleConfirm(fetchGoogleIdToken(context))
+                            } catch (e: Exception) {
+                                // Credential Manager itself failed (cancelled, no account, …) —
+                                // there's no dedicated slot for this, so it's silently retryable.
+                            }
+                        }
+                    }
+                },
+            ) {
+                if (isLoading) {
+                    CircularProgressIndicator(modifier = Modifier.padding(2.dp).size(16.dp), strokeWidth = 2.dp)
+                } else {
+                    Text(
+                        stringResource(
+                            if (isPasswordAccount) R.string.profile_reauth_confirm_button else R.string.profile_reauth_google_button,
+                        ),
+                    )
+                }
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.profile_reauth_cancel_button))
+            }
+        },
+    )
 }

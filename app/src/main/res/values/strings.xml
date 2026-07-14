@@ -187,11 +187,19 @@
     <string name="login_or_divider">or</string>
     <string name="login_google_button">Continue with Google</string>
     <string name="login_learn_more_button">Learn more</string>
+    <string name="login_password_too_short_error">Password must be at least 8 characters long.</string>
     <!-- Update after enabling Google Sign-In in the Firebase console (Authentication > Sign-in
          method > Google) — the Web client ID is shown right there, no need to redownload
          google-services.json. -->
     <string name="google_web_client_id" translatable="false">217482013121-rufgbqk389i5kfmjm5on47ir41q4ldkb.apps.googleusercontent.com</string>
-    <string name="login_learn_more_url" translatable="false">https://github.com/Xenovyrion/reelia-content/blob/main/docs/guide/fr.md</string>
+
+    <!-- Password field / strength -->
+    <string name="password_show_content_description">Show password</string>
+    <string name="password_hide_content_description">Hide password</string>
+    <string name="password_strength_too_short">Too short</string>
+    <string name="password_strength_weak">Weak</string>
+    <string name="password_strength_medium">Medium</string>
+    <string name="password_strength_strong">Strong</string>
 
     <!-- Person Detail -->
     <string name="person_detail_error_load">Couldn\'t load this person\'s info.</string>
@@ -224,8 +232,15 @@
     <string name="profile_delete_account_dialog_message">This permanently deletes your account and all synced data (library, watch history, settings). This can\'t be undone.</string>
     <string name="profile_delete_account_dialog_confirm">Delete</string>
     <string name="profile_delete_account_dialog_cancel">Cancel</string>
-    <string name="profile_delete_account_recent_login_error">For security, please sign out, sign back in, then try deleting your account again.</string>
     <string name="settings_tvtime_import_button">Import from TV Time</string>
+
+    <!-- Reauthentication (required by Firebase before honoring a sensitive action like account deletion) -->
+    <string name="profile_reauth_dialog_title">Confirm your identity</string>
+    <string name="profile_reauth_dialog_message_password">For security, enter your password to confirm account deletion.</string>
+    <string name="profile_reauth_dialog_message_google">For security, sign in again with Google to confirm account deletion.</string>
+    <string name="profile_reauth_confirm_button">Confirm</string>
+    <string name="profile_reauth_google_button">Sign in with Google</string>
+    <string name="profile_reauth_cancel_button">Cancel</string>
 
     <string name="tvtime_import_title">Import from TV Time</string>
     <string name="tvtime_import_pick_file_step1">1. Request your data export from TV Time.</string>
