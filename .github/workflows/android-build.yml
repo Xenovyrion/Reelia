@@ -46,12 +46,13 @@ jobs:
           token: ${{ secrets.CONTENT_REPO_TOKEN }}
           tag_name: debug-latest
           target_commitish: main
-          name: "Reelia — latest debug build"
+          name: "Reelia — build de test"
           body: >
-            Automated debug APK build from source commit `${{ github.sha }}`
-            (Xenovyrion/Reelia@${{ github.sha }}). Not signed for release —
-            for local testing only, and unrelated to versioned releases
-            (see the "Latest" release for those).
+            Build de test généré automatiquement depuis le commit
+            Xenovyrion/Reelia@${{ github.sha }}. Marqué "Pre-release" par GitHub
+            (pas un brouillon) car c'est un canal de test continu, republié à
+            chaque push — pas une version numérotée. Voir la section "Releases"
+            pour les vraies versions (`vX.Y.Z`).
           prerelease: true
           files: app/build/outputs/apk/debug/*.apk
 

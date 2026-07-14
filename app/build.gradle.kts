@@ -31,8 +31,8 @@ android {
         applicationId = "com.reelia.app"
         minSdk = 26
         targetSdk = 35
-        versionCode = 12
-        versionName = "0.12.0"
+        versionCode = 13
+        versionName = "0.13.0"
         buildConfigField("String", "GIT_SHA", "\"${gitCommitSha()}\"")
     }
 
@@ -74,6 +74,17 @@ android {
     sourceSets {
         getByName("main") {
             kotlin.srcDirs("src/main/kotlin")
+        }
+    }
+
+    // Default output filename is the generic "app-debug.apk" — rename to something recognizable
+    // once it shows up as a GitHub Release asset. Captured into locals before entering
+    // outputs.all { } since that inner lambda's `this` shadows the outer variant.
+    applicationVariants.all {
+        val apkName = "reelia-$versionName-${buildType.name}.apk"
+        outputs.all {
+            this as com.android.build.gradle.internal.api.BaseVariantOutputImpl
+            outputFileName = apkName
         }
     }
 }

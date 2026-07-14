@@ -6,9 +6,13 @@
          since Reelia isn't distributed through the Play Store. -->
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 
+    <!-- allowBackup=false: Android's default Auto Backup restores Room/DataStore/Firebase
+         Auth's session file on reinstall from a stale Google Drive snapshot — this silently
+         undid "reset library" (a fresh install looked auto-signed-in with the pre-reset data
+         back) and is redundant anyway since everything meaningful already syncs via Firestore. -->
     <application
         android:name=".TimeLineApplication"
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
