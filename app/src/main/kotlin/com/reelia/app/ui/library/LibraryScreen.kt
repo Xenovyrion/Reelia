@@ -4,8 +4,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -18,10 +20,10 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ViewList
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.GridView
-import androidx.compose.material.icons.filled.ManageSearch
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -69,6 +71,11 @@ fun LibraryScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var showFilterSheet by remember { mutableStateOf(false) }
     var showLocalSearch by remember { mutableStateOf(false) }
+    // Kept as local state rather than reading straight from uiState.searchQuery: the latter only
+    // catches up once the ViewModel's combine() pipeline re-derives it, which lags a typed
+    // keystroke by at least a frame — driving the field from it directly made fast typing (and
+    // backspacing down to empty) look like it wasn't registering.
+    var searchText by remember { mutableStateOf("") }
     val listState = rememberLazyListState()
     val gridState = rememberLazyGridState()
     val route = if (fixedMediaType == MediaType.TV) Routes.SERIES else Routes.FILMS
@@ -104,18 +111,23 @@ fun LibraryScreen(
                     IconButton(
                         onClick = {
                             showLocalSearch = !showLocalSearch
-                            if (!showLocalSearch) viewModel.onSearchQueryChanged("")
+                            if (!showLocalSearch) {
+                                searchText = ""
+                                viewModel.onSearchQueryChanged("")
+                            }
                         },
                     ) {
                         Icon(
-                            if (showLocalSearch) Icons.Filled.Close else Icons.Filled.ManageSearch,
+                            if (showLocalSearch) Icons.Filled.Close else Icons.Filled.Search,
                             contentDescription = stringResource(R.string.library_local_search_content_description),
                         )
                     }
+                    // A distinct "+" rather than another magnifying glass — this one leaves the
+                    // library to search TMDB for new titles to add, not filter the current list.
                     IconButton(onClick = onSearchClick) {
                         Icon(
-                            Icons.Filled.Search,
-                            contentDescription = stringResource(R.string.library_search_content_description),
+                            Icons.Filled.Add,
+                            contentDescription = stringResource(R.string.library_add_content_description),
                         )
                     }
                     IconButton(onClick = { showFilterSheet = true }) {
@@ -138,10 +150,25 @@ fun LibraryScreen(
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
             if (showLocalSearch) {
                 OutlinedTextField(
-                    value = uiState.searchQuery,
-                    onValueChange = viewModel::onSearchQueryChanged,
+                    value = searchText,
+                    onValueChange = {
+                        searchText = it
+                        viewModel.onSearchQueryChanged(it)
+                    },
                     placeholder = { Text(stringResource(R.string.library_local_search_placeholder)) },
                     leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
+                    trailingIcon = {
+                        if (searchText.isNotEmpty()) {
+                            IconButton(
+                                onClick = {
+                                    searchText = ""
+                                    viewModel.onSearchQueryChanged("")
+                                },
+                            ) {
+                                Icon(Icons.Filled.Close, contentDescription = stringResource(R.string.filter_reset_button))
+                            }
+                        }
+                    },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
                 )
@@ -151,10 +178,10 @@ fun LibraryScreen(
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         CircularProgressIndicator()
                     }
-                } else if (isEmpty && uiState.searchQuery.isNotBlank()) {
+                } else if (isEmpty && searchText.isNotBlank()) {
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Text(
-                            stringResource(R.string.library_local_search_no_results, uiState.searchQuery),
+                            stringResource(R.string.library_local_search_no_results, searchText),
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
@@ -178,6 +205,12 @@ fun LibraryScreen(
                                     items(uiState.upcomingMovies, key = { "movie_${it.movieId}" }) { UpcomingMovieCard(it) }
                                 }
                             }
+                        }
+
+                        // Sort modes without section headers (recently added/watched) would
+                        // otherwise sit flush against "À venir" with no breathing room.
+                        if (needsLeadingSpacer(uiState)) {
+                            item { Spacer(Modifier.height(16.dp)) }
                         }
 
                         uiState.sections.forEach { section ->
@@ -228,6 +261,10 @@ fun LibraryScreen(
                             }
                         }
 
+                        if (needsLeadingSpacer(uiState)) {
+                            item(span = { GridItemSpan(maxLineSpan) }) { Spacer(Modifier.height(16.dp)) }
+                        }
+
                         uiState.sections.forEach { section ->
                             section.header?.let { header ->
                                 item(span = { GridItemSpan(maxLineSpan) }, key = "header_$header") {
@@ -265,6 +302,10 @@ fun LibraryScreen(
         )
     }
 }
+
+private fun needsLeadingSpacer(uiState: LibraryUiState): Boolean =
+    (uiState.upcomingShows.isNotEmpty() || uiState.upcomingMovies.isNotEmpty()) &&
+        uiState.sections.firstOrNull()?.header == null
 
 @Composable
 private fun LibrarySectionHeader.label(): String = when (this) {

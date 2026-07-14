@@ -42,6 +42,21 @@ private fun navigateToPreview(navController: NavHostController, mediaType: Media
     }
 }
 
+/** After adding a title (from the search results list or its preview screen), lands the user
+ * back on whatever screen was open before Search — not on Search or its preview screen, which
+ * would otherwise be left sitting in the back stack. Explicit pop-then-navigate rather than a
+ * single navigate(...) { popUpTo(...) } call, so the preview screen (if any) is unconditionally
+ * gone before the destination is pushed, regardless of exactly which entry started the add. */
+private fun navigateToItemAfterAdd(navController: NavHostController, mediaType: MediaType, id: Int) {
+    navController.popBackStack(route = Routes.SEARCH, inclusive = true)
+    navController.navigate(
+        when (mediaType) {
+            MediaType.TV -> Routes.showDetail(id)
+            MediaType.MOVIE -> Routes.movieDetail(id)
+        },
+    )
+}
+
 @Composable
 fun TimeLineNavGraph(navController: NavHostController, modifier: Modifier = Modifier) {
     NavHost(
@@ -86,16 +101,7 @@ fun TimeLineNavGraph(navController: NavHostController, modifier: Modifier = Modi
         ) {
             SearchScreen(
                 onItemClick = { mediaType, id -> navigateToPreview(navController, mediaType, id) },
-                onItemAdded = { mediaType, id ->
-                    navController.navigate(
-                        when (mediaType) {
-                            MediaType.TV -> Routes.showDetail(id)
-                            MediaType.MOVIE -> Routes.movieDetail(id)
-                        },
-                    ) {
-                        popUpTo(Routes.SEARCH) { inclusive = true }
-                    }
-                },
+                onItemAdded = { mediaType, id -> navigateToItemAfterAdd(navController, mediaType, id) },
             )
         }
         composable(Routes.PROFILE) {
@@ -156,15 +162,7 @@ fun TimeLineNavGraph(navController: NavHostController, modifier: Modifier = Modi
             val tmdbId = checkNotNull(backStackEntry.arguments?.getInt("tmdbId"))
             ShowPreviewScreen(
                 onBack = { navController.popBackStack() },
-                onAdded = {
-                    // Skips back past Search entirely (a no-op if Search isn't in the back stack,
-                    // e.g. reached from Home's discovery rows) — pressing back after adding a
-                    // title should land on whatever screen was open before Search, typically the
-                    // Library tab, not back on the search results.
-                    navController.navigate(Routes.showDetail(tmdbId)) {
-                        popUpTo(Routes.SEARCH) { inclusive = true }
-                    }
-                },
+                onAdded = { navigateToItemAfterAdd(navController, MediaType.TV, tmdbId) },
             )
         }
         composable(
@@ -174,11 +172,7 @@ fun TimeLineNavGraph(navController: NavHostController, modifier: Modifier = Modi
             val tmdbId = checkNotNull(backStackEntry.arguments?.getInt("tmdbId"))
             MoviePreviewScreen(
                 onBack = { navController.popBackStack() },
-                onAdded = {
-                    navController.navigate(Routes.movieDetail(tmdbId)) {
-                        popUpTo(Routes.SEARCH) { inclusive = true }
-                    }
-                },
+                onAdded = { navigateToItemAfterAdd(navController, MediaType.MOVIE, tmdbId) },
             )
         }
         composable(

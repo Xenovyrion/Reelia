@@ -58,6 +58,7 @@
     <string name="library_local_search_content_description">Search in my library</string>
     <string name="library_local_search_placeholder">Search title or episode…</string>
     <string name="library_local_search_no_results">No results for \"%1$s\"</string>
+    <string name="library_add_content_description">Search TMDB to add a title</string>
     <string name="library_sort_content_description">Sort</string>
     <string name="library_sort_status">Status</string>
     <string name="library_sort_alphabetical">Alphabetical</string>
