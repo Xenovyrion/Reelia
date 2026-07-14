@@ -52,6 +52,11 @@ interface EpisodeDao {
     @Query("SELECT * FROM episodes WHERE watched = 0 AND seasonNumber != 0 ORDER BY showId, seasonNumber, episodeNumber")
     fun getAllUnwatchedEpisodesOrdered(): Flow<List<EpisodeEntity>>
 
+    /** Backs the library's local text search (title/episode name) — a lightweight projection
+     * over every episode of every tracked show, matched in Kotlin rather than per-keystroke SQL. */
+    @Query("SELECT showId, name FROM episodes")
+    fun getAllEpisodeNames(): Flow<List<EpisodeNameRow>>
+
     @Query(
         "SELECT * FROM episodes WHERE showId = :showId AND seasonNumber = :seasonNumber AND watched = 0",
     )

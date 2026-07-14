@@ -20,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -67,13 +68,19 @@ fun PosterCard(
             )
         }
         if (progress != null) {
-            CircularProgressRing(
-                progress = progress,
-                color = status.statusColor(),
+            // Matches the dark circular backing behind Home's continue-watching ring — without it
+            // the bare stroke reads as flat/hard to see against a bright poster.
+            Box(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
-                    .padding(6.dp),
-            )
+                    .padding(6.dp)
+                    .size(34.dp)
+                    .clip(CircleShape)
+                    .background(Color.Black.copy(alpha = 0.45f)),
+                contentAlignment = Alignment.Center,
+            ) {
+                CircularProgressRing(progress = progress, color = status.statusColor())
+            }
         }
         if (isFavorite) {
             Surface(

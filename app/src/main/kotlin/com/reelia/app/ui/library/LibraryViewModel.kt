@@ -53,6 +53,7 @@ private data class LibraryFilterState(
     val sortOption: LibrarySortOption = LibrarySortOption.STATUS,
     val selectedStatuses: Set<WatchStatus> = emptySet(),
     val selectedGenreIds: Set<Int> = emptySet(),
+    val searchQuery: String = "",
 )
 
 @HiltViewModel
@@ -86,9 +87,13 @@ class LibraryViewModel @Inject constructor(
         rawMovieData,
         filterState,
         statsRepository.getLastWatchedPerMedia(),
-    ) { showData, movieData, filter, lastWatchedEntries ->
+        showRepository.getAllEpisodeNames(),
+    ) { showData, movieData, filter, lastWatchedEntries, episodeNames ->
         val lastWatchedByKey: Map<Pair<MediaType, Int>, Instant> =
             lastWatchedEntries.associate { (it.mediaType to it.tmdbId) to it.watchedAt }
+        val episodeNamesByShowId: Map<Int, List<String>> =
+            episodeNames.groupBy({ it.showId }, { it.name })
+        val query = filter.searchQuery.trim()
         val genreIdsByShowId = showData.crossRefs.groupBy({ it.showId }, { it.genreId })
         val genreIdsByMovieId = movieData.crossRefs.groupBy({ it.movieId }, { it.genreId })
         val showGenreNameById = showData.genres.associateBy { it.tmdbId }
@@ -105,7 +110,10 @@ class LibraryViewModel @Inject constructor(
                     val matchesStatus = filter.selectedStatuses.isEmpty() || status in filter.selectedStatuses
                     val matchesGenre = filter.selectedGenreIds.isEmpty() ||
                         genreIdsByShowId[show.tmdbId].orEmpty().any { it in filter.selectedGenreIds }
-                    matchesStatus && matchesGenre
+                    val matchesQuery = query.isEmpty() ||
+                        show.name.contains(query, ignoreCase = true) ||
+                        episodeNamesByShowId[show.tmdbId].orEmpty().any { it.contains(query, ignoreCase = true) }
+                    matchesStatus && matchesGenre && matchesQuery
                 }
                 .map { (show, status) ->
                     val showProgress = progressByShowId[show.tmdbId]
@@ -119,7 +127,11 @@ class LibraryViewModel @Inject constructor(
                         status = status,
                         isFavorite = show.isFavorite,
                         addedAt = show.addedAt,
-                        lastWatchedAt = lastWatchedByKey[MediaType.TV to show.tmdbId],
+                        // Watch-log entries survive remove/re-add (kept for stats accuracy — see
+                        // ShowRepository.removeShow) and TV Time import, so a show can carry watch
+                        // history from before its current stay in the library. Only count it for
+                        // the "recently watched" sort if it happened after this add.
+                        lastWatchedAt = lastWatchedByKey[MediaType.TV to show.tmdbId]?.takeIf { it >= show.addedAt },
                         nextEpisodeCode = nextEpisode?.let { "S${it.seasonNumber} · E${it.episodeNumber}" },
                         nextEpisodeName = nextEpisode?.name,
                         genreNames = genreIdsByShowId[show.tmdbId].orEmpty().mapNotNull { showGenreNameById[it]?.name },
@@ -136,7 +148,8 @@ class LibraryViewModel @Inject constructor(
                     val matchesStatus = filter.selectedStatuses.isEmpty() || status in filter.selectedStatuses
                     val matchesGenre = filter.selectedGenreIds.isEmpty() ||
                         genreIdsByMovieId[movie.tmdbId].orEmpty().any { it in filter.selectedGenreIds }
-                    matchesStatus && matchesGenre
+                    val matchesQuery = query.isEmpty() || movie.title.contains(query, ignoreCase = true)
+                    matchesStatus && matchesGenre && matchesQuery
                 }
                 .map { (movie, status) ->
                     LibraryItem(
@@ -148,7 +161,7 @@ class LibraryViewModel @Inject constructor(
                         status = status,
                         isFavorite = movie.isFavorite,
                         addedAt = movie.addedAt,
-                        lastWatchedAt = lastWatchedByKey[MediaType.MOVIE to movie.tmdbId],
+                        lastWatchedAt = lastWatchedByKey[MediaType.MOVIE to movie.tmdbId]?.takeIf { it >= movie.addedAt },
                         runtimeMinutes = movie.runtimeMinutes,
                         genreNames = genreIdsByMovieId[movie.tmdbId].orEmpty().mapNotNull { movieGenreNameById[it]?.name },
                     )
@@ -158,13 +171,15 @@ class LibraryViewModel @Inject constructor(
         val combinedItems = showItems + movieItems
         val sections = buildSections(combinedItems, filter.sortOption)
 
-        val upcomingShows = if (filter.typeFilter == LibraryTypeFilter.FILMS) {
+        // Upcoming episodes/releases aren't part of what's being searched for, so they'd just be
+        // noise mixed in with search results — hidden while a query is active.
+        val upcomingShows = if (filter.typeFilter == LibraryTypeFilter.FILMS || query.isNotEmpty()) {
             emptyList()
         } else {
             buildUpcomingShowItems(showData.shows, imageUrlBuilder)
         }
 
-        val upcomingMovies = if (filter.typeFilter == LibraryTypeFilter.SERIES) {
+        val upcomingMovies = if (filter.typeFilter == LibraryTypeFilter.SERIES || query.isNotEmpty()) {
             emptyList()
         } else {
             buildUpcomingMovieItems(movieData.movies, imageUrlBuilder)
@@ -186,6 +201,7 @@ class LibraryViewModel @Inject constructor(
             availableGenres = availableGenres,
             selectedStatuses = filter.selectedStatuses,
             selectedGenreIds = filter.selectedGenreIds,
+            searchQuery = filter.searchQuery,
         )
     }.stateIn(
         scope = viewModelScope,
@@ -203,6 +219,10 @@ class LibraryViewModel @Inject constructor(
 
     fun onFiltersApplied(statuses: Set<WatchStatus>, genreIds: Set<Int>, sortOption: LibrarySortOption) {
         filterState.update { it.copy(selectedStatuses = statuses, selectedGenreIds = genreIds, sortOption = sortOption) }
+    }
+
+    fun onSearchQueryChanged(query: String) {
+        filterState.update { it.copy(searchQuery = query) }
     }
 
 }

@@ -119,6 +119,7 @@ fun FilterBottomSheet(
                     statuses = emptySet()
                     genreIds = emptySet()
                     sort = DEFAULT_SORT_OPTION
+                    onApply(statuses, genreIds, sort)
                 }) {
                     Text(stringResource(R.string.filter_reset_button))
                 }
@@ -167,7 +168,10 @@ fun GenreFilterBottomSheet(
                 }
             }
             Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp)) {
-                TextButton(onClick = { genreIds = emptySet() }) {
+                TextButton(onClick = {
+                    genreIds = emptySet()
+                    onApply(genreIds)
+                }) {
                     Text(stringResource(R.string.filter_reset_button))
                 }
                 Spacer(Modifier.weight(1f))

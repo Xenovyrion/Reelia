@@ -53,4 +53,5 @@ data class LibraryUiState(
     val availableGenres: List<GenreOption> = emptyList(),
     val selectedStatuses: Set<WatchStatus> = emptySet(),
     val selectedGenreIds: Set<Int> = emptySet(),
+    val searchQuery: String = "",
 )

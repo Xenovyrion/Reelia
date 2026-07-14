@@ -157,8 +157,13 @@ fun TimeLineNavGraph(navController: NavHostController, modifier: Modifier = Modi
             ShowPreviewScreen(
                 onBack = { navController.popBackStack() },
                 onAdded = {
-                    navController.popBackStack()
-                    navController.navigate(Routes.showDetail(tmdbId))
+                    // Skips back past Search entirely (a no-op if Search isn't in the back stack,
+                    // e.g. reached from Home's discovery rows) — pressing back after adding a
+                    // title should land on whatever screen was open before Search, typically the
+                    // Library tab, not back on the search results.
+                    navController.navigate(Routes.showDetail(tmdbId)) {
+                        popUpTo(Routes.SEARCH) { inclusive = true }
+                    }
                 },
             )
         }
@@ -170,8 +175,9 @@ fun TimeLineNavGraph(navController: NavHostController, modifier: Modifier = Modi
             MoviePreviewScreen(
                 onBack = { navController.popBackStack() },
                 onAdded = {
-                    navController.popBackStack()
-                    navController.navigate(Routes.movieDetail(tmdbId))
+                    navController.navigate(Routes.movieDetail(tmdbId)) {
+                        popUpTo(Routes.SEARCH) { inclusive = true }
+                    }
                 },
             )
         }

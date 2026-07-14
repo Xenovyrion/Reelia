@@ -1,6 +1,7 @@
 package com.reelia.app.data.repository
 
 import com.reelia.app.data.local.dao.EpisodeDao
+import com.reelia.app.data.local.dao.EpisodeNameRow
 import com.reelia.app.data.local.dao.GenreDao
 import com.reelia.app.data.local.dao.SeasonDao
 import com.reelia.app.data.local.dao.ShowDao
@@ -46,6 +47,8 @@ class ShowRepository @Inject constructor(
     fun getEpisodeProgressByShow(): Flow<List<ShowEpisodeProgress>> = episodeDao.getEpisodeProgressByShow()
 
     fun getAllUnwatchedEpisodesOrdered(): Flow<List<EpisodeEntity>> = episodeDao.getAllUnwatchedEpisodesOrdered()
+
+    fun getAllEpisodeNames(): Flow<List<EpisodeNameRow>> = episodeDao.getAllEpisodeNames()
 
     fun getGenresForTrackedShows(): Flow<List<GenreEntity>> = genreDao.getGenresForTrackedShows()
 
