@@ -1,8 +1,8 @@
 {
-  "id": "",
+  "id": "test-announcement-1",
   "important": false,
   "message": {
-    "fr": "",
-    "en": ""
+    "fr": "Ceci est un message de test : le système d'annonces in-app fonctionne ! Édite docs/announcement.json sur GitHub pour changer ce message (et son id) et le republier.",
+    "en": "This is a test message: the in-app announcement system works! Edit docs/announcement.json on GitHub to change this message (and its id) to republish it."
   }
 }
