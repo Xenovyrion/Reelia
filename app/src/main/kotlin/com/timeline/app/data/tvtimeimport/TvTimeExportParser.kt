@@ -62,15 +62,26 @@ class TvTimeExportParser @Inject constructor() {
     }
 
     private fun extractShows(rows: List<Map<String, String>>): List<TvTimeShowImport> {
-        val nameByTvdbId = rows
+        val seriesRows = rows.filter { it["key"]?.startsWith("user-series-") == true }
+
+        val nameByTvdbId = seriesRows
             .asSequence()
-            .filter { it["key"]?.startsWith("user-series-") == true }
             .mapNotNull { row ->
                 val tvdbId = row["s_id"]?.toIntOrNull() ?: return@mapNotNull null
                 val name = row["series_name"]?.takeIf { it.isNotBlank() } ?: return@mapNotNull null
                 tvdbId to name
             }
             .toMap()
+
+        // TV Time keeps a "user-series-*" row forever once a show is first followed — removing
+        // it later only flips `is_followed` to false, the row (and any watch history recorded
+        // while it was followed) stays in the export. Without this filter, a show the user
+        // deliberately removed would silently come back on every import.
+        val removedTvdbIds = seriesRows
+            .asSequence()
+            .filter { it["is_followed"] == "false" }
+            .mapNotNull { it["s_id"]?.toIntOrNull() }
+            .toSet()
 
         val watchedByShow = mutableMapOf<Int, MutableMap<Pair<Int, Int>, Instant>>()
         rows.asSequence()
@@ -88,13 +99,16 @@ class TvTimeExportParser @Inject constructor() {
                 }
             }
 
-        return (nameByTvdbId.keys + watchedByShow.keys).distinct().map { tvdbId ->
-            TvTimeShowImport(
-                tvdbId = tvdbId,
-                name = nameByTvdbId[tvdbId] ?: "#$tvdbId",
-                watchedEpisodes = watchedByShow[tvdbId] ?: emptyMap(),
-            )
-        }
+        return (nameByTvdbId.keys + watchedByShow.keys)
+            .distinct()
+            .filterNot { it in removedTvdbIds }
+            .map { tvdbId ->
+                TvTimeShowImport(
+                    tvdbId = tvdbId,
+                    name = nameByTvdbId[tvdbId] ?: "#$tvdbId",
+                    watchedEpisodes = watchedByShow[tvdbId] ?: emptyMap(),
+                )
+            }
     }
 
     private fun extractMovies(rows: List<Map<String, String>>): List<TvTimeMovieImport> {
