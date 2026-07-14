@@ -28,20 +28,48 @@ import com.reelia.app.domain.model.displayLabel
 
 data class GenreOption(val id: Int, val name: String)
 
+enum class LibrarySortOption { STATUS, ALPHABETICAL, GENRE, RECENTLY_ADDED }
+
+@Composable
+private fun LibrarySortOption.label(): String = stringResource(
+    when (this) {
+        LibrarySortOption.STATUS -> R.string.library_sort_status
+        LibrarySortOption.ALPHABETICAL -> R.string.library_sort_alphabetical
+        LibrarySortOption.GENRE -> R.string.library_sort_genre
+        LibrarySortOption.RECENTLY_ADDED -> R.string.library_sort_recently_added
+    },
+)
+
+/** Filter and sort share one sheet (opened from the same toolbar button) rather than two nearly
+ * identical entry points — sort is applied together with the filters on "Appliquer" rather than
+ * instantly, so the whole set of choices is confirmed as one action. */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun FilterBottomSheet(
     selectedStatuses: Set<WatchStatus>,
     availableGenres: List<GenreOption>,
     selectedGenreIds: Set<Int>,
-    onApply: (Set<WatchStatus>, Set<Int>) -> Unit,
+    sortOption: LibrarySortOption,
+    onApply: (Set<WatchStatus>, Set<Int>, LibrarySortOption) -> Unit,
     onDismiss: () -> Unit,
 ) {
     var statuses by remember { mutableStateOf(selectedStatuses) }
     var genreIds by remember { mutableStateOf(selectedGenreIds) }
+    var sort by remember { mutableStateOf(sortOption) }
 
     ModalBottomSheet(onDismissRequest = onDismiss) {
         Column(modifier = Modifier.padding(16.dp)) {
+            Text(stringResource(R.string.library_sort_content_description), style = MaterialTheme.typography.titleMedium)
+            FlowRow(modifier = Modifier.padding(top = 8.dp, bottom = 16.dp)) {
+                LibrarySortOption.entries.forEach { option ->
+                    FilterChip(
+                        selected = sort == option,
+                        onClick = { sort = option },
+                        label = { Text(option.label()) },
+                        modifier = Modifier.padding(end = 8.dp, bottom = 8.dp),
+                    )
+                }
+            }
             Text(stringResource(R.string.filter_status_label), style = MaterialTheme.typography.titleMedium)
             FlowRow(modifier = Modifier.padding(top = 8.dp, bottom = 16.dp)) {
                 WatchStatus.entries.forEach { status ->
@@ -78,7 +106,7 @@ fun FilterBottomSheet(
                     Text(stringResource(R.string.filter_reset_button))
                 }
                 Spacer(Modifier.weight(1f))
-                Button(onClick = { onApply(statuses, genreIds) }) {
+                Button(onClick = { onApply(statuses, genreIds, sort) }) {
                     Text(stringResource(R.string.filter_apply_button))
                 }
             }

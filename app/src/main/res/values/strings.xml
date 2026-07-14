@@ -54,6 +54,7 @@
     <!-- Shared: Séries/Films tabs -->
     <string name="action_filter_content_description">Filter</string>
     <string name="action_toggle_view_content_description">Toggle view</string>
+    <string name="library_filter_sort_content_description">Filter and sort</string>
     <string name="library_sort_content_description">Sort</string>
     <string name="library_sort_status">Status</string>
     <string name="library_sort_alphabetical">Alphabetical</string>
@@ -291,6 +292,7 @@
     <string name="settings_update_section_title">Updates</string>
     <string name="settings_update_check_button">Check for updates</string>
     <string name="settings_update_checking">Checking…</string>
+    <string name="settings_update_downloading">Downloading update…</string>
     <string name="settings_update_up_to_date">Reelia is up to date.</string>
     <string name="settings_update_available">New version available</string>
     <string name="settings_app_version_format">Version %1$s (%2$s)</string>
@@ -299,6 +301,9 @@
     <string name="profile_appcheck_section_title">App Check (debug)</string>
     <string name="profile_appcheck_explanation">Fetch the token to register under Firebase console > App Check > Manage debug tokens.</string>
     <string name="profile_appcheck_fetch_button">Fetch App Check token</string>
+    <string name="profile_appcheck_cooldown_format">Retry in %1$ds</string>
+    <string name="profile_appcheck_error_rate_limited">Too many attempts — please wait a minute before retrying.</string>
+    <string name="profile_appcheck_error_format">Error: %1$s</string>
     <string name="profile_appcheck_dialog_title">App Check token</string>
     <string name="profile_appcheck_copy_button">Copy</string>
     <string name="profile_appcheck_close_button">Close</string>

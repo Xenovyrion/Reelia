@@ -43,6 +43,7 @@ import java.time.format.TextStyle
 import java.util.Locale
 import javax.inject.Inject
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -152,6 +153,16 @@ data class ResetLibraryUiState(
     val isResetting: Boolean = false,
     val errorMessage: String? = null,
 )
+
+data class AppCheckTokenUiState(
+    val token: String? = null,
+    val errorMessage: String? = null,
+    val isRateLimited: Boolean = false,
+    val isFetching: Boolean = false,
+    val cooldownSecondsRemaining: Int = 0,
+)
+
+private const val APP_CHECK_COOLDOWN_SECONDS = 60
 
 @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
 @HiltViewModel
@@ -486,21 +497,46 @@ class ProfileViewModel @Inject constructor(
     // App Check debug token (debug builds only — see ProfileScreen's BuildConfig.DEBUG gate).
     // Firebase's DebugAppCheckProviderFactory also logs this to Logcat on its own, but that's
     // unreachable without adb/Android Studio, so this surfaces it directly in the app instead.
-    private val _appCheckDebugToken = MutableStateFlow<String?>(null)
-    val appCheckDebugToken: StateFlow<String?> = _appCheckDebugToken.asStateFlow()
+    private val _appCheckTokenUiState = MutableStateFlow(AppCheckTokenUiState())
+    val appCheckTokenUiState: StateFlow<AppCheckTokenUiState> = _appCheckTokenUiState.asStateFlow()
 
+    /** The debug provider exchanges its local secret for a real token over the network on every
+     * single call (there's no way to skip that round trip client-side), so hammering the button
+     * hits Firebase's own rate limit ("too many attempts") and only makes it worse. A cooldown
+     * after any failure stops the app from making that same mistake automatically. */
     fun onFetchAppCheckDebugTokenClicked() {
+        if (_appCheckTokenUiState.value.cooldownSecondsRemaining > 0) return
         viewModelScope.launch {
-            _appCheckDebugToken.value = try {
-                Firebase.appCheck.getAppCheckToken(false).await().token
+            _appCheckTokenUiState.update { it.copy(isFetching = true, errorMessage = null, isRateLimited = false) }
+            try {
+                val token = Firebase.appCheck.getAppCheckToken(false).await().token
+                _appCheckTokenUiState.update { it.copy(isFetching = false, token = token) }
             } catch (e: Exception) {
-                "Erreur : ${e.message}"
+                _appCheckTokenUiState.update {
+                    it.copy(isFetching = false, errorMessage = e.message, isRateLimited = isAppCheckRateLimited(e))
+                }
+                startAppCheckCooldown()
             }
         }
     }
 
+    private fun startAppCheckCooldown() {
+        viewModelScope.launch {
+            for (remaining in APP_CHECK_COOLDOWN_SECONDS downTo 1) {
+                _appCheckTokenUiState.update { it.copy(cooldownSecondsRemaining = remaining) }
+                delay(1_000)
+            }
+            _appCheckTokenUiState.update { it.copy(cooldownSecondsRemaining = 0) }
+        }
+    }
+
+    private fun isAppCheckRateLimited(e: Exception): Boolean {
+        val raw = e.message.orEmpty()
+        return listOf("429", "too many", "resource_exhausted", "quota").any { raw.contains(it, ignoreCase = true) }
+    }
+
     fun onAppCheckDebugTokenDismissed() {
-        _appCheckDebugToken.value = null
+        _appCheckTokenUiState.update { it.copy(token = null, errorMessage = null) }
     }
 
     // Library reset

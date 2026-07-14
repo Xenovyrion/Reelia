@@ -31,7 +31,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -53,8 +52,8 @@ import com.reelia.app.ui.common.components.EpisodeCodeBadge
 import com.reelia.app.ui.common.components.SectionHeader
 import com.reelia.app.ui.common.components.UpcomingMovieCard
 import com.reelia.app.ui.common.components.UpcomingShowCard
-import com.reelia.app.ui.navigation.BottomNavScrollToTop
 import com.reelia.app.ui.navigation.Routes
+import com.reelia.app.ui.navigation.ScrollToTopOnTabReselect
 
 @Composable
 fun HomeScreen(
@@ -65,11 +64,7 @@ fun HomeScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val listState = rememberLazyListState()
-    LaunchedEffect(Unit) {
-        BottomNavScrollToTop.events.collect { route ->
-            if (route == Routes.HOME) listState.animateScrollToItem(0)
-        }
-    }
+    ScrollToTopOnTabReselect(Routes.HOME) { listState.animateScrollToItem(0) }
 
     Scaffold { padding ->
         if (uiState.isLoading) {

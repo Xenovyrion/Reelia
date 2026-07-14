@@ -54,6 +54,7 @@
     <!-- Shared: Séries/Films tabs -->
     <string name="action_filter_content_description">Filtrer</string>
     <string name="action_toggle_view_content_description">Changer l\'affichage</string>
+    <string name="library_filter_sort_content_description">Filtrer et trier</string>
     <string name="library_sort_content_description">Trier</string>
     <string name="library_sort_status">Statut</string>
     <string name="library_sort_alphabetical">Alphabétique</string>
@@ -287,6 +288,7 @@
     <string name="settings_update_section_title">Mises à jour</string>
     <string name="settings_update_check_button">Rechercher les mises à jour</string>
     <string name="settings_update_checking">Recherche en cours…</string>
+    <string name="settings_update_downloading">Téléchargement de la mise à jour…</string>
     <string name="settings_update_up_to_date">Reelia est à jour.</string>
     <string name="settings_update_available">Nouvelle version disponible</string>
     <string name="settings_app_version_format">Version %1$s (%2$s)</string>
@@ -295,6 +297,9 @@
     <string name="profile_appcheck_section_title">App Check (debug)</string>
     <string name="profile_appcheck_explanation">Récupère le token à enregistrer dans Firebase console > App Check > Manage debug tokens.</string>
     <string name="profile_appcheck_fetch_button">Récupérer le token App Check</string>
+    <string name="profile_appcheck_cooldown_format">Réessaie dans %1$ds</string>
+    <string name="profile_appcheck_error_rate_limited">Trop de tentatives — patiente une minute avant de réessayer.</string>
+    <string name="profile_appcheck_error_format">Erreur : %1$s</string>
     <string name="profile_appcheck_dialog_title">Token App Check</string>
     <string name="profile_appcheck_copy_button">Copier</string>
     <string name="profile_appcheck_close_button">Fermer</string>

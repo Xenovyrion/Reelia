@@ -70,8 +70,8 @@ import com.reelia.app.ui.common.components.GenreProgressItem
 import com.reelia.app.ui.common.components.PasswordField
 import com.reelia.app.ui.common.components.SectionHeader
 import com.reelia.app.ui.common.components.StatCard
-import com.reelia.app.ui.navigation.BottomNavScrollToTop
 import com.reelia.app.ui.navigation.Routes
+import com.reelia.app.ui.navigation.ScrollToTopOnTabReselect
 import com.reelia.app.ui.settings.LANGUAGE_DISPLAY_NAME_RES
 import com.reelia.app.ui.theme.StatusFavorite
 import com.reelia.app.ui.update.UpdateUiState
@@ -164,14 +164,10 @@ fun ProfileScreen(
     val settingsScrollState = rememberScrollState()
     val statsScrollState = rememberScrollState()
 
-    LaunchedEffect(Unit) {
-        BottomNavScrollToTop.events.collect { route ->
-            if (route == Routes.PROFILE) {
-                when (selectedTab) {
-                    ProfileSubTab.SETTINGS -> settingsScrollState.animateScrollTo(0)
-                    ProfileSubTab.STATS -> statsScrollState.animateScrollTo(0)
-                }
-            }
+    ScrollToTopOnTabReselect(Routes.PROFILE) {
+        when (selectedTab) {
+            ProfileSubTab.SETTINGS -> settingsScrollState.animateScrollTo(0)
+            ProfileSubTab.STATS -> statsScrollState.animateScrollTo(0)
         }
     }
 
@@ -502,6 +498,11 @@ private fun ProfileSettingsContent(
         Text(stringResource(R.string.settings_update_section_title), style = MaterialTheme.typography.titleMedium)
         Spacer(Modifier.height(8.dp))
         when {
+            updateUiState.isDownloading -> Text(
+                stringResource(R.string.settings_update_downloading),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
             updateUiState.isChecking -> Text(
                 stringResource(R.string.settings_update_checking),
                 style = MaterialTheme.typography.bodyMedium,
@@ -518,20 +519,39 @@ private fun ProfileSettingsContent(
             )
         }
         Spacer(Modifier.height(12.dp))
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
             if (updateUiState.availableUpdate != null) {
                 Button(onClick = viewModel::onUpdateDownloadClicked, enabled = !updateUiState.isDownloading) {
                     if (updateUiState.isDownloading) {
-                        Text(stringResource(R.string.settings_update_checking))
+                        CircularProgressIndicator(modifier = Modifier.padding(2.dp).size(16.dp), strokeWidth = 2.dp)
+                        Text(stringResource(R.string.settings_update_downloading), modifier = Modifier.padding(start = 8.dp))
                     } else {
                         Text(stringResource(R.string.update_action_download_install))
                     }
                 }
             } else {
                 Button(onClick = viewModel::onCheckForUpdateClicked, enabled = !updateUiState.isChecking) {
-                    Text(stringResource(R.string.settings_update_check_button))
+                    if (updateUiState.isChecking) {
+                        CircularProgressIndicator(modifier = Modifier.padding(2.dp).size(16.dp), strokeWidth = 2.dp)
+                        Text(stringResource(R.string.settings_update_checking), modifier = Modifier.padding(start = 8.dp))
+                    } else {
+                        Text(stringResource(R.string.settings_update_check_button))
+                    }
                 }
             }
+        }
+        updateUiState.errorMessage?.let {
+            Text(
+                it,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.error,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+            )
         }
         Text(
             stringResource(R.string.settings_app_version_format, BuildConfig.VERSION_NAME, BuildConfig.GIT_SHA.take(7)),
@@ -548,7 +568,7 @@ private fun ProfileSettingsContent(
         }
 
         if (BuildConfig.DEBUG) {
-            val appCheckDebugToken by viewModel.appCheckDebugToken.collectAsStateWithLifecycle()
+            val appCheckState by viewModel.appCheckTokenUiState.collectAsStateWithLifecycle()
             val clipboardManager = LocalClipboardManager.current
 
             Spacer(Modifier.height(28.dp))
@@ -559,11 +579,33 @@ private fun ProfileSettingsContent(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 4.dp, bottom = 8.dp),
             )
-            OutlinedButton(onClick = viewModel::onFetchAppCheckDebugTokenClicked) {
-                Text(stringResource(R.string.profile_appcheck_fetch_button))
+            OutlinedButton(
+                onClick = viewModel::onFetchAppCheckDebugTokenClicked,
+                enabled = !appCheckState.isFetching && appCheckState.cooldownSecondsRemaining == 0,
+            ) {
+                if (appCheckState.isFetching) {
+                    CircularProgressIndicator(modifier = Modifier.padding(2.dp).size(16.dp), strokeWidth = 2.dp)
+                } else if (appCheckState.cooldownSecondsRemaining > 0) {
+                    Text(stringResource(R.string.profile_appcheck_cooldown_format, appCheckState.cooldownSecondsRemaining))
+                } else {
+                    Text(stringResource(R.string.profile_appcheck_fetch_button))
+                }
+            }
+            appCheckState.errorMessage?.let { raw ->
+                val displayMessage = if (appCheckState.isRateLimited) {
+                    stringResource(R.string.profile_appcheck_error_rate_limited)
+                } else {
+                    stringResource(R.string.profile_appcheck_error_format, raw)
+                }
+                Text(
+                    displayMessage,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(top = 8.dp),
+                )
             }
 
-            appCheckDebugToken?.let { token ->
+            appCheckState.token?.let { token ->
                 AlertDialog(
                     onDismissRequest = viewModel::onAppCheckDebugTokenDismissed,
                     title = { Text(stringResource(R.string.profile_appcheck_dialog_title)) },

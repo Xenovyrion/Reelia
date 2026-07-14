@@ -18,6 +18,7 @@ import com.reelia.app.domain.model.displayLabel
 import com.reelia.app.ui.common.effectiveMovieStatus
 import com.reelia.app.ui.common.effectiveShowStatus
 import com.reelia.app.ui.common.components.GenreOption
+import com.reelia.app.ui.common.components.LibrarySortOption
 import com.reelia.app.ui.common.components.ViewMode
 import com.reelia.app.ui.common.model.buildUpcomingMovieItems
 import com.reelia.app.ui.common.model.buildUpcomingShowItems
@@ -192,13 +193,10 @@ class LibraryViewModel @Inject constructor(
         filterState.update { it.copy(typeFilter = typeFilter) }
     }
 
-    fun onFiltersApplied(statuses: Set<WatchStatus>, genreIds: Set<Int>) {
-        filterState.update { it.copy(selectedStatuses = statuses, selectedGenreIds = genreIds) }
+    fun onFiltersApplied(statuses: Set<WatchStatus>, genreIds: Set<Int>, sortOption: LibrarySortOption) {
+        filterState.update { it.copy(selectedStatuses = statuses, selectedGenreIds = genreIds, sortOption = sortOption) }
     }
 
-    fun onSortOptionSelected(sortOption: LibrarySortOption) {
-        filterState.update { it.copy(sortOption = sortOption) }
-    }
 }
 
 private fun buildSections(items: List<LibraryItem>, sortOption: LibrarySortOption): List<LibrarySection> =

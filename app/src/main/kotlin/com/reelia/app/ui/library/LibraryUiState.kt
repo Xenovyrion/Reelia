@@ -3,14 +3,13 @@ package com.reelia.app.ui.library
 import com.reelia.app.domain.model.MediaType
 import com.reelia.app.domain.model.WatchStatus
 import com.reelia.app.ui.common.components.GenreOption
+import com.reelia.app.ui.common.components.LibrarySortOption
 import com.reelia.app.ui.common.components.ViewMode
 import com.reelia.app.ui.common.model.UpcomingMovieItem
 import com.reelia.app.ui.common.model.UpcomingShowItem
 import java.time.Instant
 
 enum class LibraryTypeFilter { ALL, SERIES, FILMS }
-
-enum class LibrarySortOption { STATUS, ALPHABETICAL, GENRE, RECENTLY_ADDED }
 
 data class LibraryItem(
     val id: Int,
