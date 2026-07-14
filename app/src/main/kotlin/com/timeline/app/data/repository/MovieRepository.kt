@@ -57,6 +57,16 @@ class MovieRepository @Inject constructor(
         firestoreSyncRepository.pushPendingChanges()
     }
 
+    /** Removes a movie from the library and its Firestore document — see
+     * [com.timeline.app.data.repository.ShowRepository.removeShow] for the equivalent on shows. */
+    suspend fun removeMovie(movieId: Int) {
+        val movie = movieDao.getMovieOnce(movieId) ?: return
+        genreDao.deleteMovieCrossRefs(movieId)
+        movieDao.deleteMovie(movie)
+        syncOutboxDao.clearPending(movieId, MediaType.MOVIE)
+        firestoreSyncRepository.deleteMovieRemote(movieId)
+    }
+
     /** Fetches a movie from TMDB, persists it, then pushes its existence to Firestore so it can
      * sync to other devices. */
     suspend fun addMovieFromTmdb(tmdbId: Int) {

@@ -31,6 +31,9 @@ interface GenreDao {
     @Query("SELECT * FROM show_genre_cross_ref")
     fun getAllShowGenreCrossRefs(): Flow<List<ShowGenreCrossRef>>
 
+    @Query("DELETE FROM show_genre_cross_ref WHERE showId = :showId")
+    suspend fun deleteShowCrossRefs(showId: Int)
+
     @Query(
         """
         SELECT DISTINCT g.* FROM genres g
@@ -42,6 +45,9 @@ interface GenreDao {
 
     @Query("SELECT * FROM movie_genre_cross_ref")
     fun getAllMovieGenreCrossRefs(): Flow<List<MovieGenreCrossRef>>
+
+    @Query("DELETE FROM movie_genre_cross_ref WHERE movieId = :movieId")
+    suspend fun deleteMovieCrossRefs(movieId: Int)
 
     @Query(
         """

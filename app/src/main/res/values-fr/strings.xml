@@ -26,6 +26,11 @@
 
     <!-- BackdropHeader -->
     <string name="backdrop_back_content_description">Retour</string>
+    <string name="detail_remove_content_description">Retirer de la bibliothèque</string>
+    <string name="detail_remove_dialog_title">Retirer « %1$s » ?</string>
+    <string name="detail_remove_dialog_message">Ceci la retire de ta bibliothèque sur tes deux appareils synchronisés. Ton historique de visionnage reste dans tes statistiques.</string>
+    <string name="detail_remove_dialog_confirm">Retirer</string>
+    <string name="detail_remove_dialog_cancel">Annuler</string>
 
     <!-- FilterBottomSheet -->
     <string name="filter_status_label">Statut</string>

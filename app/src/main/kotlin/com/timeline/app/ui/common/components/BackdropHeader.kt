@@ -5,11 +5,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,7 +29,8 @@ import com.timeline.app.R
  * Full-bleed hero image over the top of a detail screen, with a gradient scrim fading into
  * the background so it blends seamlessly into the content below. Title is intentionally NOT
  * overlaid on the image (legibility varies too much per source image) — render it in the
- * caller's content below this header instead.
+ * caller's content below this header instead. [onDelete], when provided, shows a matching
+ * pill button at the opposite corner (e.g. "remove from library" on Show/Movie detail).
  */
 @Composable
 fun BackdropHeader(
@@ -35,6 +39,7 @@ fun BackdropHeader(
     modifier: Modifier = Modifier,
     heightFraction: Float = 0.32f,
     onBack: () -> Unit,
+    onDelete: (() -> Unit)? = null,
 ) {
     val heightDp = (LocalConfiguration.current.screenHeightDp * heightFraction).dp
     val backgroundColor = MaterialTheme.colorScheme.background
@@ -60,17 +65,25 @@ fun BackdropHeader(
                     ),
                 ),
         )
-        IconButton(
+        BackButton(
             onClick = onBack,
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .padding(8.dp),
-        ) {
-            Icon(
-                Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = stringResource(R.string.backdrop_back_content_description),
-                tint = Color.White,
-            )
+            onImage = true,
+            modifier = Modifier.align(Alignment.TopStart).padding(8.dp),
+        )
+        if (onDelete != null) {
+            Surface(
+                shape = CircleShape,
+                color = Color.Black.copy(alpha = 0.4f),
+                modifier = Modifier.align(Alignment.TopEnd).padding(8.dp).size(38.dp),
+            ) {
+                IconButton(onClick = onDelete) {
+                    Icon(
+                        Icons.Filled.DeleteOutline,
+                        contentDescription = stringResource(R.string.detail_remove_content_description),
+                        tint = Color.White,
+                    )
+                }
+            }
         }
     }
 }

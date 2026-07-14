@@ -139,6 +139,19 @@ class FirestoreSyncRepository @Inject constructor(
             ).await()
     }
 
+    /** Deletes a single show's Firestore document — used when the user removes it from their
+     * library, so it doesn't come back down via sync. No-op if signed out. */
+    suspend fun deleteShowRemote(tmdbId: Int) {
+        val uid = firebaseAuth.currentUser?.uid ?: return
+        firestore.collection("users/$uid/shows").document(tmdbId.toString()).delete().await()
+    }
+
+    /** Deletes a single movie's Firestore document — see [deleteShowRemote]. */
+    suspend fun deleteMovieRemote(tmdbId: Int) {
+        val uid = firebaseAuth.currentUser?.uid ?: return
+        firestore.collection("users/$uid/movies").document(tmdbId.toString()).delete().await()
+    }
+
     /** Pushes the TMDB API key to the user's own Firestore document (merged, not overwritten)
      * so the other device can import it automatically instead of requiring it to be re-typed
      * after every reinstall. Protected by the same per-user Firestore rule as everything else
@@ -223,6 +236,10 @@ class FirestoreSyncRepository @Inject constructor(
 
         showsListener = firestore.collection("users/$uid/shows").addSnapshotListener { snapshot, _ ->
             snapshot?.documentChanges?.forEach { change ->
+                // A REMOVED change means this device (or the other one) deleted the show —
+                // without this guard, the stale cached document data below would look like a
+                // legitimate update and re-add the show right after it was removed.
+                if (change.type == DocumentChange.Type.REMOVED) return@forEach
                 val tmdbId = change.document.id.toIntOrNull() ?: return@forEach
                 val remoteModifiedAt = change.document.getLong("lastModifiedAt")?.let(Instant::ofEpochMilli) ?: return@forEach
                 val remoteFavorite = change.document.getBoolean("isFavorite") ?: false
@@ -256,6 +273,9 @@ class FirestoreSyncRepository @Inject constructor(
         }
         moviesListener = firestore.collection("users/$uid/movies").addSnapshotListener { snapshot, _ ->
             snapshot?.documentChanges?.forEach { change ->
+                // See the shows listener's comment above — ignore deletes to avoid resurrecting
+                // a movie this or another device just removed.
+                if (change.type == DocumentChange.Type.REMOVED) return@forEach
                 val tmdbId = change.document.id.toIntOrNull() ?: return@forEach
                 val remoteModifiedAt = change.document.getLong("lastModifiedAt")?.let(Instant::ofEpochMilli) ?: return@forEach
                 val remoteFavorite = change.document.getBoolean("isFavorite") ?: false

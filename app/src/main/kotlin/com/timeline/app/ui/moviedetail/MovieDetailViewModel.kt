@@ -12,12 +12,15 @@ import com.timeline.app.ui.common.components.CastRowItem
 import com.timeline.app.ui.common.components.WatchProviderRowItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -42,6 +45,9 @@ class MovieDetailViewModel @Inject constructor(
     private val movieId: Int = checkNotNull(savedStateHandle["movieId"])
 
     private val extras = MutableStateFlow(MovieDetailExtras())
+
+    private val removedEventChannel = Channel<Unit>(Channel.BUFFERED)
+    val removedEvent: Flow<Unit> = removedEventChannel.receiveAsFlow()
 
     init {
         viewModelScope.launch {
@@ -116,6 +122,13 @@ class MovieDetailViewModel @Inject constructor(
     fun onFavoriteToggled(isFavorite: Boolean) {
         viewModelScope.launch {
             movieRepository.setFavorite(movieId, isFavorite)
+        }
+    }
+
+    fun onRemoveConfirmed() {
+        viewModelScope.launch {
+            movieRepository.removeMovie(movieId)
+            removedEventChannel.send(Unit)
         }
     }
 

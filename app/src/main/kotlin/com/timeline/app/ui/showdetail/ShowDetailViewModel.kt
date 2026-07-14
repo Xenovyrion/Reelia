@@ -17,12 +17,15 @@ import com.timeline.app.ui.common.components.WatchProviderRowItem
 import com.timeline.app.ui.common.format.toYearOrNull
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -48,6 +51,9 @@ class ShowDetailViewModel @Inject constructor(
     private val showId: Int = checkNotNull(savedStateHandle["showId"])
 
     private val extras = MutableStateFlow(ShowDetailExtras())
+
+    private val removedEventChannel = Channel<Unit>(Channel.BUFFERED)
+    val removedEvent: Flow<Unit> = removedEventChannel.receiveAsFlow()
 
     init {
         viewModelScope.launch {
@@ -181,6 +187,13 @@ class ShowDetailViewModel @Inject constructor(
     fun onFavoriteToggled(isFavorite: Boolean) {
         viewModelScope.launch {
             showRepository.setFavorite(showId, isFavorite)
+        }
+    }
+
+    fun onRemoveConfirmed() {
+        viewModelScope.launch {
+            showRepository.removeShow(showId)
+            removedEventChannel.send(Unit)
         }
     }
 }

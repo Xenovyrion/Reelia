@@ -12,7 +12,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.BugReport
@@ -24,7 +23,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -47,6 +45,7 @@ import com.timeline.app.R
 import com.timeline.app.data.releasenotes.ReleaseNoteCategory
 import com.timeline.app.data.releasenotes.ReleaseNoteItem
 import com.timeline.app.data.releasenotes.ReleaseNoteVersion
+import com.timeline.app.ui.common.components.BackButton
 import com.timeline.app.ui.theme.StatusFavorite
 import com.timeline.app.ui.theme.StatusPlanned
 import com.timeline.app.ui.theme.StatusWantToWatch
@@ -62,11 +61,7 @@ fun ReleaseNotesScreen(onBack: () -> Unit, viewModel: ReleaseNotesViewModel = hi
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.release_notes_title)) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
-                    }
-                },
+                navigationIcon = { BackButton(onClick = onBack, modifier = Modifier.padding(start = 8.dp)) },
                 colors = timeLineTopAppBarColors(),
             )
         },

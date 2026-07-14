@@ -80,6 +80,18 @@ class ShowRepository @Inject constructor(
         firestoreSyncRepository.pushPendingChanges()
     }
 
+    /** Removes a show from the library — episodes/seasons cascade-delete via their foreign key,
+     * genre cross-refs are cleared explicitly (no FK on those), and the Firestore document is
+     * deleted too so it doesn't come back down on the next sync. The watch log is untouched, so
+     * past viewing still counts toward stats. */
+    suspend fun removeShow(showId: Int) {
+        val show = showDao.getShowOnce(showId) ?: return
+        genreDao.deleteShowCrossRefs(showId)
+        showDao.deleteShow(show)
+        syncOutboxDao.clearPending(showId, MediaType.TV)
+        firestoreSyncRepository.deleteShowRemote(showId)
+    }
+
     /** Fetches full show + every season's episodes from TMDB and persists it as a new tracked
      * show, then pushes its existence to Firestore so it can sync to other devices. All seasons
      * are fetched concurrently so progress tracking is correct from the start — a show is never

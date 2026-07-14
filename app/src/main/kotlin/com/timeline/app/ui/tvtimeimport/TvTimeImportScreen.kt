@@ -23,10 +23,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Icon
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -42,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.timeline.app.R
+import com.timeline.app.ui.common.components.BackButton
 import com.timeline.app.ui.theme.timeLineTopAppBarColors
 import kotlin.math.roundToInt
 
@@ -60,11 +57,7 @@ fun TvTimeImportScreen(onBack: () -> Unit, viewModel: TvTimeImportViewModel = hi
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.tvtime_import_title)) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
-                    }
-                },
+                navigationIcon = { BackButton(onClick = onBack, modifier = Modifier.padding(start = 8.dp)) },
                 colors = timeLineTopAppBarColors(),
             )
         },

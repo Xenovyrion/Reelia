@@ -23,6 +23,7 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -39,7 +40,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -82,6 +85,11 @@ fun ShowDetailScreen(
     var selectedSeasonNumber by remember { mutableStateOf<Int?>(null) }
     var selectedTab by remember { mutableIntStateOf(0) }
     var selectedEpisodeKey by remember { mutableStateOf<Pair<Int, Int>?>(null) }
+    var showRemoveConfirmation by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        viewModel.removedEvent.collect { onBack() }
+    }
 
     Scaffold { padding ->
         if (uiState.isLoading) {
@@ -97,6 +105,7 @@ fun ShowDetailScreen(
                     imageUrl = uiState.backdropUrl ?: uiState.posterUrl,
                     contentDescription = uiState.title,
                     onBack = onBack,
+                    onDelete = { showRemoveConfirmation = true },
                 )
             }
 
@@ -352,6 +361,29 @@ fun ShowDetailScreen(
                 )
             }
         }
+    }
+
+    if (showRemoveConfirmation) {
+        AlertDialog(
+            onDismissRequest = { showRemoveConfirmation = false },
+            title = { Text(stringResource(R.string.detail_remove_dialog_title, uiState.title)) },
+            text = { Text(stringResource(R.string.detail_remove_dialog_message)) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showRemoveConfirmation = false
+                        viewModel.onRemoveConfirmed()
+                    },
+                ) {
+                    Text(stringResource(R.string.detail_remove_dialog_confirm), color = MaterialTheme.colorScheme.error)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showRemoveConfirmation = false }) {
+                    Text(stringResource(R.string.detail_remove_dialog_cancel))
+                }
+            },
+        )
     }
 }
 

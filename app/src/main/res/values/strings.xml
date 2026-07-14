@@ -26,6 +26,11 @@
 
     <!-- BackdropHeader -->
     <string name="backdrop_back_content_description">Back</string>
+    <string name="detail_remove_content_description">Remove from library</string>
+    <string name="detail_remove_dialog_title">Remove \"%1$s\"?</string>
+    <string name="detail_remove_dialog_message">This removes it from your library on both synced devices. Your watch history stays in your stats.</string>
+    <string name="detail_remove_dialog_confirm">Remove</string>
+    <string name="detail_remove_dialog_cancel">Cancel</string>
 
     <!-- FilterBottomSheet -->
     <string name="filter_status_label">Status</string>

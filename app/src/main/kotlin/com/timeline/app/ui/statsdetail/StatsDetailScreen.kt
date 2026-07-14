@@ -3,11 +3,7 @@ package com.timeline.app.ui.statsdetail
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -21,6 +17,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.timeline.app.R
 import com.timeline.app.domain.model.MediaType
+import com.timeline.app.ui.common.components.BackButton
 import com.timeline.app.ui.common.components.MediaListRow
 import com.timeline.app.ui.theme.timeLineTopAppBarColors
 
@@ -37,11 +34,7 @@ fun StatsDetailScreen(
         topBar = {
             TopAppBar(
                 title = { Text(viewModel.title) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
-                    }
-                },
+                navigationIcon = { BackButton(onClick = onBack, modifier = Modifier.padding(start = 8.dp)) },
                 colors = timeLineTopAppBarColors(),
             )
         },
