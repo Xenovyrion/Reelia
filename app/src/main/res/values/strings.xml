@@ -283,6 +283,7 @@
     <string name="release_notes_error">Couldn\'t load release notes. Check your connection and try again later.</string>
     <string name="release_notes_version_format">Version %1$s</string>
     <string name="release_notes_current_badge">Current</string>
+    <string name="release_notes_newer_badge">New version</string>
     <string name="release_notes_category_feature">New</string>
     <string name="release_notes_category_fix">Fixed</string>
     <string name="release_notes_category_improvement">Improved</string>

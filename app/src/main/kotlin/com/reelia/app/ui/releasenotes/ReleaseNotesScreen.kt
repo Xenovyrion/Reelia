@@ -41,10 +41,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.reelia.app.BuildConfig
 import com.reelia.app.R
 import com.reelia.app.data.releasenotes.ReleaseNoteCategory
 import com.reelia.app.data.releasenotes.ReleaseNoteItem
 import com.reelia.app.data.releasenotes.ReleaseNoteVersion
+import com.reelia.app.data.update.isNewerVersion
 import com.reelia.app.ui.common.components.BackButton
 import com.reelia.app.ui.theme.StatusFavorite
 import com.reelia.app.ui.theme.StatusPlanned
@@ -81,8 +83,12 @@ fun ReleaseNotesScreen(onBack: () -> Unit, viewModel: ReleaseNotesViewModel = hi
                     style = MaterialTheme.typography.bodyMedium,
                 )
                 is ReleaseNotesUiState.Loaded -> {
-                    state.versions.forEachIndexed { index, version ->
-                        ReleaseNoteVersionCard(version = version, isCurrent = index == 0)
+                    state.versions.forEach { version ->
+                        ReleaseNoteVersionCard(
+                            version = version,
+                            isCurrent = version.version == BuildConfig.VERSION_NAME,
+                            isNewer = isNewerVersion(version.version, BuildConfig.VERSION_NAME),
+                        )
                     }
                 }
             }
@@ -91,8 +97,8 @@ fun ReleaseNotesScreen(onBack: () -> Unit, viewModel: ReleaseNotesViewModel = hi
 }
 
 @Composable
-private fun ReleaseNoteVersionCard(version: ReleaseNoteVersion, isCurrent: Boolean) {
-    var expanded by remember(version.version) { mutableStateOf(isCurrent) }
+private fun ReleaseNoteVersionCard(version: ReleaseNoteVersion, isCurrent: Boolean, isNewer: Boolean) {
+    var expanded by remember(version.version) { mutableStateOf(isCurrent || isNewer) }
 
     Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer)) {
         Column(
@@ -111,6 +117,15 @@ private fun ReleaseNoteVersionCard(version: ReleaseNoteVersion, isCurrent: Boole
                                     stringResource(R.string.release_notes_current_badge),
                                     style = MaterialTheme.typography.labelSmall,
                                     color = StatusWatchingCompleted,
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
+                                )
+                            }
+                        } else if (isNewer) {
+                            Surface(color = StatusWantToWatch.copy(alpha = 0.15f), shape = RoundedCornerShape(50)) {
+                                Text(
+                                    stringResource(R.string.release_notes_newer_badge),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = StatusWantToWatch,
                                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
                                 )
                             }

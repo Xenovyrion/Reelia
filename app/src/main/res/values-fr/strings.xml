@@ -278,6 +278,7 @@
     <string name="release_notes_error">Impossible de charger les notes de version. Vérifie ta connexion et réessaie plus tard.</string>
     <string name="release_notes_version_format">Version %1$s</string>
     <string name="release_notes_current_badge">Actuelle</string>
+    <string name="release_notes_newer_badge">Nouvelle version</string>
     <string name="release_notes_category_feature">Nouveautés</string>
     <string name="release_notes_category_fix">Corrections</string>
     <string name="release_notes_category_improvement">Améliorations</string>
