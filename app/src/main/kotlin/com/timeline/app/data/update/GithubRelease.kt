@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class GithubRelease(
-    val target_commitish: String,
+    val tag_name: String,
     val html_url: String,
     val assets: List<GithubReleaseAsset> = emptyList(),
 )
@@ -15,9 +15,9 @@ data class GithubReleaseAsset(
     val browser_download_url: String,
 )
 
-/** A newer build than this one, detected on the rolling "debug-latest" GitHub release. */
+/** A newer version than this one, detected on GitHub's latest tagged release. */
 data class AppUpdate(
-    val commitSha: String,
+    val versionName: String,
     val downloadUrl: String,
     val releaseUrl: String,
 )

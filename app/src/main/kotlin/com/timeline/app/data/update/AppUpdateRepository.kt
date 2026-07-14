@@ -15,15 +15,15 @@ import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
 import okhttp3.Request
 
-private const val RELEASE_TAG_URL =
-    "https://api.github.com/repos/Xenovyrion/TimeLine/releases/tags/debug-latest"
+private const val LATEST_RELEASE_URL =
+    "https://api.github.com/repos/Xenovyrion/TimeLine/releases/latest"
 
 /**
- * Checks GitHub's rolling "debug-latest" release for a build newer than this one, since Reelia
- * isn't distributed through the Play Store and gets no store-driven auto-updates. "Newer" is
- * decided by comparing the release's `target_commitish` (set by CI to the exact commit it built)
- * against this build's own [BuildConfig.GIT_SHA] — not by a version number, since every CI build
- * republishes the same rolling tag rather than incrementing one.
+ * Checks GitHub's latest tagged release (e.g. `v0.13.0`) for a version newer than this build's
+ * own [BuildConfig.VERSION_NAME], since Reelia isn't distributed through the Play Store and gets
+ * no store-driven auto-updates. `/releases/latest` only ever returns the newest non-prerelease,
+ * non-draft release, so the rolling "debug-latest" dogfooding build (always published as a
+ * prerelease) never shows up here — only real version bumps do.
  */
 @Singleton
 class AppUpdateRepository @Inject constructor(
@@ -34,15 +34,16 @@ class AppUpdateRepository @Inject constructor(
 
     suspend fun checkForUpdate(): AppUpdate? = withContext(Dispatchers.IO) {
         try {
-            val request = Request.Builder().url(RELEASE_TAG_URL).build()
+            val request = Request.Builder().url(LATEST_RELEASE_URL).build()
             httpClient.newCall(request).execute().use { response ->
                 if (!response.isSuccessful) return@withContext null
                 val body = response.body?.string() ?: return@withContext null
                 val release = json.decodeFromString<GithubRelease>(body)
-                if (release.target_commitish == BuildConfig.GIT_SHA) return@withContext null
+                val remoteVersion = release.tag_name.removePrefix("v")
+                if (!isNewerVersion(remoteVersion, BuildConfig.VERSION_NAME)) return@withContext null
                 val apkAsset = release.assets.firstOrNull { it.name.endsWith(".apk") } ?: return@withContext null
                 AppUpdate(
-                    commitSha = release.target_commitish,
+                    versionName = remoteVersion,
                     downloadUrl = apkAsset.browser_download_url,
                     releaseUrl = release.html_url,
                 )
@@ -52,6 +53,19 @@ class AppUpdateRepository @Inject constructor(
             // Never surfaced as an error; the next check (app restart or manual retry) tries again.
             null
         }
+    }
+
+    /** Component-wise comparison ("0.9.0" < "0.13.0") rather than a string/lexicographic
+     * compare, which would wrongly rank "0.13.0" below "0.9.0" ('1' < '9'). */
+    private fun isNewerVersion(remote: String, local: String): Boolean {
+        val remoteParts = remote.split(".").map { it.toIntOrNull() ?: 0 }
+        val localParts = local.split(".").map { it.toIntOrNull() ?: 0 }
+        for (i in 0 until maxOf(remoteParts.size, localParts.size)) {
+            val r = remoteParts.getOrElse(i) { 0 }
+            val l = localParts.getOrElse(i) { 0 }
+            if (r != l) return r > l
+        }
+        return false
     }
 
     /** Downloads the APK into the app's cache dir and returns a content:// Uri the system
