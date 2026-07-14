@@ -31,8 +31,8 @@ android {
         applicationId = "com.reelia.app"
         minSdk = 26
         targetSdk = 35
-        versionCode = 22
-        versionName = "0.16.1"
+        versionCode = 23
+        versionName = "0.17.0"
         buildConfigField("String", "GIT_SHA", "\"${gitCommitSha()}\"")
     }
 

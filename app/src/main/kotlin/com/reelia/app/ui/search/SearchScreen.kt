@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Search
@@ -30,7 +31,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -57,15 +57,10 @@ import com.reelia.app.ui.theme.timeLineTopAppBarColors
 @Composable
 fun SearchScreen(
     onItemClick: (MediaType, Int) -> Unit,
-    onItemAdded: (MediaType, Int) -> Unit,
     viewModel: SearchViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var showFilterSheet by remember { mutableStateOf(false) }
-
-    LaunchedEffect(Unit) {
-        viewModel.addedEvent.collect { added -> onItemAdded(added.mediaType, added.id) }
-    }
 
     val titleRes = when (uiState.lockedMediaType) {
         MediaType.TV -> R.string.search_title_series
@@ -150,6 +145,7 @@ fun SearchScreen(
                                 SearchResultCard(
                                     item = item,
                                     isAdding = (item.mediaType to item.id) in uiState.addingItems,
+                                    isAdded = (item.mediaType to item.id) in uiState.addedItems,
                                     onClick = { onItemClick(item.mediaType, item.id) },
                                     onAddClick = { viewModel.onAddClicked(item) },
                                     modifier = Modifier.weight(1f).padding(end = 4.dp),
@@ -182,6 +178,7 @@ fun SearchScreen(
 private fun SearchResultCard(
     item: SearchResultItem,
     isAdding: Boolean,
+    isAdded: Boolean,
     onClick: () -> Unit,
     onAddClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -201,18 +198,27 @@ private fun SearchResultCard(
             )
             Surface(
                 shape = CircleShape,
-                color = MaterialTheme.colorScheme.primary,
+                // A muted tertiary once added — reusing the same primary color as "add" would
+                // make the checkmark look like just another clickable add button.
+                color = if (isAdded) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary,
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .padding(6.dp)
                     .size(28.dp)
-                    .clickable(enabled = !isAdding, onClick = onAddClick),
+                    .clickable(enabled = !isAdding && !isAdded, onClick = onAddClick),
             ) {
                 if (isAdding) {
                     CircularProgressIndicator(
                         color = MaterialTheme.colorScheme.onPrimary,
                         strokeWidth = 2.dp,
                         modifier = Modifier.padding(7.dp),
+                    )
+                } else if (isAdded) {
+                    Icon(
+                        Icons.Filled.Check,
+                        contentDescription = stringResource(R.string.search_added_content_description),
+                        tint = MaterialTheme.colorScheme.onTertiary,
+                        modifier = Modifier.padding(5.dp),
                     )
                 } else {
                     Icon(

@@ -4,10 +4,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -50,6 +48,7 @@ import com.reelia.app.R
 import com.reelia.app.domain.model.MediaType
 import com.reelia.app.domain.model.displayLabel
 import com.reelia.app.ui.common.components.FilterBottomSheet
+import com.reelia.app.ui.common.components.LibrarySortOption
 import com.reelia.app.ui.common.components.MediaListRow
 import com.reelia.app.ui.common.components.PosterCard
 import com.reelia.app.ui.common.components.SectionHeader
@@ -207,12 +206,6 @@ fun LibraryScreen(
                             }
                         }
 
-                        // Sort modes without section headers (recently added/watched) would
-                        // otherwise sit flush against "À venir" with no breathing room.
-                        if (needsLeadingSpacer(uiState)) {
-                            item { Spacer(Modifier.height(16.dp)) }
-                        }
-
                         uiState.sections.forEach { section ->
                             section.header?.let { header ->
                                 item(key = "header_$header") {
@@ -261,10 +254,6 @@ fun LibraryScreen(
                             }
                         }
 
-                        if (needsLeadingSpacer(uiState)) {
-                            item(span = { GridItemSpan(maxLineSpan) }) { Spacer(Modifier.height(16.dp)) }
-                        }
-
                         uiState.sections.forEach { section ->
                             section.header?.let { header ->
                                 item(span = { GridItemSpan(maxLineSpan) }, key = "header_$header") {
@@ -303,16 +292,19 @@ fun LibraryScreen(
     }
 }
 
-private fun needsLeadingSpacer(uiState: LibraryUiState): Boolean =
-    (uiState.upcomingShows.isNotEmpty() || uiState.upcomingMovies.isNotEmpty()) &&
-        uiState.sections.firstOrNull()?.header == null
-
 @Composable
 private fun LibrarySectionHeader.label(): String = when (this) {
     is LibrarySectionHeader.Status -> status.displayLabel()
     is LibrarySectionHeader.Genre -> name
     is LibrarySectionHeader.NoGenre -> stringResource(R.string.library_sort_genre_other)
     is LibrarySectionHeader.Alpha -> letter
+    is LibrarySectionHeader.SortLabel -> stringResource(
+        when (sortOption) {
+            LibrarySortOption.RECENTLY_ADDED -> R.string.library_sort_recently_added
+            LibrarySortOption.RECENTLY_WATCHED -> R.string.library_sort_recently_watched
+            else -> R.string.library_sort_recently_added // unreachable — only these two build SortLabel
+        },
+    )
 }
 
 @Composable

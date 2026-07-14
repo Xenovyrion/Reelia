@@ -13,8 +13,6 @@ data class SearchResultItem(
     val genreIds: List<Int> = emptyList(),
 )
 
-data class AddedItem(val mediaType: MediaType, val id: Int)
-
 data class SearchUiState(
     val query: String = "",
     val isSearching: Boolean = false,
@@ -26,6 +24,7 @@ data class SearchUiState(
     val availableGenres: List<GenreOption> = emptyList(),
     val selectedGenreIds: Set<Int> = emptySet(),
     val addingItems: Set<Pair<MediaType, Int>> = emptySet(),
+    val addedItems: Set<Pair<MediaType, Int>> = emptySet(),
     @StringRes val errorMessageRes: Int? = null,
 ) {
     val displayedItems: List<SearchResultItem>

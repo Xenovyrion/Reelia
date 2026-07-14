@@ -104,6 +104,7 @@ class ShowDetailViewModel @Inject constructor(
                     seasonNumber = season.seasonNumber,
                     name = season.name,
                     episodeCount = season.episodeCount,
+                    airDate = season.airDate,
                     episodes = episodesBySeason[season.seasonNumber]
                         .orEmpty()
                         .sortedBy { it.episodeNumber }
@@ -127,7 +128,7 @@ class ShowDetailViewModel @Inject constructor(
             .flatMap { season -> season.episodes.map { season.seasonNumber to it } }
             .firstOrNull { (_, episode) -> !episode.watched }
             ?.let { (seasonNumber, episode) ->
-                NextEpisodeUi(seasonNumber, episode.episodeNumber, episode.name, episode.stillUrl)
+                NextEpisodeUi(seasonNumber, episode.episodeNumber, episode.name, episode.stillUrl, episode.airDate)
             }
         val watchedEpisodeCount = regularSeasons.sumOf { season -> season.episodes.count { it.watched } }
         val totalEpisodeCount = regularSeasons.sumOf { it.episodeCount }

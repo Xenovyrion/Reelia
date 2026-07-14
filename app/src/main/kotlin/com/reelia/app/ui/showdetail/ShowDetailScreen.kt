@@ -68,8 +68,11 @@ import com.reelia.app.ui.common.components.EpisodeCodeBadge
 import com.reelia.app.ui.common.components.SeasonPillItem
 import com.reelia.app.ui.common.components.SeasonPillTabs
 import com.reelia.app.ui.common.components.SectionHeader
+import com.reelia.app.ui.common.components.UpcomingCountdownBadge
 import com.reelia.app.ui.common.components.WatchProvidersRow
 import com.reelia.app.ui.common.components.WatchedToggleButton
+import com.reelia.app.ui.common.format.daysUntilOrNull
+import com.reelia.app.ui.common.format.isAfterToday
 import com.reelia.app.ui.common.format.toFormattedDateOrNull
 import com.reelia.app.ui.theme.StatusFavorite
 import com.reelia.app.ui.theme.StatusWatchingCompleted
@@ -324,21 +327,32 @@ fun ShowDetailScreen(
 
                     val currentSeason = uiState.seasons.find { it.seasonNumber == effectiveSeasonNumber }
                     currentSeason?.let { season ->
-                        item(key = "season_summary_${season.seasonNumber}") {
-                            SeasonSummaryRow(
-                                season = season,
-                                onMarkAllWatched = { watched -> viewModel.onSeasonMarkAllWatched(season.seasonNumber, watched) },
-                            )
-                        }
-                        items(season.episodes, key = { "ep_${season.seasonNumber}_${it.episodeNumber}" }) { episode ->
-                            EpisodeRow(
-                                seasonNumber = season.seasonNumber,
-                                episode = episode,
-                                onClick = { selectedEpisodeKey = season.seasonNumber to episode.episodeNumber },
-                                onWatchedChange = { watched, fillGaps ->
-                                    viewModel.onEpisodeToggled(season.seasonNumber, episode.episodeNumber, watched, fillGaps)
-                                },
-                            )
+                        if (season.airDate.isAfterToday()) {
+                            item(key = "season_upcoming_${season.seasonNumber}") {
+                                Box(Modifier.fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) {
+                                    Text(
+                                        stringResource(R.string.show_detail_season_upcoming),
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    )
+                                }
+                            }
+                        } else {
+                            item(key = "season_summary_${season.seasonNumber}") {
+                                SeasonSummaryRow(
+                                    season = season,
+                                    onMarkAllWatched = { watched -> viewModel.onSeasonMarkAllWatched(season.seasonNumber, watched) },
+                                )
+                            }
+                            items(season.episodes, key = { "ep_${season.seasonNumber}_${it.episodeNumber}" }) { episode ->
+                                EpisodeRow(
+                                    seasonNumber = season.seasonNumber,
+                                    episode = episode,
+                                    onClick = { selectedEpisodeKey = season.seasonNumber to episode.episodeNumber },
+                                    onWatchedChange = { watched, fillGaps ->
+                                        viewModel.onEpisodeToggled(season.seasonNumber, episode.episodeNumber, watched, fillGaps)
+                                    },
+                                )
+                            }
                         }
                     }
                 }
@@ -422,6 +436,9 @@ private fun EpisodeRow(
             Column(modifier = Modifier.padding(start = 12.dp).weight(1f)) {
                 EpisodeCodeBadge(seasonNumber = seasonNumber, episodeNumber = episode.episodeNumber)
                 Text(episode.name, modifier = Modifier.padding(top = 4.dp))
+            }
+            episode.airDate.daysUntilOrNull()?.let { daysUntil ->
+                UpcomingCountdownBadge(daysUntil = daysUntil, modifier = Modifier.padding(start = 8.dp))
             }
             WatchedToggleButton(
                 checked = episode.watched,
@@ -580,8 +597,17 @@ private fun SeasonSummaryRow(season: SeasonUi, onMarkAllWatched: (Boolean) -> Un
 
 @Composable
 private fun ContinueWatchingCard(episode: NextEpisodeUi, onClick: () -> Unit) {
+    val daysUntil = episode.airDate.daysUntilOrNull()
     Column(modifier = Modifier.padding(16.dp)) {
-        SectionHeader(stringResource(R.string.show_detail_continue_watching_title))
+        SectionHeader(
+            stringResource(
+                if (daysUntil != null) {
+                    R.string.show_detail_upcoming_episode_title
+                } else {
+                    R.string.show_detail_continue_watching_title
+                },
+            ),
+        )
         Spacer(Modifier.padding(top = 12.dp))
         Card(modifier = Modifier.fillMaxWidth().clickable(onClick = onClick)) {
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(12.dp)) {
@@ -597,8 +623,11 @@ private fun ContinueWatchingCard(episode: NextEpisodeUi, onClick: () -> Unit) {
                 )
                 Text(
                     "${episode.seasonNumber}x${episode.episodeNumber} · ${episode.name}",
-                    modifier = Modifier.padding(start = 12.dp),
+                    modifier = Modifier.padding(start = 12.dp).weight(1f),
                 )
+                if (daysUntil != null) {
+                    UpcomingCountdownBadge(daysUntil = daysUntil, modifier = Modifier.padding(start = 8.dp))
+                }
             }
         }
     }

@@ -248,13 +248,13 @@ private fun buildSections(items: List<LibraryItem>, sortOption: LibrarySortOptio
             .map { (letter, bucketItems) -> LibrarySection(LibrarySectionHeader.Alpha(letter), bucketItems) }
         LibrarySortOption.RECENTLY_ADDED -> listOf(
             LibrarySection(
-                header = null,
+                header = LibrarySectionHeader.SortLabel(LibrarySortOption.RECENTLY_ADDED),
                 items = items.sortedWith(compareByDescending<LibraryItem> { it.addedAt }.thenBy { it.title.lowercase() }),
             ),
         )
         LibrarySortOption.RECENTLY_WATCHED -> listOf(
             LibrarySection(
-                header = null,
+                header = LibrarySectionHeader.SortLabel(LibrarySortOption.RECENTLY_WATCHED),
                 items = items.sortedWith(
                     compareByDescending<LibraryItem> { it.lastWatchedAt ?: Instant.MIN }.thenBy { it.title.lowercase() },
                 ),

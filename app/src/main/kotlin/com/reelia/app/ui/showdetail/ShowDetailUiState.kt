@@ -20,6 +20,7 @@ data class SeasonUi(
     val name: String,
     val episodeCount: Int,
     val episodes: List<EpisodeUi>,
+    val airDate: String? = null,
 )
 
 data class NextEpisodeUi(
@@ -27,6 +28,7 @@ data class NextEpisodeUi(
     val episodeNumber: Int,
     val name: String,
     val stillUrl: String?,
+    val airDate: String? = null,
 )
 
 data class ShowDetailUiState(
