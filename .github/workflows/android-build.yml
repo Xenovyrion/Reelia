@@ -43,24 +43,6 @@ jobs:
           name: timeline-debug-apk
           path: app/build/outputs/apk/debug/*.apk
 
-      - name: Publish debug APK as a rolling GitHub Release
-        if: github.ref == 'refs/heads/main' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'push')
-        uses: softprops/action-gh-release@v2
-        with:
-          repository: Xenovyrion/reelia-content
-          token: ${{ secrets.CONTENT_REPO_TOKEN }}
-          tag_name: debug-latest
-          target_commitish: main
-          name: "Reelia — build de test"
-          body: >
-            Build de test généré automatiquement depuis le commit
-            Xenovyrion/Reelia@${{ github.sha }}. Marqué "Pre-release" par GitHub
-            (pas un brouillon) car c'est un canal de test continu, republié à
-            chaque push — pas une version numérotée. Voir la section "Releases"
-            pour les vraies versions (`vX.Y.Z`).
-          prerelease: true
-          files: app/build/outputs/apk/debug/*.apk
-
   release:
     if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch'
     needs: build
@@ -88,10 +70,7 @@ jobs:
           token: ${{ secrets.CONTENT_REPO_TOKEN }}
           tag_name: ${{ steps.tag.outputs.name }}
           target_commitish: main
-          name: "Reelia ${{ steps.tag.outputs.name }}"
-          body: >
-            Version ${{ steps.tag.outputs.name }}, buildée depuis Xenovyrion/Reelia@${{ github.sha }}.
-            Notes de version complètes dans l'appli (Profil > Notes de version)
-            ou docs/release-notes/fr.md (docs/release-notes/en.md en anglais).
+          name: "Reelia"
+          body: "Notes de version disponibles dans l'application (Profil > Notes de version)."
           prerelease: false
           files: dist/*.apk

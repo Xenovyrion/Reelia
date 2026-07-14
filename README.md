@@ -106,11 +106,11 @@ modification locale n'est perdue si l'appareil est hors-ligne au moment du chang
 ./gradlew assembleDebug
 ```
 
-La CI GitHub Actions compile chaque push/PR vers `main` et publie l'APK debug le plus
-récent en tant que [release "debug-latest"](https://github.com/Xenovyrion/reelia-content/releases/tag/debug-latest)
-sur `reelia-content`. Un tag `vX.Y.Z` poussé sur ce dépôt publie en plus une vraie
-release versionnée (non-prerelease) au même endroit, que l'appli détecte via son
-vérificateur de mise à jour intégré.
+La CI GitHub Actions compile chaque push/PR vers `main`. Une release versionnée se
+publie sur [`reelia-content`](https://github.com/Xenovyrion/reelia-content/releases)
+soit en poussant un tag `vX.Y.Z`, soit en déclenchant manuellement le workflow
+`Android CI` (bouton "Run workflow" sur GitHub) avec le numéro de version — l'appli
+détecte la nouvelle version via son vérificateur de mise à jour intégré.
 
 ## État actuel
 
