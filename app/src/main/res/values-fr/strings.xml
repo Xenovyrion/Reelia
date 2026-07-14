@@ -98,6 +98,8 @@
     <string name="home_favorite_shows_section_title">Séries favorites</string>
     <string name="home_favorite_movies_section_title">Films favoris</string>
     <string name="home_empty_state">Ajoute une série ou un film depuis Rechercher pour commencer.</string>
+    <string name="home_error_add">Impossible d\'ajouter ce titre. Réessaie.</string>
+    <string name="home_discover_add_content_description">Ajouter à ma bibliothèque</string>
 
     <!-- Search tab -->
     <string name="search_title">Rechercher</string>

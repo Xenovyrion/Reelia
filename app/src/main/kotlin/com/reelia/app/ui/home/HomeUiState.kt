@@ -40,4 +40,6 @@ data class HomeUiState(
     val suggestions: List<HomeDiscoverItem> = emptyList(),
     val favoriteShows: List<HomeDiscoverItem> = emptyList(),
     val favoriteMovies: List<HomeDiscoverItem> = emptyList(),
+    val pendingAddItems: Set<Pair<MediaType, Int>> = emptySet(),
+    val errorMessageRes: Int? = null,
 )

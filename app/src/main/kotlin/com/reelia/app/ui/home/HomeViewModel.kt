@@ -2,6 +2,7 @@ package com.reelia.app.ui.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.reelia.app.R
 import com.reelia.app.data.auth.AuthRepository
 import com.reelia.app.data.local.dao.ShowEpisodeProgress
 import com.reelia.app.data.local.entity.EpisodeEntity
@@ -30,6 +31,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 private data class RawHomeData(
@@ -57,6 +59,15 @@ class HomeViewModel @Inject constructor(
 
     private val discoverData = MutableStateFlow(DiscoverData())
     private val discoverLoading = MutableStateFlow(true)
+    private val _pendingAddItems = MutableStateFlow<Set<Pair<MediaType, Int>>>(emptySet())
+    private val _errorMessageRes = MutableStateFlow<Int?>(null)
+
+    private val libraryItems = combine(
+        showRepository.getAllShows(),
+        movieRepository.getAllMovies(),
+    ) { shows, movies ->
+        shows.map { MediaType.TV to it.tmdbId }.toSet() + movies.map { MediaType.MOVIE to it.tmdbId }.toSet()
+    }
 
     init {
         // One-time backfill: status used to only ever be set once at add-time, so anything
@@ -125,7 +136,8 @@ class HomeViewModel @Inject constructor(
         discoverData,
         userFirstName,
         discoverLoading,
-    ) { raw, discover, firstName, isDiscoverLoading ->
+        combine(libraryItems, _pendingAddItems, _errorMessageRes, ::Triple),
+    ) { raw, discover, firstName, isDiscoverLoading, (libraryItems, pendingAddItems, errorMessageRes) ->
         val progressByShowId = raw.progress.associateBy { it.showId }
         val nextEpisodeByShowId = raw.unwatchedEpisodes.groupBy { it.showId }.mapValues { it.value.first() }
 
@@ -161,10 +173,12 @@ class HomeViewModel @Inject constructor(
             continueWatching = continueWatching,
             upcomingShows = buildUpcomingShowItems(raw.shows, imageUrlBuilder),
             upcomingMovies = buildUpcomingMovieItems(raw.movies, imageUrlBuilder),
-            trending = discover.trending.map { it.toDiscoverItem() },
-            recentMovies = discover.recentMovies.map { it.toDiscoverItem() },
-            recentShows = discover.recentShows.map { it.toDiscoverItem() },
-            suggestions = discover.suggestions.map { it.toDiscoverItem() },
+            trending = discover.trending.filterNot { (it.mediaType to it.tmdbId) in libraryItems }.map { it.toDiscoverItem() },
+            recentMovies = discover.recentMovies.filterNot { (it.mediaType to it.tmdbId) in libraryItems }.map { it.toDiscoverItem() },
+            recentShows = discover.recentShows.filterNot { (it.mediaType to it.tmdbId) in libraryItems }.map { it.toDiscoverItem() },
+            suggestions = discover.suggestions.filterNot { (it.mediaType to it.tmdbId) in libraryItems }.map { it.toDiscoverItem() },
+            pendingAddItems = pendingAddItems,
+            errorMessageRes = errorMessageRes,
             favoriteShows = raw.shows.filter { it.isFavorite }.map { show ->
                 HomeDiscoverItem(
                     tmdbId = show.tmdbId,
@@ -189,6 +203,28 @@ class HomeViewModel @Inject constructor(
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = HomeUiState(),
     )
+
+    fun onAddClicked(item: HomeDiscoverItem) {
+        val key = item.mediaType to item.tmdbId
+        if (key in _pendingAddItems.value) return
+        viewModelScope.launch {
+            _pendingAddItems.update { it + key }
+            try {
+                when (item.mediaType) {
+                    MediaType.TV -> showRepository.addShowFromTmdb(item.tmdbId)
+                    MediaType.MOVIE -> movieRepository.addMovieFromTmdb(item.tmdbId)
+                }
+            } catch (e: Exception) {
+                _errorMessageRes.value = R.string.home_error_add
+            } finally {
+                _pendingAddItems.update { it - key }
+            }
+        }
+    }
+
+    fun onErrorShown() {
+        _errorMessageRes.value = null
+    }
 
     private suspend fun MediaPreview.toDiscoverItem(): HomeDiscoverItem = HomeDiscoverItem(
         tmdbId = tmdbId,

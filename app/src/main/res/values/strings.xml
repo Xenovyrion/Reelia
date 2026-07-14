@@ -98,6 +98,8 @@
     <string name="home_favorite_shows_section_title">Favorite Shows</string>
     <string name="home_favorite_movies_section_title">Favorite Movies</string>
     <string name="home_empty_state">Add a show or movie from Search to get started.</string>
+    <string name="home_error_add">Couldn\'t add this title. Try again.</string>
+    <string name="home_discover_add_content_description">Add to my library</string>
 
     <!-- Search tab -->
     <string name="search_title">Search</string>

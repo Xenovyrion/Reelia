@@ -23,21 +23,28 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -66,7 +73,16 @@ fun HomeScreen(
     val listState = rememberLazyListState()
     ScrollToTopOnTabReselect(Routes.HOME) { listState.scrollToItem(0) }
 
-    Scaffold { padding ->
+    val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
+    LaunchedEffect(uiState.errorMessageRes) {
+        uiState.errorMessageRes?.let { res ->
+            snackbarHostState.showSnackbar(context.getString(res))
+            viewModel.onErrorShown()
+        }
+    }
+
+    Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) }) { padding ->
         if (uiState.isLoading) {
             Box(Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator()
@@ -180,21 +196,33 @@ fun HomeScreen(
                 titleRes = R.string.home_suggestions_section_title,
                 items = uiState.suggestions,
                 onItemClick = onDiscoverItemClick,
+                showAddButton = true,
+                pendingItems = uiState.pendingAddItems,
+                onAddClick = viewModel::onAddClicked,
             )
             discoverSection(
                 titleRes = R.string.home_trending_section_title,
                 items = uiState.trending,
                 onItemClick = onDiscoverItemClick,
+                showAddButton = true,
+                pendingItems = uiState.pendingAddItems,
+                onAddClick = viewModel::onAddClicked,
             )
             discoverSection(
                 titleRes = R.string.home_recent_movies_section_title,
                 items = uiState.recentMovies,
                 onItemClick = onDiscoverItemClick,
+                showAddButton = true,
+                pendingItems = uiState.pendingAddItems,
+                onAddClick = viewModel::onAddClicked,
             )
             discoverSection(
                 titleRes = R.string.home_recent_shows_section_title,
                 items = uiState.recentShows,
                 onItemClick = onDiscoverItemClick,
+                showAddButton = true,
+                pendingItems = uiState.pendingAddItems,
+                onAddClick = viewModel::onAddClicked,
             )
 
             item { Box(Modifier.padding(bottom = 16.dp)) }
@@ -206,6 +234,9 @@ private fun LazyListScope.discoverSection(
     @StringRes titleRes: Int,
     items: List<HomeDiscoverItem>,
     onItemClick: (MediaType, Int) -> Unit,
+    showAddButton: Boolean = false,
+    pendingItems: Set<Pair<MediaType, Int>> = emptySet(),
+    onAddClick: (HomeDiscoverItem) -> Unit = {},
 ) {
     if (items.isEmpty()) return
     item {
@@ -220,25 +251,65 @@ private fun LazyListScope.discoverSection(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             items(items, key = { "${it.mediaType}_${it.tmdbId}" }) { item ->
-                DiscoverPosterCard(item, onClick = { onItemClick(item.mediaType, item.tmdbId) })
+                DiscoverPosterCard(
+                    item = item,
+                    onClick = { onItemClick(item.mediaType, item.tmdbId) },
+                    showAddButton = showAddButton,
+                    isPending = (item.mediaType to item.tmdbId) in pendingItems,
+                    onAddClick = { onAddClick(item) },
+                )
             }
         }
     }
 }
 
 @Composable
-private fun DiscoverPosterCard(item: HomeDiscoverItem, onClick: () -> Unit) {
+private fun DiscoverPosterCard(
+    item: HomeDiscoverItem,
+    onClick: () -> Unit,
+    showAddButton: Boolean = false,
+    isPending: Boolean = false,
+    onAddClick: () -> Unit = {},
+) {
     Column(modifier = Modifier.width(110.dp).clickable(onClick = onClick)) {
-        AsyncImage(
-            model = item.posterUrl,
-            contentDescription = item.title,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .fillMaxWidth()
-                .aspectRatio(2f / 3f)
-                .clip(MaterialTheme.shapes.medium)
-                .background(MaterialTheme.colorScheme.surfaceVariant),
-        )
+        Box {
+            AsyncImage(
+                model = item.posterUrl,
+                contentDescription = item.title,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(2f / 3f)
+                    .clip(MaterialTheme.shapes.medium)
+                    .background(MaterialTheme.colorScheme.surfaceVariant),
+            )
+            if (showAddButton) {
+                Surface(
+                    shape = CircleShape,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(6.dp)
+                        .size(26.dp)
+                        .clickable(enabled = !isPending, onClick = onAddClick),
+                ) {
+                    if (isPending) {
+                        CircularProgressIndicator(
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            strokeWidth = 2.dp,
+                            modifier = Modifier.padding(6.dp),
+                        )
+                    } else {
+                        Icon(
+                            Icons.Filled.Add,
+                            contentDescription = stringResource(R.string.home_discover_add_content_description),
+                            tint = MaterialTheme.colorScheme.onPrimary,
+                            modifier = Modifier.padding(4.dp),
+                        )
+                    }
+                }
+            }
+        }
         Text(
             item.title,
             style = MaterialTheme.typography.labelMedium,
