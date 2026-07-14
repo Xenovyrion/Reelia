@@ -266,6 +266,12 @@
     <string name="settings_app_version_format">Version %1$s (%2$s)</string>
     <string name="settings_release_notes_button">Notes de version</string>
     <string name="settings_guide_button">Aide</string>
+    <string name="profile_appcheck_section_title">App Check (debug)</string>
+    <string name="profile_appcheck_explanation">Récupère le token à enregistrer dans Firebase console > App Check > Manage debug tokens.</string>
+    <string name="profile_appcheck_fetch_button">Récupérer le token App Check</string>
+    <string name="profile_appcheck_dialog_title">Token App Check</string>
+    <string name="profile_appcheck_copy_button">Copier</string>
+    <string name="profile_appcheck_close_button">Fermer</string>
     <string name="guide_title">Aide</string>
     <string name="guide_error">Impossible de charger le guide. Vérifie ta connexion et réessaie plus tard.</string>
     <string name="release_notes_title">Notes de version</string>

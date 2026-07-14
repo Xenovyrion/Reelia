@@ -6,6 +6,8 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.Firebase
+import com.google.firebase.appcheck.appCheck
 import com.google.firebase.auth.FirebaseAuthRecentLoginRequiredException
 import com.timeline.app.data.auth.AuthRepository
 import com.timeline.app.data.local.dao.GenreStat
@@ -53,6 +55,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 enum class StatsScope { ALL, SERIES, FILMS }
 
@@ -430,6 +433,26 @@ class ProfileViewModel @Inject constructor(
 
     fun onDeleteAccountErrorDismissed() {
         _deleteAccountUiState.update { it.copy(errorMessage = null, requiresRecentLogin = false) }
+    }
+
+    // App Check debug token (debug builds only — see ProfileScreen's BuildConfig.DEBUG gate).
+    // Firebase's DebugAppCheckProviderFactory also logs this to Logcat on its own, but that's
+    // unreachable without adb/Android Studio, so this surfaces it directly in the app instead.
+    private val _appCheckDebugToken = MutableStateFlow<String?>(null)
+    val appCheckDebugToken: StateFlow<String?> = _appCheckDebugToken.asStateFlow()
+
+    fun onFetchAppCheckDebugTokenClicked() {
+        viewModelScope.launch {
+            _appCheckDebugToken.value = try {
+                Firebase.appCheck.getAppCheckToken(false).await().token
+            } catch (e: Exception) {
+                "Erreur : ${e.message}"
+            }
+        }
+    }
+
+    fun onAppCheckDebugTokenDismissed() {
+        _appCheckDebugToken.value = null
     }
 
     // Library reset

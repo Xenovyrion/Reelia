@@ -61,7 +61,7 @@ object NetworkModule {
         OkHttpClient.Builder()
             .addInterceptor { chain ->
                 val request = chain.request().newBuilder()
-                    .header("User-Agent", "Reelia/1.0 (personal Android app; github.com/Xenovyrion/TimeLine)")
+                    .header("User-Agent", "Reelia/1.0 (personal Android app; github.com/Xenovyrion/Reelia)")
                     .build()
                 chain.proceed(request)
             }

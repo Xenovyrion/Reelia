@@ -48,8 +48,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -663,6 +665,44 @@ fun ProfileScreen(
             }
             TextButton(onClick = onGuideClick) {
                 Text(stringResource(R.string.settings_guide_button))
+            }
+
+            if (BuildConfig.DEBUG) {
+                val appCheckDebugToken by viewModel.appCheckDebugToken.collectAsStateWithLifecycle()
+                val clipboardManager = LocalClipboardManager.current
+
+                Spacer(Modifier.height(28.dp))
+                Text(stringResource(R.string.profile_appcheck_section_title), style = MaterialTheme.typography.titleMedium)
+                Text(
+                    stringResource(R.string.profile_appcheck_explanation),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(top = 4.dp, bottom = 8.dp),
+                )
+                OutlinedButton(onClick = viewModel::onFetchAppCheckDebugTokenClicked) {
+                    Text(stringResource(R.string.profile_appcheck_fetch_button))
+                }
+
+                appCheckDebugToken?.let { token ->
+                    AlertDialog(
+                        onDismissRequest = viewModel::onAppCheckDebugTokenDismissed,
+                        title = { Text(stringResource(R.string.profile_appcheck_dialog_title)) },
+                        text = { Text(token, style = MaterialTheme.typography.bodySmall) },
+                        confirmButton = {
+                            TextButton(
+                                onClick = {
+                                    clipboardManager.setText(AnnotatedString(token))
+                                    viewModel.onAppCheckDebugTokenDismissed()
+                                },
+                            ) { Text(stringResource(R.string.profile_appcheck_copy_button)) }
+                        },
+                        dismissButton = {
+                            TextButton(onClick = viewModel::onAppCheckDebugTokenDismissed) {
+                                Text(stringResource(R.string.profile_appcheck_close_button))
+                            }
+                        },
+                    )
+                }
             }
         }
     }
