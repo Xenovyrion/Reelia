@@ -74,6 +74,7 @@ import com.reelia.app.ui.navigation.BottomNavScrollToTop
 import com.reelia.app.ui.navigation.Routes
 import com.reelia.app.ui.settings.LANGUAGE_DISPLAY_NAME_RES
 import com.reelia.app.ui.theme.StatusFavorite
+import com.reelia.app.ui.update.UpdateUiState
 import com.reelia.app.ui.theme.StatusPlanned
 import com.reelia.app.ui.theme.StatusWantToWatch
 import com.reelia.app.ui.theme.StatusWatchingCompleted
@@ -300,6 +301,7 @@ fun ProfileScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ProfileSettingsContent(
     scrollState: ScrollState,
@@ -586,6 +588,7 @@ private fun ProfileSettingsContent(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ProfileStatsContent(
     scrollState: ScrollState,
