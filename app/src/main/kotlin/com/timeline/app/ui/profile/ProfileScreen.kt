@@ -114,6 +114,7 @@ private fun formatWatchDuration(totalHours: Double): String {
 fun ProfileScreen(
     onImportClick: () -> Unit = {},
     onReleaseNotesClick: () -> Unit = {},
+    onGuideClick: () -> Unit = {},
     onStatsDetailClick: (filterType: String, filterId: String, filterLabel: String) -> Unit = { _, _, _ -> },
     viewModel: ProfileViewModel = hiltViewModel(),
 ) {
@@ -659,6 +660,9 @@ fun ProfileScreen(
             )
             TextButton(onClick = onReleaseNotesClick, modifier = Modifier.padding(top = 4.dp)) {
                 Text(stringResource(R.string.settings_release_notes_button))
+            }
+            TextButton(onClick = onGuideClick) {
+                Text(stringResource(R.string.settings_guide_button))
             }
         }
     }

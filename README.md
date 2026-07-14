@@ -44,13 +44,16 @@ remplaçant de TV Time, avec une bibliothèque synchronisée entre plusieurs app
 - **Synchronisation multi-appareils** — via un compte (email/mot de passe ou Google),
   la bibliothèque, les statuts vu/non-vu et la clé API TMDB se synchronisent
   automatiquement entre deux appareils via Firebase.
-- **Réinitialisation de bibliothèque** et **notes de version** consultables directement
-  dans l'appli (Profil > Compte).
+- **Réinitialisation de bibliothèque**, **notes de version** et **guide d'utilisation**
+  consultables directement dans l'appli (Profil).
+- **Annonces in-app** — un message important (édité directement sur GitHub, sans nouvelle
+  version de l'appli) peut s'afficher en bannière ou en popup au lancement.
 - **Français / English** — l'interface est entièrement traduite dans les deux langues,
   y compris le format des dates selon la région.
 
-Voir [`docs/GUIDE.md`](docs/GUIDE.md) pour le guide d'utilisation détaillé (premiers
-pas, fonctionnement de la synchro, confidentialité).
+Voir [`docs/guide/fr.md`](docs/guide/fr.md) ([`en`](docs/guide/en.md)) pour le guide
+d'utilisation détaillé (premiers pas, fonctionnement de la synchro, confidentialité) — le
+même contenu que l'écran Aide de l'appli.
 
 ## Stack technique
 

@@ -12,6 +12,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.timeline.app.domain.model.MediaType
+import com.timeline.app.ui.guide.GuideScreen
 import com.timeline.app.ui.home.HomeScreen
 import com.timeline.app.ui.library.LibraryScreen
 import com.timeline.app.ui.moviedetail.MovieDetailScreen
@@ -101,6 +102,7 @@ fun TimeLineNavGraph(navController: NavHostController, modifier: Modifier = Modi
             ProfileScreen(
                 onImportClick = { navController.navigate(Routes.TV_TIME_IMPORT) },
                 onReleaseNotesClick = { navController.navigate(Routes.RELEASE_NOTES) },
+                onGuideClick = { navController.navigate(Routes.GUIDE) },
                 onStatsDetailClick = { filterType, filterId, filterLabel ->
                     navController.navigate(Routes.statsDetail(filterType, filterId, filterLabel))
                 },
@@ -111,6 +113,9 @@ fun TimeLineNavGraph(navController: NavHostController, modifier: Modifier = Modi
         }
         composable(Routes.RELEASE_NOTES) {
             ReleaseNotesScreen(onBack = { navController.popBackStack() })
+        }
+        composable(Routes.GUIDE) {
+            GuideScreen(onBack = { navController.popBackStack() })
         }
         composable(
             route = Routes.STATS_DETAIL,

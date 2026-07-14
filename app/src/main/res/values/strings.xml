@@ -7,6 +7,11 @@
     <string name="nav_films">Movies</string>
     <string name="nav_profile">Profile</string>
 
+    <!-- Announcement banner/popup -->
+    <string name="announcement_dialog_title">Notice</string>
+    <string name="announcement_dialog_confirm">OK</string>
+    <string name="announcement_dismiss_content_description">Dismiss</string>
+
     <!-- WatchStatus display labels -->
     <string name="watch_status_watching">Watching</string>
     <string name="watch_status_plan_to_watch">Plan to Watch</string>
@@ -184,7 +189,7 @@
          method > Google) — the Web client ID is shown right there, no need to redownload
          google-services.json. -->
     <string name="google_web_client_id" translatable="false">217482013121-rufgbqk389i5kfmjm5on47ir41q4ldkb.apps.googleusercontent.com</string>
-    <string name="login_learn_more_url" translatable="false">https://github.com/Xenovyrion/TimeLine/blob/main/docs/GUIDE.md</string>
+    <string name="login_learn_more_url" translatable="false">https://github.com/Xenovyrion/TimeLine/blob/main/docs/guide/fr.md</string>
 
     <!-- Person Detail -->
     <string name="person_detail_error_load">Couldn\'t load this person\'s info.</string>
@@ -265,6 +270,9 @@
     <string name="settings_update_available">New version available</string>
     <string name="settings_app_version_format">Version %1$s (%2$s)</string>
     <string name="settings_release_notes_button">Release notes</string>
+    <string name="settings_guide_button">Help</string>
+    <string name="guide_title">Help</string>
+    <string name="guide_error">Couldn\'t load the guide. Check your connection and try again later.</string>
     <string name="release_notes_title">Release notes</string>
     <string name="release_notes_error">Couldn\'t load release notes. Check your connection and try again later.</string>
     <string name="release_notes_version_format">Version %1$s</string>

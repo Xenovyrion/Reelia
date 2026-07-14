@@ -16,6 +16,7 @@ object Routes {
     const val PERSON_DETAIL = "person_detail/{personId}"
     const val TV_TIME_IMPORT = "tv_time_import"
     const val RELEASE_NOTES = "release_notes"
+    const val GUIDE = "guide"
     const val STATS_DETAIL = "stats_detail/{filterType}/{filterId}/{filterLabel}"
 
     fun search(mediaType: MediaType? = null) = if (mediaType != null) "search?mediaType=${mediaType.name}" else "search"

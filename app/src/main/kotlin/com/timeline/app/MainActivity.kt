@@ -4,8 +4,10 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -26,6 +28,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.timeline.app.ui.announcement.AnnouncementBanner
 import com.timeline.app.ui.auth.AuthGateViewModel
 import com.timeline.app.ui.auth.LoginScreen
 import com.timeline.app.ui.navigation.BottomNavItem
@@ -68,7 +71,12 @@ private fun TimeLineAppContent() {
     val currentRoute = backStackEntry?.destination
 
     Scaffold(
-        topBar = { UpdateBanner() },
+        topBar = {
+            Column(Modifier.statusBarsPadding()) {
+                UpdateBanner()
+                AnnouncementBanner()
+            }
+        },
         bottomBar = {
             val showBottomBar = BottomNavItem.entries.any { item ->
                 currentRoute?.hierarchy?.any { it.route == item.route } == true
