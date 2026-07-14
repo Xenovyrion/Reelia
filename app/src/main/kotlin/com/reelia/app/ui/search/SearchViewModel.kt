@@ -21,6 +21,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -51,6 +52,14 @@ class SearchViewModel @Inject constructor(
         viewModelScope.launch {
             settingsRepository.apiKey.collect { key ->
                 _uiState.update { it.copy(hasApiKey = key != null) }
+            }
+        }
+        viewModelScope.launch {
+            combine(showRepository.getAllShows(), movieRepository.getAllMovies()) { shows, movies ->
+                shows.map { MediaType.TV to it.tmdbId }.toSet() +
+                    movies.map { MediaType.MOVIE to it.tmdbId }.toSet()
+            }.collect { ids ->
+                _uiState.update { it.copy(libraryItems = ids) }
             }
         }
         loadTrendingFeed()
@@ -119,19 +128,36 @@ class SearchViewModel @Inject constructor(
 
     fun onAddClicked(item: SearchResultItem) {
         val key = item.mediaType to item.id
-        if (key in _uiState.value.addingItems || key in _uiState.value.addedItems) return
+        if (key in _uiState.value.pendingItems || key in _uiState.value.libraryItems) return
         viewModelScope.launch {
-            _uiState.update { it.copy(addingItems = it.addingItems + key) }
+            _uiState.update { it.copy(pendingItems = it.pendingItems + key) }
             try {
                 when (item.mediaType) {
                     MediaType.TV -> showRepository.addShowFromTmdb(item.id)
                     MediaType.MOVIE -> movieRepository.addMovieFromTmdb(item.id)
                 }
-                _uiState.update { it.copy(addedItems = it.addedItems + key) }
             } catch (e: Exception) {
                 _uiState.update { it.copy(errorMessageRes = R.string.search_error_add) }
             } finally {
-                _uiState.update { it.copy(addingItems = it.addingItems - key) }
+                _uiState.update { it.copy(pendingItems = it.pendingItems - key) }
+            }
+        }
+    }
+
+    fun onRemoveClicked(item: SearchResultItem) {
+        val key = item.mediaType to item.id
+        if (key in _uiState.value.pendingItems || key !in _uiState.value.libraryItems) return
+        viewModelScope.launch {
+            _uiState.update { it.copy(pendingItems = it.pendingItems + key) }
+            try {
+                when (item.mediaType) {
+                    MediaType.TV -> showRepository.removeShow(item.id)
+                    MediaType.MOVIE -> movieRepository.removeMovie(item.id)
+                }
+            } catch (e: Exception) {
+                _uiState.update { it.copy(errorMessageRes = R.string.search_error_remove) }
+            } finally {
+                _uiState.update { it.copy(pendingItems = it.pendingItems - key) }
             }
         }
     }

@@ -327,32 +327,21 @@ fun ShowDetailScreen(
 
                     val currentSeason = uiState.seasons.find { it.seasonNumber == effectiveSeasonNumber }
                     currentSeason?.let { season ->
-                        if (season.airDate.isAfterToday()) {
-                            item(key = "season_upcoming_${season.seasonNumber}") {
-                                Box(Modifier.fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) {
-                                    Text(
-                                        stringResource(R.string.show_detail_season_upcoming),
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    )
-                                }
-                            }
-                        } else {
-                            item(key = "season_summary_${season.seasonNumber}") {
-                                SeasonSummaryRow(
-                                    season = season,
-                                    onMarkAllWatched = { watched -> viewModel.onSeasonMarkAllWatched(season.seasonNumber, watched) },
-                                )
-                            }
-                            items(season.episodes, key = { "ep_${season.seasonNumber}_${it.episodeNumber}" }) { episode ->
-                                EpisodeRow(
-                                    seasonNumber = season.seasonNumber,
-                                    episode = episode,
-                                    onClick = { selectedEpisodeKey = season.seasonNumber to episode.episodeNumber },
-                                    onWatchedChange = { watched, fillGaps ->
-                                        viewModel.onEpisodeToggled(season.seasonNumber, episode.episodeNumber, watched, fillGaps)
-                                    },
-                                )
-                            }
+                        item(key = "season_summary_${season.seasonNumber}") {
+                            SeasonSummaryRow(
+                                season = season,
+                                onMarkAllWatched = { watched -> viewModel.onSeasonMarkAllWatched(season.seasonNumber, watched) },
+                            )
+                        }
+                        items(season.episodes, key = { "ep_${season.seasonNumber}_${it.episodeNumber}" }) { episode ->
+                            EpisodeRow(
+                                seasonNumber = season.seasonNumber,
+                                episode = episode,
+                                onClick = { selectedEpisodeKey = season.seasonNumber to episode.episodeNumber },
+                                onWatchedChange = { watched, fillGaps ->
+                                    viewModel.onEpisodeToggled(season.seasonNumber, episode.episodeNumber, watched, fillGaps)
+                                },
+                            )
                         }
                     }
                 }
@@ -437,8 +426,16 @@ private fun EpisodeRow(
                 EpisodeCodeBadge(seasonNumber = seasonNumber, episodeNumber = episode.episodeNumber)
                 Text(episode.name, modifier = Modifier.padding(top = 4.dp))
             }
-            episode.airDate.daysUntilOrNull()?.let { daysUntil ->
+            val daysUntil = episode.airDate.daysUntilOrNull()
+            if (daysUntil != null) {
                 UpcomingCountdownBadge(daysUntil = daysUntil, modifier = Modifier.padding(start = 8.dp))
+            } else if (!episode.watched && episode.airDate == null) {
+                Text(
+                    stringResource(R.string.show_detail_episode_date_unknown),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(start = 8.dp),
+                )
             }
             WatchedToggleButton(
                 checked = episode.watched,
@@ -585,6 +582,14 @@ private fun SeasonSummaryRow(season: SeasonUi, onMarkAllWatched: (Boolean) -> Un
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.weight(1f),
             )
+            if (season.airDate.isAfterToday()) {
+                Text(
+                    stringResource(R.string.show_detail_season_upcoming),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(end = 8.dp),
+                )
+            }
             WatchedToggleButton(
                 checked = allWatched,
                 onCheckedChange = onMarkAllWatched,

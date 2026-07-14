@@ -112,8 +112,9 @@
     <string name="search_error_feed">Couldn\'t load the latest releases.</string>
     <string name="search_error_query">Search failed. Check your connection.</string>
     <string name="search_add_content_description">Add</string>
-    <string name="search_added_content_description">Added</string>
+    <string name="search_remove_content_description">Already in your library. Tap to remove.</string>
     <string name="search_error_add">Couldn\'t add this title. Try again.</string>
+    <string name="search_error_remove">Couldn\'t remove this title. Try again.</string>
 
     <!-- Stats tab -->
     <string name="stats_title">Stats</string>
@@ -169,7 +170,8 @@
     <string name="show_detail_season_progress_format">%1$d / %2$d episodes watched</string>
     <string name="show_detail_continue_watching_title">Continue Watching</string>
     <string name="show_detail_upcoming_episode_title">Upcoming episode</string>
-    <string name="show_detail_season_upcoming">Season not yet released</string>
+    <string name="show_detail_season_upcoming">Upcoming season</string>
+    <string name="show_detail_episode_date_unknown">Date unknown</string>
     <string name="show_detail_mark_season_watched_content_description">Mark whole season as watched</string>
     <string name="show_detail_mark_episode_watched_content_description">Toggle episode watched</string>
     <string name="detail_favorite_toggle_content_description">Toggle favorite</string>

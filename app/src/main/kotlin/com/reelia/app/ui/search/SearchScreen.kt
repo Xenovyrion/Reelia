@@ -144,10 +144,11 @@ fun SearchScreen(
                             row.forEach { item ->
                                 SearchResultCard(
                                     item = item,
-                                    isAdding = (item.mediaType to item.id) in uiState.addingItems,
-                                    isAdded = (item.mediaType to item.id) in uiState.addedItems,
+                                    isPending = (item.mediaType to item.id) in uiState.pendingItems,
+                                    isInLibrary = (item.mediaType to item.id) in uiState.libraryItems,
                                     onClick = { onItemClick(item.mediaType, item.id) },
                                     onAddClick = { viewModel.onAddClicked(item) },
+                                    onRemoveClick = { viewModel.onRemoveClicked(item) },
                                     modifier = Modifier.weight(1f).padding(end = 4.dp),
                                 )
                             }
@@ -177,10 +178,11 @@ fun SearchScreen(
 @Composable
 private fun SearchResultCard(
     item: SearchResultItem,
-    isAdding: Boolean,
-    isAdded: Boolean,
+    isPending: Boolean,
+    isInLibrary: Boolean,
     onClick: () -> Unit,
     onAddClick: () -> Unit,
+    onRemoveClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.clickable(onClick = onClick)) {
@@ -200,23 +202,26 @@ private fun SearchResultCard(
                 shape = CircleShape,
                 // A muted tertiary once added — reusing the same primary color as "add" would
                 // make the checkmark look like just another clickable add button.
-                color = if (isAdded) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary,
+                color = if (isInLibrary) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary,
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .padding(6.dp)
                     .size(28.dp)
-                    .clickable(enabled = !isAdding && !isAdded, onClick = onAddClick),
+                    .clickable(
+                        enabled = !isPending,
+                        onClick = if (isInLibrary) onRemoveClick else onAddClick,
+                    ),
             ) {
-                if (isAdding) {
+                if (isPending) {
                     CircularProgressIndicator(
                         color = MaterialTheme.colorScheme.onPrimary,
                         strokeWidth = 2.dp,
                         modifier = Modifier.padding(7.dp),
                     )
-                } else if (isAdded) {
+                } else if (isInLibrary) {
                     Icon(
                         Icons.Filled.Check,
-                        contentDescription = stringResource(R.string.search_added_content_description),
+                        contentDescription = stringResource(R.string.search_remove_content_description),
                         tint = MaterialTheme.colorScheme.onTertiary,
                         modifier = Modifier.padding(5.dp),
                     )

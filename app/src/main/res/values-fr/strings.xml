@@ -112,8 +112,9 @@
     <string name="search_error_feed">Impossible de charger les dernières sorties.</string>
     <string name="search_error_query">Recherche impossible. Vérifie ta connexion.</string>
     <string name="search_add_content_description">Ajouter</string>
-    <string name="search_added_content_description">Ajouté</string>
+    <string name="search_remove_content_description">Déjà dans ta bibliothèque. Touche pour retirer.</string>
     <string name="search_error_add">Impossible d\'ajouter ce titre. Réessaie.</string>
+    <string name="search_error_remove">Impossible de retirer ce titre. Réessaie.</string>
 
     <!-- Stats tab -->
     <string name="stats_title">Statistiques</string>
@@ -169,7 +170,8 @@
     <string name="show_detail_season_progress_format">%1$d / %2$d épisodes vus</string>
     <string name="show_detail_continue_watching_title">Continuer le suivi</string>
     <string name="show_detail_upcoming_episode_title">Épisode à venir</string>
-    <string name="show_detail_season_upcoming">Saison pas encore sortie</string>
+    <string name="show_detail_season_upcoming">Saison à venir</string>
+    <string name="show_detail_episode_date_unknown">Date inconnue</string>
     <string name="show_detail_mark_season_watched_content_description">Marquer toute la saison comme vue</string>
     <string name="show_detail_mark_episode_watched_content_description">Marquer l\'épisode comme vu</string>
     <string name="detail_favorite_toggle_content_description">Basculer favori</string>

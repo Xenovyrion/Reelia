@@ -23,13 +23,19 @@ data class SearchUiState(
     val lockedMediaType: MediaType? = null,
     val availableGenres: List<GenreOption> = emptyList(),
     val selectedGenreIds: Set<Int> = emptySet(),
-    val addingItems: Set<Pair<MediaType, Int>> = emptySet(),
-    val addedItems: Set<Pair<MediaType, Int>> = emptySet(),
+    val pendingItems: Set<Pair<MediaType, Int>> = emptySet(),
+    val libraryItems: Set<Pair<MediaType, Int>> = emptySet(),
     @StringRes val errorMessageRes: Int? = null,
 ) {
     val displayedItems: List<SearchResultItem>
         get() {
-            val base = if (query.isBlank()) trendingFeed else results
+            val base = if (query.isBlank()) {
+                // Already-owned items don't need to be suggested in the trending feed —
+                // only actual search results show the add/remove toggle for owned items.
+                trendingFeed.filterNot { (it.mediaType to it.id) in libraryItems }
+            } else {
+                results
+            }
             return if (selectedGenreIds.isEmpty()) {
                 base
             } else {
