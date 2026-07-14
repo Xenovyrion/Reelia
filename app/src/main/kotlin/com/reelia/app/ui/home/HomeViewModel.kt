@@ -165,6 +165,24 @@ class HomeViewModel @Inject constructor(
             recentMovies = discover.recentMovies.map { it.toDiscoverItem() },
             recentShows = discover.recentShows.map { it.toDiscoverItem() },
             suggestions = discover.suggestions.map { it.toDiscoverItem() },
+            favoriteShows = raw.shows.filter { it.isFavorite }.map { show ->
+                HomeDiscoverItem(
+                    tmdbId = show.tmdbId,
+                    mediaType = MediaType.TV,
+                    title = show.name,
+                    posterUrl = imageUrlBuilder.posterUrl(show.posterPath),
+                    year = show.firstAirDate.toYearOrNull(),
+                )
+            },
+            favoriteMovies = raw.movies.filter { it.isFavorite }.map { movie ->
+                HomeDiscoverItem(
+                    tmdbId = movie.tmdbId,
+                    mediaType = MediaType.MOVIE,
+                    title = movie.title,
+                    posterUrl = imageUrlBuilder.posterUrl(movie.posterPath),
+                    year = movie.releaseDate.toYearOrNull(),
+                )
+            },
         )
     }.stateIn(
         scope = viewModelScope,

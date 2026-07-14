@@ -38,4 +38,6 @@ data class HomeUiState(
     val recentMovies: List<HomeDiscoverItem> = emptyList(),
     val recentShows: List<HomeDiscoverItem> = emptyList(),
     val suggestions: List<HomeDiscoverItem> = emptyList(),
+    val favoriteShows: List<HomeDiscoverItem> = emptyList(),
+    val favoriteMovies: List<HomeDiscoverItem> = emptyList(),
 )

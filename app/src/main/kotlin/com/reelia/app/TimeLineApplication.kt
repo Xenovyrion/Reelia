@@ -5,7 +5,6 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
 import com.reelia.app.appcheck.installAppCheckProviderFactory
-import com.reelia.app.crash.installCrashLogger
 import com.reelia.app.data.local.prefs.LanguagePreferenceStore
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
@@ -21,9 +20,6 @@ class TimeLineApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        // First thing, so it catches crashes from anything below too — there's no adb access
-        // on the device this runs on, so this is the only way to see a real stack trace.
-        installCrashLogger(this)
         // Must run before any other Firebase Auth/Firestore call so every request already
         // carries an App Check token. Best-effort: App Check is a hardening layer, never a
         // reason the whole app should fail to start if the SDK/Play Services misbehave.

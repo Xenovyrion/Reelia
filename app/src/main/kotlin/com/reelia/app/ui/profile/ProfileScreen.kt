@@ -83,6 +83,7 @@ import androidx.compose.material.icons.filled.Autorenew
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.HelpOutline
 import androidx.compose.material.icons.filled.HourglassBottom
 import androidx.compose.material.icons.filled.Inventory2
 import androidx.compose.material.icons.filled.LiveTv
@@ -122,10 +123,19 @@ fun ProfileScreen(
     viewModel: ProfileViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val statsUiState by viewModel.statsUiState.collectAsStateWithLifecycle()
+    val rawStatsUiState by viewModel.statsUiState.collectAsStateWithLifecycle()
     val updateUiState by viewModel.updateUiState.collectAsStateWithLifecycle()
     val deleteAccountUiState by viewModel.deleteAccountUiState.collectAsStateWithLifecycle()
     val resetLibraryUiState by viewModel.resetLibraryUiState.collectAsStateWithLifecycle()
+    // Room's underlying flows (shows/movies/episodes/watch log) invalidate and re-query
+    // independently rather than atomically, so combining their still-stale and already-cleared
+    // values together during a reset can momentarily show nonsensical numbers — pin the stats to
+    // a neutral zeroed state for that window instead of trusting the live combine output.
+    val statsUiState = if (resetLibraryUiState.isResetting) {
+        ProfileStatsUiState(scope = rawStatsUiState.scope)
+    } else {
+        rawStatsUiState
+    }
 
     var apiKeyInput by remember { mutableStateOf("") }
     var showDeleteConfirmation by remember { mutableStateOf(false) }
@@ -195,7 +205,20 @@ fun ProfileScreen(
     }
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text(stringResource(R.string.nav_profile)) }, colors = timeLineTopAppBarColors()) },
+        topBar = {
+            TopAppBar(
+                title = { Text(stringResource(R.string.nav_profile)) },
+                colors = timeLineTopAppBarColors(),
+                actions = {
+                    IconButton(onClick = onGuideClick) {
+                        Icon(
+                            Icons.Filled.HelpOutline,
+                            contentDescription = stringResource(R.string.settings_guide_button),
+                        )
+                    }
+                },
+            )
+        },
         snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { padding ->
         Column(
@@ -615,7 +638,10 @@ fun ProfileScreen(
                 modifier = Modifier.fillMaxWidth(),
             )
             Spacer(Modifier.height(12.dp))
-            Button(onClick = { viewModel.onApiKeySubmitted(apiKeyInput) }) {
+            Button(
+                onClick = { viewModel.onApiKeySubmitted(apiKeyInput) },
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+            ) {
                 Text(stringResource(R.string.settings_save_button))
             }
 
@@ -640,7 +666,7 @@ fun ProfileScreen(
                 )
             }
             Spacer(Modifier.height(12.dp))
-            Row {
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
                 if (updateUiState.availableUpdate != null) {
                     Button(onClick = viewModel::onUpdateDownloadClicked, enabled = !updateUiState.isDownloading) {
                         if (updateUiState.isDownloading) {
@@ -659,13 +685,14 @@ fun ProfileScreen(
                 stringResource(R.string.settings_app_version_format, BuildConfig.VERSION_NAME, BuildConfig.GIT_SHA.take(7)),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(top = 12.dp),
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
             )
-            TextButton(onClick = onReleaseNotesClick, modifier = Modifier.padding(top = 4.dp)) {
+            TextButton(
+                onClick = onReleaseNotesClick,
+                modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 4.dp),
+            ) {
                 Text(stringResource(R.string.settings_release_notes_button))
-            }
-            TextButton(onClick = onGuideClick) {
-                Text(stringResource(R.string.settings_guide_button))
             }
 
             if (BuildConfig.DEBUG) {

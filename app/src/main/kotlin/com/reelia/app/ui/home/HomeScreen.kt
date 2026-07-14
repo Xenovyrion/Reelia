@@ -75,7 +75,9 @@ fun HomeScreen(
             uiState.trending.isEmpty() &&
             uiState.recentMovies.isEmpty() &&
             uiState.recentShows.isEmpty() &&
-            uiState.suggestions.isEmpty()
+            uiState.suggestions.isEmpty() &&
+            uiState.favoriteShows.isEmpty() &&
+            uiState.favoriteMovies.isEmpty()
         if (isEmpty && uiState.isDiscoverLoading) {
             // The discovery feeds (trending/recent/suggestions) are still in flight — show the
             // spinner rather than a premature "empty library" message that would just flash by.
@@ -159,6 +161,16 @@ fun HomeScreen(
                 }
             }
 
+            discoverSection(
+                titleRes = R.string.home_favorite_shows_section_title,
+                items = uiState.favoriteShows,
+                onItemClick = onDiscoverItemClick,
+            )
+            discoverSection(
+                titleRes = R.string.home_favorite_movies_section_title,
+                items = uiState.favoriteMovies,
+                onItemClick = onDiscoverItemClick,
+            )
             discoverSection(
                 titleRes = R.string.home_suggestions_section_title,
                 items = uiState.suggestions,

@@ -81,6 +81,8 @@
     <string name="home_recent_movies_section_title">Derniers films sortis</string>
     <string name="home_recent_shows_section_title">Dernières séries sorties</string>
     <string name="home_suggestions_section_title">Suggestions pour toi</string>
+    <string name="home_favorite_shows_section_title">Séries favorites</string>
+    <string name="home_favorite_movies_section_title">Films favoris</string>
     <string name="home_empty_state">Ajoute une série ou un film depuis Rechercher pour commencer.</string>
 
     <!-- Search tab -->
