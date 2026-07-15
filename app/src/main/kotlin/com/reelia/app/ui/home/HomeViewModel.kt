@@ -82,46 +82,59 @@ class HomeViewModel @Inject constructor(
             movieRepository.reconcileAllStatuses()
         }
 
+        // Movies, shows, and suggestions each update discoverData and flip their own loading
+        // flag independently as soon as THEY resolve — previously all three were awaited
+        // together before a single combined update, so a slow suggestions fetch (up to 3
+        // sequential-ish TMDB recommendation calls) held back movies/shows that had already
+        // arrived, reading as the whole section "popping in" late.
         viewModelScope.launch {
-            try {
-                val provider = metadataProviderRegistry.activeProvider.first()
-                // Each wrapped independently (not just by the outer try/catch) so one failing
-                // feed — e.g. no TMDB API key configured yet on a fresh install — can't take
-                // down the other two, or the whole coroutine, along with it.
-                val moviesDeferred = async { runCatching { provider.getMoviesByCategory(DiscoverCategory.POPULAR) }.getOrDefault(emptyList()) }
-                val showsDeferred = async { runCatching { provider.getShowsByCategory(DiscoverCategory.POPULAR) }.getOrDefault(emptyList()) }
+            val provider = metadataProviderRegistry.activeProvider.first()
 
-                val shows = showRepository.getAllShows().first()
-                val movies = movieRepository.getAllMovies().first()
-                val inLibrary = shows.map { MediaType.TV to it.tmdbId }.toSet() +
-                    movies.map { MediaType.MOVIE to it.tmdbId }.toSet()
-
-                val suggestions = buildSuggestionSeeds(shows, movies)
-                    .map { (type, id) ->
-                        async { runCatching { provider.getRecommendationsFeed(type, id) }.getOrDefault(emptyList()) }
-                    }
-                    .awaitAll()
-                    .flatten()
-                    .distinctBy { it.mediaType to it.tmdbId }
-                    .filterNot { (it.mediaType to it.tmdbId) in inLibrary }
-                    .take(15)
-
-                discoverData.update {
-                    it.copy(
-                        moviesByCategory = moviesDeferred.await(),
-                        showsByCategory = showsDeferred.await(),
-                        isMoviesByCategoryLoading = false,
-                        isShowsByCategoryLoading = false,
-                        suggestions = suggestions,
-                    )
-                }
-            } catch (e: Exception) {
-                // Discovery rows are supplementary — a network failure here must never block
-                // the Room-backed core UI (continue watching), so they just stay empty.
-                discoverData.update { it.copy(isMoviesByCategoryLoading = false, isShowsByCategoryLoading = false) }
-            } finally {
-                discoverLoading.value = false
+            launch {
+                val results = runCatching { provider.getMoviesByCategory(DiscoverCategory.POPULAR) }.getOrDefault(emptyList())
+                discoverData.update { it.copy(moviesByCategory = results, isMoviesByCategoryLoading = false) }
+                maybeStopDiscoverLoading()
             }
+
+            launch {
+                val results = runCatching { provider.getShowsByCategory(DiscoverCategory.POPULAR) }.getOrDefault(emptyList())
+                discoverData.update { it.copy(showsByCategory = results, isShowsByCategoryLoading = false) }
+                maybeStopDiscoverLoading()
+            }
+
+            launch {
+                try {
+                    val shows = showRepository.getAllShows().first()
+                    val movies = movieRepository.getAllMovies().first()
+                    val inLibrary = shows.map { MediaType.TV to it.tmdbId }.toSet() +
+                        movies.map { MediaType.MOVIE to it.tmdbId }.toSet()
+
+                    val suggestions = buildSuggestionSeeds(shows, movies)
+                        .map { (type, id) ->
+                            async { runCatching { provider.getRecommendationsFeed(type, id) }.getOrDefault(emptyList()) }
+                        }
+                        .awaitAll()
+                        .flatten()
+                        .distinctBy { it.mediaType to it.tmdbId }
+                        .filterNot { (it.mediaType to it.tmdbId) in inLibrary }
+                        .take(15)
+
+                    discoverData.update { it.copy(suggestions = suggestions) }
+                } catch (e: Exception) {
+                    // Discovery rows are supplementary — a network failure here must never block
+                    // the Room-backed core UI (continue watching), so they just stay empty.
+                }
+            }
+        }
+    }
+
+    /** The full-screen "still loading" spinner only needs to wait for movies+shows (the two
+     * sections with their own loading UI) — suggestions has no equivalent spinner and can
+     * arrive whenever, so it's not part of this gate. */
+    private fun maybeStopDiscoverLoading() {
+        val discover = discoverData.value
+        if (!discover.isMoviesByCategoryLoading && !discover.isShowsByCategoryLoading) {
+            discoverLoading.value = false
         }
     }
 

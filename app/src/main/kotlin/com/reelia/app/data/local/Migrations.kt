@@ -37,3 +37,13 @@ val MIGRATION_6_7 = object : Migration(6, 7) {
         db.execSQL("ALTER TABLE watch_log ADD COLUMN syncId TEXT NOT NULL DEFAULT ''")
     }
 }
+
+/** Adds contentRating (age/content classification, e.g. "16", "PG-13"). Backfilled lazily —
+ * existing rows get a null rating until the next time their show/movie is re-fetched from TMDB
+ * (add, or a Firestore-triggered refresh), not eagerly on migration. */
+val MIGRATION_7_8 = object : Migration(7, 8) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE tracked_shows ADD COLUMN contentRating TEXT")
+        db.execSQL("ALTER TABLE tracked_movies ADD COLUMN contentRating TEXT")
+    }
+}
