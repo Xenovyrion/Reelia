@@ -6,12 +6,31 @@ import com.reelia.app.data.local.entity.SeasonEntity
 import com.reelia.app.data.local.entity.TrackedMovieEntity
 import com.reelia.app.data.local.entity.TrackedShowEntity
 import com.reelia.app.data.remote.tmdb.dto.TmdbMovieDetailsDto
+import com.reelia.app.data.remote.tmdb.dto.TmdbMovieReleaseDatesResponseDto
 import com.reelia.app.data.remote.tmdb.dto.TmdbSeasonDetailsDto
+import com.reelia.app.data.remote.tmdb.dto.TmdbTvContentRatingsResponseDto
 import com.reelia.app.data.remote.tmdb.dto.TmdbTvDetailsDto
 import com.reelia.app.domain.model.WatchStatus
 import java.time.Instant
 
-fun TmdbTvDetailsDto.toEntity(status: WatchStatus, addedAt: Instant): TrackedShowEntity =
+/** Not every title has a French rating on TMDB, so US is the fallback — checked in priority
+ * order and the first non-blank certification wins. */
+private val CERTIFICATION_REGIONS = listOf("FR", "US")
+
+fun TmdbMovieReleaseDatesResponseDto.toContentRating(): String? =
+    CERTIFICATION_REGIONS.firstNotNullOfOrNull { region ->
+        results.find { it.countryCode == region }
+            ?.releaseDates
+            ?.map { it.certification }
+            ?.firstOrNull { it.isNotBlank() }
+    }
+
+fun TmdbTvContentRatingsResponseDto.toContentRating(): String? =
+    CERTIFICATION_REGIONS.firstNotNullOfOrNull { region ->
+        results.find { it.countryCode == region }?.rating?.takeIf { it.isNotBlank() }
+    }
+
+fun TmdbTvDetailsDto.toEntity(status: WatchStatus, addedAt: Instant, contentRating: String? = null): TrackedShowEntity =
     TrackedShowEntity(
         tmdbId = id,
         name = name,
@@ -33,6 +52,7 @@ fun TmdbTvDetailsDto.toEntity(status: WatchStatus, addedAt: Instant): TrackedSho
         broadcastStatus = this.status,
         lastAirDate = lastAirDate,
         creatorNames = createdBy.map { it.name }.takeIf { it.isNotEmpty() }?.joinToString(", "),
+        contentRating = contentRating,
     )
 
 fun TmdbTvDetailsDto.toSeasonEntities(): List<SeasonEntity> =
@@ -67,7 +87,7 @@ fun TmdbSeasonDetailsDto.toEpisodeEntities(showId: Int, defaultRuntimeMinutes: I
         )
     }
 
-fun TmdbMovieDetailsDto.toEntity(status: WatchStatus, addedAt: Instant): TrackedMovieEntity =
+fun TmdbMovieDetailsDto.toEntity(status: WatchStatus, addedAt: Instant, contentRating: String? = null): TrackedMovieEntity =
     TrackedMovieEntity(
         tmdbId = id,
         title = title,
@@ -78,6 +98,7 @@ fun TmdbMovieDetailsDto.toEntity(status: WatchStatus, addedAt: Instant): Tracked
         status = status,
         userRating = null,
         addedAt = addedAt,
+        contentRating = contentRating,
     )
 
 fun TmdbMovieDetailsDto.toGenreEntities(): List<GenreEntity> =

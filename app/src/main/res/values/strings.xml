@@ -91,9 +91,13 @@
     <string name="home_greeting_evening">Good evening</string>
     <string name="home_greeting_with_name_format">%1$s, %2$s</string>
     <string name="home_continue_watching_title">Continue Watching</string>
-    <string name="home_trending_section_title">Trending Now</string>
-    <string name="home_recent_movies_section_title">Latest Movie Releases</string>
-    <string name="home_recent_shows_section_title">Latest Show Releases</string>
+    <string name="home_movies_section_title">Movies</string>
+    <string name="home_shows_section_title">Shows</string>
+    <string name="home_category_popular">Popular</string>
+    <string name="home_category_top_rated">Top Rated</string>
+    <string name="home_category_upcoming">Upcoming</string>
+    <string name="home_category_now">Right Now</string>
+    <string name="home_category_dropdown_content_description">Choose category</string>
     <string name="home_suggestions_section_title">Suggested For You</string>
     <string name="home_favorite_shows_section_title">Favorite Shows</string>
     <string name="home_favorite_movies_section_title">Favorite Movies</string>

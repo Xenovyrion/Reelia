@@ -168,6 +168,7 @@ class ShowDetailViewModel @Inject constructor(
             nextEpisodeAirDate = details.show.nextEpisodeToAirDate,
             averageEpisodeRuntimeMinutes = details.show.averageEpisodeRuntimeMinutes,
             isFavorite = details.show.isFavorite,
+            contentRating = details.show.contentRating,
         )
     }.stateIn(
         scope = viewModelScope,

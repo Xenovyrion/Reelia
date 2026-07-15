@@ -106,6 +106,7 @@ class MovieDetailViewModel @Inject constructor(
             watchProvidersBuy = extra.watchProvidersBuy,
             trailerYoutubeKey = extra.trailerYoutubeKey,
             isFavorite = movie.isFavorite,
+            contentRating = movie.contentRating,
         )
     }.stateIn(
         scope = viewModelScope,

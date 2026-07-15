@@ -32,7 +32,7 @@ import com.reelia.app.data.local.entity.WatchLogEntryEntity
         WatchLogEntryEntity::class,
         SyncOutboxEntity::class,
     ],
-    version = 7,
+    version = 8,
     exportSchema = false,
 )
 @TypeConverters(Converters::class)

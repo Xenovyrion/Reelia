@@ -8,6 +8,7 @@ import com.reelia.app.data.local.entity.MovieGenreCrossRef
 import com.reelia.app.data.local.entity.SyncOutboxEntity
 import com.reelia.app.data.local.entity.TrackedMovieEntity
 import com.reelia.app.data.remote.tmdb.TmdbApi
+import com.reelia.app.data.remote.tmdb.mappers.toContentRating
 import com.reelia.app.data.remote.tmdb.mappers.toEntity
 import com.reelia.app.data.remote.tmdb.mappers.toGenreEntities
 import com.reelia.app.data.sync.FirestoreSyncRepository
@@ -16,6 +17,8 @@ import com.reelia.app.domain.model.WatchStatus
 import java.time.Instant
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 
@@ -79,9 +82,12 @@ class MovieRepository @Inject constructor(
     /** Used by FirestoreSyncRepository when a movie is discovered remotely for the first time —
      * fetches TMDB metadata only, without pushing back (the caller applies the authoritative
      * remote personal-state right after). */
-    suspend fun fetchAndPersistFromTmdb(tmdbId: Int) {
-        val details = tmdbApi.getMovieDetails(tmdbId)
-        movieDao.upsertMovie(details.toEntity(status = WatchStatus.PLAN_TO_WATCH, addedAt = Instant.now()))
+    suspend fun fetchAndPersistFromTmdb(tmdbId: Int): Unit = coroutineScope {
+        val detailsDeferred = async { tmdbApi.getMovieDetails(tmdbId) }
+        val contentRatingDeferred = async { runCatching { tmdbApi.getMovieReleaseDates(tmdbId) }.getOrNull()?.toContentRating() }
+        val details = detailsDeferred.await()
+        val contentRating = contentRatingDeferred.await()
+        movieDao.upsertMovie(details.toEntity(status = WatchStatus.PLAN_TO_WATCH, addedAt = Instant.now(), contentRating = contentRating))
         persistGenres(details.toGenreEntities(), tmdbId)
     }
 

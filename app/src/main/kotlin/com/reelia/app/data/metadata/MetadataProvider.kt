@@ -1,5 +1,6 @@
 package com.reelia.app.data.metadata
 
+import com.reelia.app.domain.model.DiscoverCategory
 import com.reelia.app.domain.model.Genre
 import com.reelia.app.domain.model.MediaPreview
 import com.reelia.app.domain.model.MediaType
@@ -25,6 +26,8 @@ interface MetadataProvider {
     suspend fun getRecentMoviesFeed(): List<MediaPreview>
     suspend fun getRecentShowsFeed(): List<MediaPreview>
     suspend fun getRecommendationsFeed(mediaType: MediaType, tmdbId: Int): List<MediaPreview>
+    suspend fun getMoviesByCategory(category: DiscoverCategory): List<MediaPreview>
+    suspend fun getShowsByCategory(category: DiscoverCategory): List<MediaPreview>
     suspend fun getShowPreview(tmdbId: Int): MediaPreview
     suspend fun getMoviePreview(tmdbId: Int): MediaPreview
 }

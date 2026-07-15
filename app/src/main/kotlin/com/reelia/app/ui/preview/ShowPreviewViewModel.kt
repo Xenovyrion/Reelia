@@ -71,6 +71,7 @@ class ShowPreviewViewModel @Inject constructor(
         firstAirDate = releaseDate,
         numberOfSeasons = numberOfSeasons,
         voteAverage = voteAverage,
+        contentRating = contentRating,
         genreNames = genreNames,
         networkNames = networkNames,
         cast = cast.map {

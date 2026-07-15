@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,8 +25,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -37,7 +41,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -52,6 +58,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.reelia.app.R
+import com.reelia.app.domain.model.DiscoverCategory
 import com.reelia.app.domain.model.MediaType
 import com.reelia.app.domain.model.statusColor
 import com.reelia.app.ui.common.components.CircularProgressRing
@@ -93,9 +100,8 @@ fun HomeScreen(
         val isEmpty = uiState.continueWatching.isEmpty() &&
             uiState.upcomingShows.isEmpty() &&
             uiState.upcomingMovies.isEmpty() &&
-            uiState.trending.isEmpty() &&
-            uiState.recentMovies.isEmpty() &&
-            uiState.recentShows.isEmpty() &&
+            uiState.moviesByCategory.isEmpty() &&
+            uiState.showsByCategory.isEmpty() &&
             uiState.suggestions.isEmpty() &&
             uiState.favoriteShows.isEmpty() &&
             uiState.favoriteMovies.isEmpty()
@@ -200,27 +206,23 @@ fun HomeScreen(
                 pendingItems = uiState.pendingAddItems,
                 onAddClick = viewModel::onAddClicked,
             )
-            discoverSection(
-                titleRes = R.string.home_trending_section_title,
-                items = uiState.trending,
+            categoryDiscoverSection(
+                titleRes = R.string.home_movies_section_title,
+                items = uiState.moviesByCategory,
+                isLoading = uiState.isMoviesByCategoryLoading,
+                selectedCategory = uiState.movieCategory,
+                onCategorySelected = viewModel::onMovieCategorySelected,
                 onItemClick = onDiscoverItemClick,
-                showAddButton = true,
                 pendingItems = uiState.pendingAddItems,
                 onAddClick = viewModel::onAddClicked,
             )
-            discoverSection(
-                titleRes = R.string.home_recent_movies_section_title,
-                items = uiState.recentMovies,
+            categoryDiscoverSection(
+                titleRes = R.string.home_shows_section_title,
+                items = uiState.showsByCategory,
+                isLoading = uiState.isShowsByCategoryLoading,
+                selectedCategory = uiState.showCategory,
+                onCategorySelected = viewModel::onShowCategorySelected,
                 onItemClick = onDiscoverItemClick,
-                showAddButton = true,
-                pendingItems = uiState.pendingAddItems,
-                onAddClick = viewModel::onAddClicked,
-            )
-            discoverSection(
-                titleRes = R.string.home_recent_shows_section_title,
-                items = uiState.recentShows,
-                onItemClick = onDiscoverItemClick,
-                showAddButton = true,
                 pendingItems = uiState.pendingAddItems,
                 onAddClick = viewModel::onAddClicked,
             )
@@ -261,6 +263,88 @@ private fun LazyListScope.discoverSection(
             }
         }
     }
+}
+
+private fun LazyListScope.categoryDiscoverSection(
+    @StringRes titleRes: Int,
+    items: List<HomeDiscoverItem>,
+    isLoading: Boolean,
+    selectedCategory: DiscoverCategory,
+    onCategorySelected: (DiscoverCategory) -> Unit,
+    onItemClick: (MediaType, Int) -> Unit,
+    pendingItems: Set<Pair<MediaType, Int>>,
+    onAddClick: (HomeDiscoverItem) -> Unit,
+) {
+    if (!isLoading && items.isEmpty()) return
+    item {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+        ) {
+            SectionHeader(stringResource(titleRes))
+            Spacer(Modifier.weight(1f))
+            DiscoverCategoryDropdown(selectedCategory, onCategorySelected)
+        }
+    }
+    item {
+        if (isLoading) {
+            Box(Modifier.fillMaxWidth().height(180.dp), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
+        } else {
+            LazyRow(
+                contentPadding = PaddingValues(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                items(items, key = { "${it.mediaType}_${it.tmdbId}" }) { item ->
+                    DiscoverPosterCard(
+                        item = item,
+                        onClick = { onItemClick(item.mediaType, item.tmdbId) },
+                        showAddButton = true,
+                        isPending = (item.mediaType to item.tmdbId) in pendingItems,
+                        onAddClick = { onAddClick(item) },
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun DiscoverCategoryDropdown(selected: DiscoverCategory, onSelected: (DiscoverCategory) -> Unit) {
+    var expanded by remember { mutableStateOf(false) }
+    Box {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.clickable { expanded = true },
+        ) {
+            Text(selected.label(), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
+            Icon(
+                Icons.Filled.ArrowDropDown,
+                contentDescription = stringResource(R.string.home_category_dropdown_content_description),
+                tint = MaterialTheme.colorScheme.primary,
+            )
+        }
+        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+            DiscoverCategory.entries.forEach { category ->
+                DropdownMenuItem(
+                    text = { Text(category.label()) },
+                    onClick = {
+                        expanded = false
+                        onSelected(category)
+                    },
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun DiscoverCategory.label(): String = when (this) {
+    DiscoverCategory.POPULAR -> stringResource(R.string.home_category_popular)
+    DiscoverCategory.TOP_RATED -> stringResource(R.string.home_category_top_rated)
+    DiscoverCategory.UPCOMING -> stringResource(R.string.home_category_upcoming)
+    DiscoverCategory.NOW -> stringResource(R.string.home_category_now)
 }
 
 @Composable

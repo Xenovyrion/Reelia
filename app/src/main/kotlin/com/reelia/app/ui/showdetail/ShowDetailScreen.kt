@@ -64,6 +64,7 @@ import com.reelia.app.domain.model.displayLabel
 import com.reelia.app.ui.common.components.BackdropHeader
 import com.reelia.app.ui.common.components.CastRow
 import com.reelia.app.ui.common.components.localizedCrewJobLabel
+import com.reelia.app.ui.common.components.ContentRatingBadge
 import com.reelia.app.ui.common.components.EpisodeCodeBadge
 import com.reelia.app.ui.common.components.SeasonPillItem
 import com.reelia.app.ui.common.components.SeasonPillTabs
@@ -142,6 +143,9 @@ fun ShowDetailScreen(
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.weight(1f),
                         )
+                        uiState.contentRating?.let { rating ->
+                            ContentRatingBadge(rating, modifier = Modifier.padding(end = 8.dp))
+                        }
                         uiState.userRating?.let { rating ->
                             RatingBadge(rating)
                         }

@@ -29,6 +29,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.reelia.app.R
 import com.reelia.app.ui.common.components.BackdropHeader
 import com.reelia.app.ui.common.components.CastRow
+import com.reelia.app.ui.common.components.ContentRatingBadge
 import com.reelia.app.ui.common.components.SectionHeader
 import com.reelia.app.ui.common.components.WatchProvidersRow
 import com.reelia.app.ui.common.format.toYearOrNull
@@ -73,6 +74,9 @@ fun MoviePreviewScreen(
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.weight(1f),
                     )
+                    uiState.contentRating?.let { rating ->
+                        ContentRatingBadge(rating, modifier = Modifier.padding(end = 8.dp))
+                    }
                     uiState.voteAverage?.let { rating ->
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(Icons.Filled.Star, contentDescription = null, tint = MaterialTheme.colorScheme.tertiary)

@@ -91,9 +91,13 @@
     <string name="home_greeting_evening">Bonsoir</string>
     <string name="home_greeting_with_name_format">%1$s, %2$s</string>
     <string name="home_continue_watching_title">Continuer</string>
-    <string name="home_trending_section_title">Tendances du moment</string>
-    <string name="home_recent_movies_section_title">Derniers films sortis</string>
-    <string name="home_recent_shows_section_title">Dernières séries sorties</string>
+    <string name="home_movies_section_title">Films</string>
+    <string name="home_shows_section_title">Séries</string>
+    <string name="home_category_popular">Populaire</string>
+    <string name="home_category_top_rated">Mieux notés</string>
+    <string name="home_category_upcoming">À venir</string>
+    <string name="home_category_now">Du moment</string>
+    <string name="home_category_dropdown_content_description">Choisir une catégorie</string>
     <string name="home_suggestions_section_title">Suggestions pour toi</string>
     <string name="home_favorite_shows_section_title">Séries favorites</string>
     <string name="home_favorite_movies_section_title">Films favoris</string>

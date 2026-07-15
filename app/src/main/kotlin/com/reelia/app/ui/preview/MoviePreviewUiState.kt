@@ -12,6 +12,7 @@ data class MoviePreviewUiState(
     val releaseDate: String? = null,
     val runtimeMinutes: Int? = null,
     val voteAverage: Float? = null,
+    val contentRating: String? = null,
     val genreNames: List<String> = emptyList(),
     val cast: List<CastRowItem> = emptyList(),
     val watchProvidersFlatrate: List<WatchProviderRowItem> = emptyList(),

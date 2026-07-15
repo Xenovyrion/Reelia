@@ -13,6 +13,7 @@ data class ShowPreviewUiState(
     val firstAirDate: String? = null,
     val numberOfSeasons: Int? = null,
     val voteAverage: Float? = null,
+    val contentRating: String? = null,
     val genreNames: List<String> = emptyList(),
     val networkNames: List<String> = emptyList(),
     val cast: List<CastRowItem> = emptyList(),

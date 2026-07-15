@@ -7,9 +7,11 @@ import com.reelia.app.data.remote.tmdb.dto.TmdbTrendingItemDto
 import com.reelia.app.data.remote.tmdb.dto.TmdbVideosDto
 import com.reelia.app.data.remote.tmdb.dto.TmdbWatchProviderDto
 import com.reelia.app.data.remote.tmdb.dto.TmdbWatchProvidersResponseDto
+import com.reelia.app.data.remote.tmdb.mappers.toContentRating
 import com.reelia.app.data.repository.SearchRepository
 import com.reelia.app.domain.model.CastMember
 import com.reelia.app.domain.model.CrewMember
+import com.reelia.app.domain.model.DiscoverCategory
 import com.reelia.app.domain.model.Genre
 import com.reelia.app.domain.model.MediaPreview
 import com.reelia.app.domain.model.MediaType
@@ -69,15 +71,37 @@ class TmdbMetadataProvider @Inject constructor(
         return results.mapNotNull { it.toMediaPreviewOrNull(mediaType) }
     }
 
+    override suspend fun getMoviesByCategory(category: DiscoverCategory): List<MediaPreview> {
+        val results = when (category) {
+            DiscoverCategory.POPULAR -> tmdbApi.getPopularMovies().results
+            DiscoverCategory.TOP_RATED -> tmdbApi.getTopRatedMovies().results
+            DiscoverCategory.UPCOMING -> tmdbApi.getUpcomingMovies().results
+            DiscoverCategory.NOW -> tmdbApi.getNowPlayingMovies().results
+        }
+        return results.mapNotNull { it.toMediaPreviewOrNull(MediaType.MOVIE) }
+    }
+
+    override suspend fun getShowsByCategory(category: DiscoverCategory): List<MediaPreview> {
+        val results = when (category) {
+            DiscoverCategory.POPULAR -> tmdbApi.getPopularTv().results
+            DiscoverCategory.TOP_RATED -> tmdbApi.getTopRatedTv().results
+            DiscoverCategory.UPCOMING -> tmdbApi.getOnTheAirTv().results
+            DiscoverCategory.NOW -> tmdbApi.getAiringTodayTv().results
+        }
+        return results.mapNotNull { it.toMediaPreviewOrNull(MediaType.TV) }
+    }
+
     override suspend fun getShowPreview(tmdbId: Int): MediaPreview = coroutineScope {
         val detailsDeferred = async { tmdbApi.getTvDetails(tmdbId) }
         val creditsDeferred = async { tmdbApi.getTvCredits(tmdbId) }
         val watchProvidersDeferred = async { tmdbApi.getTvWatchProviders(tmdbId) }
         val videosDeferred = async { tmdbApi.getTvVideos(tmdbId) }
+        val contentRatingsDeferred = async { runCatching { tmdbApi.getTvContentRatings(tmdbId) }.getOrNull() }
         val details = detailsDeferred.await()
         val credits = creditsDeferred.await()
         val watchProviders = watchProvidersDeferred.await()
         val videos = videosDeferred.await()
+        val contentRatings = contentRatingsDeferred.await()
 
         MediaPreview(
             tmdbId = details.id,
@@ -95,6 +119,7 @@ class TmdbMetadataProvider @Inject constructor(
             crew = credits.toCrewMembers(),
             watchProviders = watchProviders.toWatchProviders(),
             trailerYoutubeKey = videos.trailerYoutubeKey(),
+            contentRating = contentRatings?.toContentRating(),
         )
     }
 
@@ -103,10 +128,12 @@ class TmdbMetadataProvider @Inject constructor(
         val creditsDeferred = async { tmdbApi.getMovieCredits(tmdbId) }
         val watchProvidersDeferred = async { tmdbApi.getMovieWatchProviders(tmdbId) }
         val videosDeferred = async { tmdbApi.getMovieVideos(tmdbId) }
+        val releaseDatesDeferred = async { runCatching { tmdbApi.getMovieReleaseDates(tmdbId) }.getOrNull() }
         val details = detailsDeferred.await()
         val credits = creditsDeferred.await()
         val watchProviders = watchProvidersDeferred.await()
         val videos = videosDeferred.await()
+        val releaseDates = releaseDatesDeferred.await()
 
         MediaPreview(
             tmdbId = details.id,
@@ -123,6 +150,7 @@ class TmdbMetadataProvider @Inject constructor(
             crew = credits.toCrewMembers(),
             watchProviders = watchProviders.toWatchProviders(),
             trailerYoutubeKey = videos.trailerYoutubeKey(),
+            contentRating = releaseDates?.toContentRating(),
         )
     }
 }

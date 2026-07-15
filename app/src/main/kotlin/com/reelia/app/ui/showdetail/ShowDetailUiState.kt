@@ -57,4 +57,5 @@ data class ShowDetailUiState(
     val nextEpisodeAirDate: String? = null,
     val averageEpisodeRuntimeMinutes: Int? = null,
     val isFavorite: Boolean = false,
+    val contentRating: String? = null,
 )

@@ -12,6 +12,7 @@ import com.reelia.app.data.metadata.MetadataProviderRegistry
 import com.reelia.app.data.remote.tmdb.TmdbImageUrlBuilder
 import com.reelia.app.data.repository.MovieRepository
 import com.reelia.app.data.repository.ShowRepository
+import com.reelia.app.domain.model.DiscoverCategory
 import com.reelia.app.domain.model.MediaPreview
 import com.reelia.app.domain.model.MediaType
 import com.reelia.app.domain.model.WatchStatus
@@ -42,9 +43,12 @@ private data class RawHomeData(
 )
 
 private data class DiscoverData(
-    val trending: List<MediaPreview> = emptyList(),
-    val recentMovies: List<MediaPreview> = emptyList(),
-    val recentShows: List<MediaPreview> = emptyList(),
+    val movieCategory: DiscoverCategory = DiscoverCategory.POPULAR,
+    val showCategory: DiscoverCategory = DiscoverCategory.POPULAR,
+    val moviesByCategory: List<MediaPreview> = emptyList(),
+    val showsByCategory: List<MediaPreview> = emptyList(),
+    val isMoviesByCategoryLoading: Boolean = true,
+    val isShowsByCategoryLoading: Boolean = true,
     val suggestions: List<MediaPreview> = emptyList(),
 )
 
@@ -84,9 +88,8 @@ class HomeViewModel @Inject constructor(
                 // Each wrapped independently (not just by the outer try/catch) so one failing
                 // feed — e.g. no TMDB API key configured yet on a fresh install — can't take
                 // down the other two, or the whole coroutine, along with it.
-                val trendingDeferred = async { runCatching { provider.getTrendingFeed() }.getOrDefault(emptyList()) }
-                val recentMoviesDeferred = async { runCatching { provider.getRecentMoviesFeed() }.getOrDefault(emptyList()) }
-                val recentShowsDeferred = async { runCatching { provider.getRecentShowsFeed() }.getOrDefault(emptyList()) }
+                val moviesDeferred = async { runCatching { provider.getMoviesByCategory(DiscoverCategory.POPULAR) }.getOrDefault(emptyList()) }
+                val showsDeferred = async { runCatching { provider.getShowsByCategory(DiscoverCategory.POPULAR) }.getOrDefault(emptyList()) }
 
                 val shows = showRepository.getAllShows().first()
                 val movies = movieRepository.getAllMovies().first()
@@ -103,17 +106,49 @@ class HomeViewModel @Inject constructor(
                     .filterNot { (it.mediaType to it.tmdbId) in inLibrary }
                     .take(15)
 
-                discoverData.value = DiscoverData(
-                    trending = trendingDeferred.await(),
-                    recentMovies = recentMoviesDeferred.await(),
-                    recentShows = recentShowsDeferred.await(),
-                    suggestions = suggestions,
-                )
+                discoverData.update {
+                    it.copy(
+                        moviesByCategory = moviesDeferred.await(),
+                        showsByCategory = showsDeferred.await(),
+                        isMoviesByCategoryLoading = false,
+                        isShowsByCategoryLoading = false,
+                        suggestions = suggestions,
+                    )
+                }
             } catch (e: Exception) {
                 // Discovery rows are supplementary — a network failure here must never block
                 // the Room-backed core UI (continue watching), so they just stay empty.
+                discoverData.update { it.copy(isMoviesByCategoryLoading = false, isShowsByCategoryLoading = false) }
             } finally {
                 discoverLoading.value = false
+            }
+        }
+    }
+
+    fun onMovieCategorySelected(category: DiscoverCategory) {
+        if (category == discoverData.value.movieCategory) return
+        viewModelScope.launch {
+            discoverData.update { it.copy(movieCategory = category, isMoviesByCategoryLoading = true) }
+            try {
+                val provider = metadataProviderRegistry.activeProvider.first()
+                val results = provider.getMoviesByCategory(category)
+                discoverData.update { it.copy(moviesByCategory = results, isMoviesByCategoryLoading = false) }
+            } catch (e: Exception) {
+                discoverData.update { it.copy(isMoviesByCategoryLoading = false) }
+            }
+        }
+    }
+
+    fun onShowCategorySelected(category: DiscoverCategory) {
+        if (category == discoverData.value.showCategory) return
+        viewModelScope.launch {
+            discoverData.update { it.copy(showCategory = category, isShowsByCategoryLoading = true) }
+            try {
+                val provider = metadataProviderRegistry.activeProvider.first()
+                val results = provider.getShowsByCategory(category)
+                discoverData.update { it.copy(showsByCategory = results, isShowsByCategoryLoading = false) }
+            } catch (e: Exception) {
+                discoverData.update { it.copy(isShowsByCategoryLoading = false) }
             }
         }
     }
@@ -173,9 +208,12 @@ class HomeViewModel @Inject constructor(
             continueWatching = continueWatching,
             upcomingShows = buildUpcomingShowItems(raw.shows, imageUrlBuilder),
             upcomingMovies = buildUpcomingMovieItems(raw.movies, imageUrlBuilder),
-            trending = discover.trending.filterNot { (it.mediaType to it.tmdbId) in libraryItems }.map { it.toDiscoverItem() },
-            recentMovies = discover.recentMovies.filterNot { (it.mediaType to it.tmdbId) in libraryItems }.map { it.toDiscoverItem() },
-            recentShows = discover.recentShows.filterNot { (it.mediaType to it.tmdbId) in libraryItems }.map { it.toDiscoverItem() },
+            movieCategory = discover.movieCategory,
+            showCategory = discover.showCategory,
+            moviesByCategory = discover.moviesByCategory.filterNot { (it.mediaType to it.tmdbId) in libraryItems }.map { it.toDiscoverItem() },
+            showsByCategory = discover.showsByCategory.filterNot { (it.mediaType to it.tmdbId) in libraryItems }.map { it.toDiscoverItem() },
+            isMoviesByCategoryLoading = discover.isMoviesByCategoryLoading,
+            isShowsByCategoryLoading = discover.isShowsByCategoryLoading,
             suggestions = discover.suggestions.filterNot { (it.mediaType to it.tmdbId) in libraryItems }.map { it.toDiscoverItem() },
             pendingAddItems = pendingAddItems,
             errorMessageRes = errorMessageRes,

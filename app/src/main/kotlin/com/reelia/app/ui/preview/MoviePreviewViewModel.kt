@@ -70,6 +70,7 @@ class MoviePreviewViewModel @Inject constructor(
         releaseDate = releaseDate,
         runtimeMinutes = runtimeMinutes,
         voteAverage = voteAverage,
+        contentRating = contentRating,
         genreNames = genreNames,
         cast = cast.map {
             CastRowItem(

@@ -14,6 +14,7 @@ import com.reelia.app.data.local.entity.ShowWithDetails
 import com.reelia.app.data.local.entity.SyncOutboxEntity
 import com.reelia.app.data.local.entity.TrackedShowEntity
 import com.reelia.app.data.remote.tmdb.TmdbApi
+import com.reelia.app.data.remote.tmdb.mappers.toContentRating
 import com.reelia.app.data.remote.tmdb.mappers.toEntity
 import com.reelia.app.data.remote.tmdb.mappers.toEpisodeEntities
 import com.reelia.app.data.remote.tmdb.mappers.toGenreEntities
@@ -110,8 +111,11 @@ class ShowRepository @Inject constructor(
      * fetches TMDB metadata only, without pushing back to Firestore (the caller applies the
      * authoritative remote personal-state right after, so there's nothing new to push yet). */
     suspend fun fetchAndPersistFromTmdb(tmdbId: Int): Unit = coroutineScope {
-        val details = tmdbApi.getTvDetails(tmdbId)
-        showDao.upsertShow(details.toEntity(status = WatchStatus.PLAN_TO_WATCH, addedAt = Instant.now()))
+        val detailsDeferred = async { tmdbApi.getTvDetails(tmdbId) }
+        val contentRatingDeferred = async { runCatching { tmdbApi.getTvContentRatings(tmdbId) }.getOrNull()?.toContentRating() }
+        val details = detailsDeferred.await()
+        val contentRating = contentRatingDeferred.await()
+        showDao.upsertShow(details.toEntity(status = WatchStatus.PLAN_TO_WATCH, addedAt = Instant.now(), contentRating = contentRating))
         seasonDao.upsertSeasons(details.toSeasonEntities())
         persistGenres(details.toGenreEntities(), tmdbId)
 

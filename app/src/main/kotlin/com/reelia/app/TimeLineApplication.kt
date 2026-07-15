@@ -4,6 +4,8 @@ import android.app.Application
 import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
+import coil.ImageLoader
+import coil.ImageLoaderFactory
 import com.reelia.app.appcheck.installAppCheckProviderFactory
 import com.reelia.app.data.local.prefs.LanguagePreferenceStore
 import dagger.hilt.android.HiltAndroidApp
@@ -13,7 +15,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 
 @HiltAndroidApp
-class TimeLineApplication : Application() {
+class TimeLineApplication : Application(), ImageLoaderFactory {
 
     @Inject
     lateinit var languageStore: LanguagePreferenceStore
@@ -33,4 +35,9 @@ class TimeLineApplication : Application() {
             LocaleListCompat.forLanguageTags(LanguagePreferenceStore.uiLocaleTagFor(languageCode)),
         )
     }
+
+    /** A shared crossfading ImageLoader — without it, posters/backdrops pop in abruptly the
+     * instant they finish decoding, which reads as jank while scrolling fast even when frame
+     * timing itself is fine. Coil picks this up automatically for every AsyncImage in the app. */
+    override fun newImageLoader(): ImageLoader = ImageLoader.Builder(this).crossfade(true).build()
 }

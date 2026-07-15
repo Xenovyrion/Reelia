@@ -5,12 +5,14 @@ import com.reelia.app.data.remote.tmdb.dto.TmdbCreditsDto
 import com.reelia.app.data.remote.tmdb.dto.TmdbFindResponseDto
 import com.reelia.app.data.remote.tmdb.dto.TmdbGenreListResponseDto
 import com.reelia.app.data.remote.tmdb.dto.TmdbMovieDetailsDto
+import com.reelia.app.data.remote.tmdb.dto.TmdbMovieReleaseDatesResponseDto
 import com.reelia.app.data.remote.tmdb.dto.TmdbPagedResponseDto
 import com.reelia.app.data.remote.tmdb.dto.TmdbPersonCombinedCreditsDto
 import com.reelia.app.data.remote.tmdb.dto.TmdbPersonDetailsDto
 import com.reelia.app.data.remote.tmdb.dto.TmdbSearchResponseDto
 import com.reelia.app.data.remote.tmdb.dto.TmdbSeasonDetailsDto
 import com.reelia.app.data.remote.tmdb.dto.TmdbTrendingItemDto
+import com.reelia.app.data.remote.tmdb.dto.TmdbTvContentRatingsResponseDto
 import com.reelia.app.data.remote.tmdb.dto.TmdbTvDetailsDto
 import com.reelia.app.data.remote.tmdb.dto.TmdbVideosDto
 import com.reelia.app.data.remote.tmdb.dto.TmdbWatchProvidersResponseDto
@@ -68,6 +70,30 @@ interface TmdbApi {
         @Query("vote_count.gte") minVoteCount: Int = 20,
     ): TmdbPagedResponseDto<TmdbTrendingItemDto>
 
+    @GET("movie/popular")
+    suspend fun getPopularMovies(): TmdbPagedResponseDto<TmdbTrendingItemDto>
+
+    @GET("movie/top_rated")
+    suspend fun getTopRatedMovies(): TmdbPagedResponseDto<TmdbTrendingItemDto>
+
+    @GET("movie/upcoming")
+    suspend fun getUpcomingMovies(): TmdbPagedResponseDto<TmdbTrendingItemDto>
+
+    @GET("movie/now_playing")
+    suspend fun getNowPlayingMovies(): TmdbPagedResponseDto<TmdbTrendingItemDto>
+
+    @GET("tv/popular")
+    suspend fun getPopularTv(): TmdbPagedResponseDto<TmdbTrendingItemDto>
+
+    @GET("tv/top_rated")
+    suspend fun getTopRatedTv(): TmdbPagedResponseDto<TmdbTrendingItemDto>
+
+    @GET("tv/on_the_air")
+    suspend fun getOnTheAirTv(): TmdbPagedResponseDto<TmdbTrendingItemDto>
+
+    @GET("tv/airing_today")
+    suspend fun getAiringTodayTv(): TmdbPagedResponseDto<TmdbTrendingItemDto>
+
     @GET("movie/{id}/recommendations")
     suspend fun getMovieRecommendations(@Path("id") id: Int): TmdbPagedResponseDto<TmdbTrendingItemDto>
 
@@ -86,6 +112,9 @@ interface TmdbApi {
     @GET("tv/{id}/watch/providers")
     suspend fun getTvWatchProviders(@Path("id") id: Int): TmdbWatchProvidersResponseDto
 
+    @GET("tv/{id}/content_ratings")
+    suspend fun getTvContentRatings(@Path("id") id: Int): TmdbTvContentRatingsResponseDto
+
     @GET("tv/{id}/credits")
     suspend fun getTvCredits(@Path("id") id: Int): TmdbCreditsDto
 
@@ -97,6 +126,9 @@ interface TmdbApi {
 
     @GET("movie/{id}/watch/providers")
     suspend fun getMovieWatchProviders(@Path("id") id: Int): TmdbWatchProvidersResponseDto
+
+    @GET("movie/{id}/release_dates")
+    suspend fun getMovieReleaseDates(@Path("id") id: Int): TmdbMovieReleaseDatesResponseDto
 
     @GET("movie/{id}/credits")
     suspend fun getMovieCredits(@Path("id") id: Int): TmdbCreditsDto

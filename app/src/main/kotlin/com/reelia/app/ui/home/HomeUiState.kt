@@ -1,5 +1,6 @@
 package com.reelia.app.ui.home
 
+import com.reelia.app.domain.model.DiscoverCategory
 import com.reelia.app.domain.model.MediaType
 import com.reelia.app.domain.model.WatchStatus
 import com.reelia.app.ui.common.model.UpcomingMovieItem
@@ -34,9 +35,12 @@ data class HomeUiState(
     val continueWatching: List<ContinueWatchingItem> = emptyList(),
     val upcomingShows: List<UpcomingShowItem> = emptyList(),
     val upcomingMovies: List<UpcomingMovieItem> = emptyList(),
-    val trending: List<HomeDiscoverItem> = emptyList(),
-    val recentMovies: List<HomeDiscoverItem> = emptyList(),
-    val recentShows: List<HomeDiscoverItem> = emptyList(),
+    val movieCategory: DiscoverCategory = DiscoverCategory.POPULAR,
+    val showCategory: DiscoverCategory = DiscoverCategory.POPULAR,
+    val moviesByCategory: List<HomeDiscoverItem> = emptyList(),
+    val showsByCategory: List<HomeDiscoverItem> = emptyList(),
+    val isMoviesByCategoryLoading: Boolean = true,
+    val isShowsByCategoryLoading: Boolean = true,
     val suggestions: List<HomeDiscoverItem> = emptyList(),
     val favoriteShows: List<HomeDiscoverItem> = emptyList(),
     val favoriteMovies: List<HomeDiscoverItem> = emptyList(),
