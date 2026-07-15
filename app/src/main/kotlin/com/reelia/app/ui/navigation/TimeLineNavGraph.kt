@@ -162,6 +162,7 @@ fun TimeLineNavGraph(navController: NavHostController, modifier: Modifier = Modi
             ShowPreviewScreen(
                 onBack = { navController.popBackStack() },
                 onAdded = { navigateToItemAfterAdd(navController, MediaType.TV, tmdbId) },
+                onPersonClick = { navController.navigate(Routes.personDetail(it)) },
             )
         }
         composable(
@@ -172,6 +173,7 @@ fun TimeLineNavGraph(navController: NavHostController, modifier: Modifier = Modi
             MoviePreviewScreen(
                 onBack = { navController.popBackStack() },
                 onAdded = { navigateToItemAfterAdd(navController, MediaType.MOVIE, tmdbId) },
+                onPersonClick = { navController.navigate(Routes.personDetail(it)) },
             )
         }
         composable(

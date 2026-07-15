@@ -17,6 +17,7 @@ import com.reelia.app.domain.model.MediaPreview
 import com.reelia.app.domain.model.MediaType
 import com.reelia.app.domain.model.WatchStatus
 import com.reelia.app.ui.common.effectiveShowStatus
+import com.reelia.app.ui.common.format.isAfterToday
 import com.reelia.app.ui.common.format.toYearOrNull
 import com.reelia.app.ui.common.model.buildUpcomingMovieItems
 import com.reelia.app.ui.common.model.buildUpcomingShowItems
@@ -187,7 +188,13 @@ class HomeViewModel @Inject constructor(
         combine(libraryItems, _pendingAddItems, _errorMessageRes, ::Triple),
     ) { raw, discover, firstName, isDiscoverLoading, (libraryItems, pendingAddItems, errorMessageRes) ->
         val progressByShowId = raw.progress.associateBy { it.showId }
-        val nextEpisodeByShowId = raw.unwatchedEpisodes.groupBy { it.showId }.mapValues { it.value.first() }
+        // Excludes episodes that haven't aired yet from "next episode" consideration — a show
+        // whose only remaining unwatched episodes are an announced-but-unreleased season has
+        // nothing to actually continue with, so it shouldn't show up in Continue Watching.
+        val nextEpisodeByShowId = raw.unwatchedEpisodes
+            .filterNot { it.airDate.isAfterToday() }
+            .groupBy { it.showId }
+            .mapValues { it.value.first() }
 
         val continueWatching = raw.shows
             .filter { effectiveShowStatus(it.status, progressByShowId[it.tmdbId]) == WatchStatus.WATCHING }

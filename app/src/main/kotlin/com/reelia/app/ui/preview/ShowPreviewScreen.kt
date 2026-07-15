@@ -39,6 +39,7 @@ import com.reelia.app.ui.common.format.toYearOrNull
 fun ShowPreviewScreen(
     onBack: () -> Unit,
     onAdded: () -> Unit,
+    onPersonClick: (Int) -> Unit = {},
     viewModel: ShowPreviewViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -98,7 +99,7 @@ fun ShowPreviewScreen(
                     Spacer(Modifier.padding(top = 24.dp))
                     SectionHeader(stringResource(R.string.preview_cast_section_title))
                     Spacer(Modifier.padding(top = 12.dp))
-                    CastRow(uiState.cast)
+                    CastRow(uiState.cast, onPersonClick = onPersonClick)
                 }
 
                 Spacer(Modifier.padding(top = 24.dp))
