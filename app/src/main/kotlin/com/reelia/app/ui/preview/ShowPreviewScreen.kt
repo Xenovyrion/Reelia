@@ -117,11 +117,11 @@ fun ShowPreviewScreen(
 
                 Spacer(Modifier.padding(top = 24.dp))
                 Button(
-                    onClick = { viewModel.onAddClicked(onAdded) },
-                    enabled = !uiState.isAdding && !uiState.added,
+                    onClick = { if (uiState.isInLibrary) onAdded() else viewModel.onAddClicked(onAdded) },
+                    enabled = !uiState.isAdding,
                 ) {
                     Text(
-                        if (uiState.added) {
+                        if (uiState.isInLibrary) {
                             stringResource(R.string.preview_added_button)
                         } else {
                             stringResource(R.string.preview_add_button)

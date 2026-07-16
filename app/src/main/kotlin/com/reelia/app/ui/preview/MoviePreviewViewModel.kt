@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -39,12 +40,20 @@ class MoviePreviewViewModel @Inject constructor(
             try {
                 val provider = metadataProviderRegistry.activeProvider.first()
                 val preview = provider.getMoviePreview(tmdbId)
-                _uiState.value = preview.toUiState()
+                // Merge, not replace — the library-membership collector below may have already
+                // set isInLibrary on the still-default state, and a plain assignment here would
+                // wipe it back to false depending on which of the two coroutines resolves first.
+                _uiState.update { preview.toUiState().copy(isInLibrary = it.isInLibrary) }
             } catch (e: Exception) {
                 _uiState.update {
                     it.copy(isLoading = false, errorMessageRes = R.string.preview_error_load_movie)
                 }
             }
+        }
+        viewModelScope.launch {
+            movieRepository.getAllMovies()
+                .map { movies -> movies.any { it.tmdbId == tmdbId } }
+                .collect { inLibrary -> _uiState.update { it.copy(isInLibrary = inLibrary) } }
         }
     }
 
@@ -53,7 +62,7 @@ class MoviePreviewViewModel @Inject constructor(
             _uiState.update { it.copy(isAdding = true) }
             try {
                 movieRepository.addMovieFromTmdb(tmdbId)
-                _uiState.update { it.copy(isAdding = false, added = true) }
+                _uiState.update { it.copy(isAdding = false) }
                 delay(500)
                 onAdded()
             } catch (e: Exception) {

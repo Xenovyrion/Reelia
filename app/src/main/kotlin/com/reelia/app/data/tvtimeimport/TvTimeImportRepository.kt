@@ -12,6 +12,7 @@ import com.reelia.app.data.repository.MovieRepository
 import com.reelia.app.data.repository.ShowRepository
 import com.reelia.app.data.sync.FirestoreSyncRepository
 import com.reelia.app.domain.model.MediaType
+import com.reelia.app.domain.model.RuntimeDefaults
 import com.reelia.app.domain.model.WatchStatus
 import com.reelia.app.domain.usecase.refreshComputedStatus
 import java.time.Instant
@@ -118,7 +119,7 @@ class TvTimeImportRepository @Inject constructor(
                             tmdbId = tmdbId,
                             seasonNumber = episode.seasonNumber,
                             episodeNumber = episode.episodeNumber,
-                            runtimeMinutes = episode.runtimeMinutes ?: 0,
+                            runtimeMinutes = episode.runtimeMinutes ?: RuntimeDefaults.DEFAULT_EPISODE_RUNTIME_MINUTES,
                             watchedAt = episode.watchedAt ?: Instant.now(),
                         )
                     },
@@ -156,7 +157,7 @@ class TvTimeImportRepository @Inject constructor(
                     WatchLogEntryEntity(
                         mediaType = MediaType.MOVIE,
                         tmdbId = tmdbId,
-                        runtimeMinutes = current?.runtimeMinutes ?: 0,
+                        runtimeMinutes = current?.runtimeMinutes ?: RuntimeDefaults.DEFAULT_MOVIE_RUNTIME_MINUTES,
                         watchedAt = watchedAt,
                     ),
                 ),

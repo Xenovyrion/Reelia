@@ -26,6 +26,7 @@ import com.reelia.app.data.repository.TimeBucketEntry
 import com.reelia.app.data.sync.FirestoreSyncRepository
 import com.reelia.app.data.update.AppUpdateRepository
 import com.reelia.app.domain.model.MediaType
+import com.reelia.app.domain.model.RuntimeDefaults
 import com.reelia.app.domain.model.ShowBroadcastStatus
 import com.reelia.app.domain.model.parseShowBroadcastStatus
 import com.reelia.app.ui.common.components.BarChartEntry
@@ -271,8 +272,10 @@ class ProfileViewModel @Inject constructor(
         val remainingMovies = if (query.scope == StatsScope.SERIES) emptyList() else extra.movies.filter { !it.watched }
         val showById = extra.shows.associateBy { it.tmdbId }
         val remainingMinutes = unwatchedEpisodes.sumOf { episode ->
-            episode.runtimeMinutes ?: showById[episode.showId]?.averageEpisodeRuntimeMinutes ?: 0
-        } + remainingMovies.sumOf { it.runtimeMinutes ?: 0 }
+            episode.runtimeMinutes
+                ?: showById[episode.showId]?.averageEpisodeRuntimeMinutes
+                ?: RuntimeDefaults.DEFAULT_EPISODE_RUNTIME_MINUTES
+        } + remainingMovies.sumOf { it.runtimeMinutes ?: RuntimeDefaults.DEFAULT_MOVIE_RUNTIME_MINUTES }
 
         val averageHoursPerWeek = if (core.weekly.isEmpty()) {
             0.0

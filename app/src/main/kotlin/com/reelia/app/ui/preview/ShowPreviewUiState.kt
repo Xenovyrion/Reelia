@@ -21,6 +21,6 @@ data class ShowPreviewUiState(
     val watchProvidersRent: List<WatchProviderRowItem> = emptyList(),
     val watchProvidersBuy: List<WatchProviderRowItem> = emptyList(),
     val isAdding: Boolean = false,
-    val added: Boolean = false,
+    val isInLibrary: Boolean = false,
     @StringRes val errorMessageRes: Int? = null,
 )

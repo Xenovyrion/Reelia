@@ -47,3 +47,13 @@ val MIGRATION_7_8 = object : Migration(7, 8) {
         db.execSQL("ALTER TABLE tracked_movies ADD COLUMN contentRating TEXT")
     }
 }
+
+/** Backfills watch_log rows whose runtimeMinutes fell back to 0 (see RuntimeDefaults) with a
+ * reasonable estimate instead — no genuine watch event has a true 0-minute duration, so this
+ * condition unambiguously identifies rows affected by that bug. */
+val MIGRATION_8_9 = object : Migration(8, 9) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("UPDATE watch_log SET runtimeMinutes = 45 WHERE runtimeMinutes = 0 AND mediaType = 'TV'")
+        db.execSQL("UPDATE watch_log SET runtimeMinutes = 100 WHERE runtimeMinutes = 0 AND mediaType = 'MOVIE'")
+    }
+}

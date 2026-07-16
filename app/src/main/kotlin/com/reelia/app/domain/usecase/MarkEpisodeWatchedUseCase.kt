@@ -8,6 +8,7 @@ import com.reelia.app.data.local.entity.SyncOutboxEntity
 import com.reelia.app.data.local.entity.WatchLogEntryEntity
 import com.reelia.app.data.sync.FirestoreSyncRepository
 import com.reelia.app.domain.model.MediaType
+import com.reelia.app.domain.model.RuntimeDefaults
 import java.time.Instant
 import javax.inject.Inject
 
@@ -61,7 +62,7 @@ class MarkEpisodeWatchedUseCase @Inject constructor(
                     tmdbId = showId,
                     seasonNumber = seasonNumber,
                     episodeNumber = number,
-                    runtimeMinutes = episode.runtimeMinutes ?: 0,
+                    runtimeMinutes = episode.runtimeMinutes ?: RuntimeDefaults.DEFAULT_EPISODE_RUNTIME_MINUTES,
                     watchedAt = now,
                 )
                 watchLogDao.insert(entry)
