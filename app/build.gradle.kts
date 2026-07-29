@@ -48,10 +48,21 @@ android {
             keyAlias = "androiddebugkey"
             keyPassword = "android"
         }
+        // Unlike the debug config above, this key IS the app's real identity — nothing about it
+        // is hardcoded or committed. CI decodes RELEASE_KEYSTORE_BASE64 to a file and passes the
+        // path + passwords as env vars only on release builds; a local `assembleRelease` without
+        // those env vars set will fail at signing, which is fine since only CI ships releases.
+        create("release") {
+            storeFile = System.getenv("RELEASE_KEYSTORE_PATH")?.let { file(it) }
+            storePassword = System.getenv("RELEASE_KEYSTORE_PASSWORD")
+            keyAlias = System.getenv("RELEASE_KEY_ALIAS")
+            keyPassword = System.getenv("RELEASE_KEY_PASSWORD")
+        }
     }
 
     buildTypes {
         release {
+            signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }

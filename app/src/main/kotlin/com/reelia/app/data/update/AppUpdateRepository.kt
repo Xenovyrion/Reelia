@@ -7,6 +7,7 @@ import androidx.core.content.FileProvider
 import com.reelia.app.BuildConfig
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.File
+import java.security.MessageDigest
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.Dispatchers
@@ -46,6 +47,7 @@ class AppUpdateRepository @Inject constructor(
                     versionName = remoteVersion,
                     downloadUrl = apkAsset.browser_download_url,
                     releaseUrl = release.html_url,
+                    expectedSha256 = apkAsset.digest?.removePrefix("sha256:")?.lowercase(),
                 )
             }
         } catch (e: Exception) {
@@ -60,7 +62,12 @@ class AppUpdateRepository @Inject constructor(
      * the HTTP response before writing — without this check, a non-2xx response (e.g. GitHub
      * rate-limited or the asset briefly unavailable mid-publish) would silently write an error
      * page to "reelia-update.apk" and hand it to the installer, which then fails with Android's
-     * generic, unhelpful "problem with the app file" dialog instead of a clear error here. */
+     * generic, unhelpful "problem with the app file" dialog instead of a clear error here.
+     *
+     * Fails closed on integrity: every asset GitHub serves carries a digest, so a missing or
+     * mismatched [AppUpdate.expectedSha256] means the download is corrupted or was tampered with
+     * in transit — the file is deleted and an exception thrown rather than handing back an
+     * installable Uri. */
     suspend fun downloadUpdate(update: AppUpdate): Uri = withContext(Dispatchers.IO) {
         val dir = File(context.cacheDir, "apk_updates").apply { mkdirs() }
         val file = File(dir, "reelia-update.apk")
@@ -70,6 +77,24 @@ class AppUpdateRepository @Inject constructor(
             val body = response.body ?: error("Empty APK download response")
             file.outputStream().use { output -> body.byteStream().copyTo(output) }
         }
+
+        val expectedSha256 = update.expectedSha256
+        if (expectedSha256 == null) {
+            file.delete()
+            error("Update rejected: GitHub did not provide a checksum for this file")
+        }
+        val actualSha256 = file.inputStream().use { input ->
+            val digest = MessageDigest.getInstance("SHA-256")
+            val buffer = ByteArray(8192)
+            generateSequence { input.read(buffer).takeIf { it > 0 } }
+                .forEach { read -> digest.update(buffer, 0, read) }
+            digest.digest().joinToString("") { "%02x".format(it) }
+        }
+        if (actualSha256 != expectedSha256) {
+            file.delete()
+            error("Update rejected: checksum mismatch, the download may be corrupted or tampered with")
+        }
+
         FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
     }
 
