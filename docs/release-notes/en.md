@@ -1,5 +1,10 @@
 # Release notes
 
+## 0.21.1 — July 31, 2026
+### 🔒 Security
+- The app is now built and signed with a dedicated release key, separate from the development key — the previously distributed build was still using the debug key
+- Before installing a downloaded update, the app now verifies its cryptographic checksum (SHA-256) provided by GitHub; a corrupted file or a missing checksum blocks the install
+
 ## 0.21.0 — July 16, 2026
 ### 🐛 Fixed
 - Preview screens (search, Home's trending sections, an actor's filmography): a title already in your library now shows "Added" and takes you to your tracked copy, instead of offering to add it again

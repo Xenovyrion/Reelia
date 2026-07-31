@@ -1,5 +1,10 @@
 # Notes de version
 
+## 0.21.1 — 31 juillet 2026
+### 🔒 Sécurité
+- L'application est désormais compilée et signée avec une clé de publication dédiée, séparée de la clé de développement — auparavant, la version distribuée utilisait encore la clé de debug
+- Avant d'installer une mise à jour téléchargée, l'application vérifie maintenant son empreinte cryptographique (SHA-256) fournie par GitHub ; en cas de fichier corrompu ou d'empreinte manquante, l'installation est bloquée
+
 ## 0.21.0 — 16 juillet 2026
 ### 🐛 Corrections
 - Fiches de prévisualisation (recherche, tendances de l'accueil, filmographie d'un acteur) : un titre déjà dans ta bibliothèque affiche maintenant "Ajouté" et t'emmène vers ta fiche suivie, au lieu de proposer de l'ajouter à nouveau
