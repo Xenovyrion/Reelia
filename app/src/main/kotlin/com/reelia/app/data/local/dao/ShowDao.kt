@@ -19,6 +19,19 @@ interface ShowDao {
     @Query("SELECT * FROM tracked_shows WHERE tmdbId = :showId")
     suspend fun getShowOnce(showId: Int): TrackedShowEntity?
 
+    /** Shows still actively being tracked (not completed/dropped) whose next-episode date is
+     * unknown or already in the past — candidates for a fresh TMDB fetch before computing release
+     * reminders, since `nextEpisodeToAirDate` is otherwise never refreshed after a show is added
+     * (see ReleaseReminderWorker). [today] is an ISO "yyyy-MM-dd" string, matching TMDB's format. */
+    @Query(
+        """
+        SELECT * FROM tracked_shows
+        WHERE status IN ('WATCHING', 'PLAN_TO_WATCH', 'ON_HOLD')
+        AND (nextEpisodeToAirDate IS NULL OR nextEpisodeToAirDate < :today)
+        """,
+    )
+    suspend fun getShowsNeedingReleaseRefresh(today: String): List<TrackedShowEntity>
+
     @Transaction
     @Query("SELECT * FROM tracked_shows WHERE tmdbId = :showId")
     fun getShowWithDetails(showId: Int): Flow<ShowWithDetails?>

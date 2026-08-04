@@ -241,6 +241,17 @@
     <!-- Settings -->
     <string name="settings_language_section_title">Content language</string>
     <string name="settings_language_field_label">Language</string>
+    <string name="settings_notifications_section_title">Release reminders</string>
+    <string name="settings_notifications_offsets_label">Remind me:</string>
+    <string name="notification_offset_30">30 days before</string>
+    <string name="notification_offset_14">14 days before</string>
+    <string name="notification_offset_8">8 days before</string>
+    <string name="notification_offset_1">1 day before</string>
+    <string name="notification_offset_0">On release day</string>
+    <string name="notification_channel_name">Release reminders</string>
+    <string name="notification_channel_description">Alerts when a tracked show or movie is about to release, per your reminder settings.</string>
+    <string name="notification_single_title">Coming up</string>
+    <string name="notification_digest_title">%1$d releases coming up</string>
     <string name="settings_provider_section_title">Data source</string>
     <string name="settings_provider_more_soon">More sources coming soon.</string>
     <string name="settings_api_key_section_title">TMDB API Key</string>

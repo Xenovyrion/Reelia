@@ -15,6 +15,7 @@ import com.reelia.app.data.local.entity.EpisodeEntity
 import com.reelia.app.data.local.entity.TrackedMovieEntity
 import com.reelia.app.data.local.entity.TrackedShowEntity
 import com.reelia.app.data.local.prefs.LanguagePreferenceStore
+import com.reelia.app.data.local.prefs.NotificationPreferenceStore
 import com.reelia.app.data.metadata.MetadataProvider
 import com.reelia.app.data.metadata.MetadataProviderRegistry
 import com.reelia.app.data.repository.BasicStats
@@ -98,7 +99,11 @@ data class ProfileUiState(
     val accountEmail: String? = null,
     val lastSyncedAt: Instant? = null,
     val isPasswordAccount: Boolean = true,
+    val notificationsEnabled: Boolean = false,
+    val enabledNotificationOffsets: Set<Int> = NotificationPreferenceStore.DEFAULT_OFFSETS,
 )
+
+private data class NotificationSettings(val enabled: Boolean, val offsets: Set<Int>)
 
 data class ProfileStatsUiState(
     val scope: StatsScope = StatsScope.ALL,
@@ -176,12 +181,20 @@ class ProfileViewModel @Inject constructor(
     private val statsRepository: StatsRepository,
     private val showRepository: ShowRepository,
     private val movieRepository: MovieRepository,
+    private val notificationPreferenceStore: NotificationPreferenceStore,
     metadataProviderRegistry: MetadataProviderRegistry,
 ) : ViewModel() {
 
     val providers: List<MetadataProvider> = metadataProviderRegistry.providers
 
-    val uiState: StateFlow<ProfileUiState> = combine(
+    private val notificationSettings: Flow<NotificationSettings> = combine(
+        notificationPreferenceStore.notificationsEnabled,
+        notificationPreferenceStore.enabledOffsets,
+    ) { enabled, offsets -> NotificationSettings(enabled, offsets) }
+
+    // combine() only has fixed-arity overloads up to 5 flows — nesting keeps each call within
+    // that limit instead of reaching for the vararg/Array<T> overload just for a 6th input.
+    private val baseUiState: Flow<ProfileUiState> = combine(
         settingsRepository.apiKey,
         settingsRepository.language,
         settingsRepository.selectedProviderId,
@@ -196,6 +209,10 @@ class ProfileViewModel @Inject constructor(
             lastSyncedAt = lastSyncedAt,
             isPasswordAccount = authRepository.isPasswordAccount(user),
         )
+    }
+
+    val uiState: StateFlow<ProfileUiState> = combine(baseUiState, notificationSettings) { base, notif ->
+        base.copy(notificationsEnabled = notif.enabled, enabledNotificationOffsets = notif.offsets)
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
@@ -392,6 +409,21 @@ class ProfileViewModel @Inject constructor(
                 LocaleListCompat.forLanguageTags(LanguagePreferenceStore.uiLocaleTagFor(languageCode)),
             )
             firestoreSyncRepository.pushLanguage(languageCode)
+        }
+    }
+
+    /** Called once the permission dance (if any, API 33+) is already resolved by the screen —
+     * this just persists the result. Turning notifications off needs no permission and can be
+     * called directly. */
+    fun onNotificationsToggled(enabled: Boolean) {
+        viewModelScope.launch { notificationPreferenceStore.setNotificationsEnabled(enabled) }
+    }
+
+    fun onNotificationOffsetToggled(offsetDays: Int, checked: Boolean) {
+        viewModelScope.launch {
+            val current = uiState.value.enabledNotificationOffsets
+            val updated = if (checked) current + offsetDays else current - offsetDays
+            notificationPreferenceStore.setEnabledOffsets(updated)
         }
     }
 

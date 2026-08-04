@@ -6,6 +6,7 @@ import androidx.room.TypeConverters
 import com.reelia.app.data.local.dao.EpisodeDao
 import com.reelia.app.data.local.dao.GenreDao
 import com.reelia.app.data.local.dao.MovieDao
+import com.reelia.app.data.local.dao.NotifiedReminderDao
 import com.reelia.app.data.local.dao.SeasonDao
 import com.reelia.app.data.local.dao.ShowDao
 import com.reelia.app.data.local.dao.SyncOutboxDao
@@ -13,6 +14,7 @@ import com.reelia.app.data.local.dao.WatchLogDao
 import com.reelia.app.data.local.entity.EpisodeEntity
 import com.reelia.app.data.local.entity.GenreEntity
 import com.reelia.app.data.local.entity.MovieGenreCrossRef
+import com.reelia.app.data.local.entity.NotifiedReminderEntity
 import com.reelia.app.data.local.entity.SeasonEntity
 import com.reelia.app.data.local.entity.ShowGenreCrossRef
 import com.reelia.app.data.local.entity.SyncOutboxEntity
@@ -31,8 +33,9 @@ import com.reelia.app.data.local.entity.WatchLogEntryEntity
         MovieGenreCrossRef::class,
         WatchLogEntryEntity::class,
         SyncOutboxEntity::class,
+        NotifiedReminderEntity::class,
     ],
-    version = 9,
+    version = 10,
     exportSchema = false,
 )
 @TypeConverters(Converters::class)
@@ -44,6 +47,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun genreDao(): GenreDao
     abstract fun watchLogDao(): WatchLogDao
     abstract fun syncOutboxDao(): SyncOutboxDao
+    abstract fun notifiedReminderDao(): NotifiedReminderDao
 
     companion object {
         const val DATABASE_NAME = "timeline.db"

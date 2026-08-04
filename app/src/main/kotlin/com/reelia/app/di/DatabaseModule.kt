@@ -11,9 +11,11 @@ import com.reelia.app.data.local.MIGRATION_5_6
 import com.reelia.app.data.local.MIGRATION_6_7
 import com.reelia.app.data.local.MIGRATION_7_8
 import com.reelia.app.data.local.MIGRATION_8_9
+import com.reelia.app.data.local.MIGRATION_9_10
 import com.reelia.app.data.local.dao.EpisodeDao
 import com.reelia.app.data.local.dao.GenreDao
 import com.reelia.app.data.local.dao.MovieDao
+import com.reelia.app.data.local.dao.NotifiedReminderDao
 import com.reelia.app.data.local.dao.SeasonDao
 import com.reelia.app.data.local.dao.ShowDao
 import com.reelia.app.data.local.dao.SyncOutboxDao
@@ -35,7 +37,7 @@ object DatabaseModule {
     @Singleton
     fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase =
         Room.databaseBuilder(context, AppDatabase::class.java, AppDatabase.DATABASE_NAME)
-            .addMigrations(MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9)
+            .addMigrations(MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10)
             .fallbackToDestructiveMigration()
             .build()
 
@@ -59,6 +61,9 @@ object DatabaseModule {
 
     @Provides
     fun provideSyncOutboxDao(db: AppDatabase): SyncOutboxDao = db.syncOutboxDao()
+
+    @Provides
+    fun provideNotifiedReminderDao(db: AppDatabase): NotifiedReminderDao = db.notifiedReminderDao()
 
     @Provides
     @Singleton

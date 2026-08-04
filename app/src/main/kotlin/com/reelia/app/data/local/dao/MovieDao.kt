@@ -20,6 +20,12 @@ interface MovieDao {
     @Query("SELECT * FROM tracked_movies WHERE tmdbId = :movieId")
     suspend fun getMovieOnce(movieId: Int): TrackedMovieEntity?
 
+    /** Unwatched movies whose release date is unknown or already in the past — candidates for a
+     * fresh TMDB fetch before computing release reminders. See ShowDao.getShowsNeedingReleaseRefresh
+     * for why this refresh is needed at all. [today] is an ISO "yyyy-MM-dd" string. */
+    @Query("SELECT * FROM tracked_movies WHERE watched = 0 AND (releaseDate IS NULL OR releaseDate < :today)")
+    suspend fun getMoviesNeedingReleaseRefresh(today: String): List<TrackedMovieEntity>
+
     @Upsert
     suspend fun upsertMovie(movie: TrackedMovieEntity)
 

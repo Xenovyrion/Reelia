@@ -1,5 +1,11 @@
 package com.reelia.app.ui.profile
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -19,6 +25,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -39,6 +46,7 @@ import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -61,6 +69,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.reelia.app.BuildConfig
 import com.reelia.app.R
 import com.reelia.app.data.local.prefs.LanguagePreferenceStore
+import com.reelia.app.data.local.prefs.NotificationPreferenceStore
 import com.reelia.app.domain.model.displayLabel
 import com.reelia.app.ui.auth.fetchGoogleIdToken
 import com.reelia.app.ui.common.components.BarChart
@@ -73,6 +82,7 @@ import com.reelia.app.ui.common.components.StatCard
 import com.reelia.app.ui.navigation.Routes
 import com.reelia.app.ui.navigation.ScrollToTopOnTabReselect
 import com.reelia.app.ui.settings.LANGUAGE_DISPLAY_NAME_RES
+import com.reelia.app.ui.settings.NOTIFICATION_OFFSET_LABEL_RES
 import com.reelia.app.ui.theme.StatusFavorite
 import com.reelia.app.ui.update.UpdateUiState
 import com.reelia.app.ui.theme.StatusPlanned
@@ -447,6 +457,52 @@ private fun ProfileSettingsContent(
                             languageMenuExpanded = false
                         },
                     )
+                }
+            }
+        }
+
+        // --- Rappels de sortie ---
+        Spacer(Modifier.height(24.dp))
+        val context = LocalContext.current
+        val notificationPermissionLauncher = rememberLauncherForActivityResult(
+            ActivityResultContracts.RequestPermission(),
+        ) { granted -> if (granted) viewModel.onNotificationsToggled(true) }
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+            Text(
+                stringResource(R.string.settings_notifications_section_title),
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.weight(1f),
+            )
+            Switch(
+                checked = uiState.notificationsEnabled,
+                onCheckedChange = { checked ->
+                    when {
+                        !checked -> viewModel.onNotificationsToggled(false)
+                        Build.VERSION.SDK_INT >= 33 &&
+                            ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) !=
+                            PackageManager.PERMISSION_GRANTED ->
+                            notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                        else -> viewModel.onNotificationsToggled(true)
+                    }
+                },
+            )
+        }
+        if (uiState.notificationsEnabled) {
+            Spacer(Modifier.height(8.dp))
+            Text(
+                stringResource(R.string.settings_notifications_offsets_label),
+                style = MaterialTheme.typography.bodyMedium,
+            )
+            NotificationPreferenceStore.AVAILABLE_OFFSETS.forEach { offset ->
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Checkbox(
+                        checked = offset in uiState.enabledNotificationOffsets,
+                        onCheckedChange = { checked -> viewModel.onNotificationOffsetToggled(offset, checked) },
+                    )
+                    Text(stringResource(NOTIFICATION_OFFSET_LABEL_RES.getValue(offset)))
                 }
             }
         }

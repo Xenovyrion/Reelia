@@ -237,6 +237,17 @@
     <!-- Settings -->
     <string name="settings_language_section_title">Langue du contenu</string>
     <string name="settings_language_field_label">Langue</string>
+    <string name="settings_notifications_section_title">Rappels de sortie</string>
+    <string name="settings_notifications_offsets_label">Me rappeler :</string>
+    <string name="notification_offset_30">30 jours avant</string>
+    <string name="notification_offset_14">14 jours avant</string>
+    <string name="notification_offset_8">8 jours avant</string>
+    <string name="notification_offset_1">1 jour avant</string>
+    <string name="notification_offset_0">Le jour de la sortie</string>
+    <string name="notification_channel_name">Rappels de sortie</string>
+    <string name="notification_channel_description">Alertes quand une série ou un film suivi est sur le point de sortir, selon tes réglages de rappel.</string>
+    <string name="notification_single_title">Bientôt disponible</string>
+    <string name="notification_digest_title">%1$d sorties à venir</string>
     <string name="settings_provider_section_title">Source des données</string>
     <string name="settings_provider_more_soon">D\'autres sources arriveront bientôt.</string>
     <string name="settings_api_key_section_title">Clé API TMDB</string>

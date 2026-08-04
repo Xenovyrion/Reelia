@@ -5,6 +5,9 @@
     <!-- Needed to launch the system package installer ourselves for in-app update installs,
          since Reelia isn't distributed through the Play Store. -->
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    <!-- Runtime-requested (API 33+) only when the user opts into release-date reminders in
+         Profil > Paramètres — never requested proactively on launch. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <!-- allowBackup=false: Android's default Auto Backup restores Room/DataStore/Firebase
          Auth's session file on reinstall from a stale Google Drive snapshot — this silently
@@ -22,6 +25,7 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
+            android:launchMode="singleTop"
             android:theme="@style/Theme.TimeLine">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

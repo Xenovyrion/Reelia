@@ -57,3 +57,21 @@ val MIGRATION_8_9 = object : Migration(8, 9) {
         db.execSQL("UPDATE watch_log SET runtimeMinutes = 100 WHERE runtimeMinutes = 0 AND mediaType = 'MOVIE'")
     }
 }
+
+/** Adds the notified_reminders dedup table for release-date reminder notifications. */
+val MIGRATION_9_10 = object : Migration(9, 10) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS notified_reminders (
+                tmdbId INTEGER NOT NULL,
+                mediaType TEXT NOT NULL,
+                offsetDays INTEGER NOT NULL,
+                targetDate TEXT NOT NULL,
+                notifiedAt INTEGER NOT NULL,
+                PRIMARY KEY(tmdbId, mediaType, offsetDays, targetDate)
+            )
+            """.trimIndent(),
+        )
+    }
+}

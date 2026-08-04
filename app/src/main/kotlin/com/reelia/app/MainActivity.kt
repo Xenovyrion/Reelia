@@ -1,5 +1,6 @@
 package com.reelia.app
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -28,11 +29,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.reelia.app.domain.model.MediaType
 import com.reelia.app.ui.announcement.AnnouncementBanner
 import com.reelia.app.ui.auth.AuthGateViewModel
 import com.reelia.app.ui.auth.LoginScreen
 import com.reelia.app.ui.navigation.BottomNavItem
 import com.reelia.app.ui.navigation.BottomNavScrollToTop
+import com.reelia.app.ui.navigation.HandlePendingNotificationTarget
+import com.reelia.app.ui.navigation.PendingNotificationTarget
 import com.reelia.app.ui.navigation.TimeLineNavGraph
 import com.reelia.app.ui.theme.TimeLineTheme
 import com.reelia.app.ui.update.UpdateBanner
@@ -43,11 +47,35 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        handleNotificationIntent(intent)
         setContent {
             TimeLineTheme {
                 TimeLineApp()
             }
         }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        handleNotificationIntent(intent)
+    }
+
+    /** Reads the extras a release-reminder notification's tap target carries (see
+     * ReleaseReminderWorker.postNotification) — a plain Intent-extras handoff rather than a
+     * manifest deep link, since the only source is this app's own notifications, not external
+     * URIs. Recorded via [PendingNotificationTarget] rather than navigated directly here, since
+     * the NavGraph doesn't exist yet at this point in the Activity lifecycle. */
+    private fun handleNotificationIntent(intent: Intent) {
+        val mediaTypeName = intent.getStringExtra(EXTRA_MEDIA_TYPE) ?: return
+        val tmdbId = intent.getIntExtra(EXTRA_TMDB_ID, -1).takeIf { it != -1 } ?: return
+        val mediaType = runCatching { MediaType.valueOf(mediaTypeName) }.getOrNull() ?: return
+        PendingNotificationTarget.set(mediaType, tmdbId)
+    }
+
+    companion object {
+        const val EXTRA_MEDIA_TYPE = "notification_media_type"
+        const val EXTRA_TMDB_ID = "notification_tmdb_id"
     }
 }
 
@@ -68,6 +96,7 @@ private fun TimeLineApp() {
 @Composable
 private fun TimeLineAppContent() {
     val navController = rememberNavController()
+    HandlePendingNotificationTarget(navController)
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination
 
