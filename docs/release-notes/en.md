@@ -1,5 +1,10 @@
 # Release notes
 
+## 0.22.0 — August 4, 2026
+### ✨ New
+- Profile > Backup: export your entire library (shows, movies, watch history) to a JSON file, and restore it anytime from that file — a safety net independent of cloud sync, also handy for moving to a new account
+- Release reminders: turn on notifications in Profile > Settings to get alerted when a movie or a tracked show's next episode is coming up, with configurable reminder offsets (30, 14, 8, 1 day before, or the day of)
+
 ## 0.21.1 — July 31, 2026
 ### 🔒 Security
 - The app is now built and signed with a dedicated release key, separate from the development key — the previously distributed build was still using the debug key

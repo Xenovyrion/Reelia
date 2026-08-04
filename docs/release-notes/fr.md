@@ -1,5 +1,10 @@
 # Notes de version
 
+## 0.22.0 — 4 août 2026
+### ✨ Nouveautés
+- Profil > Sauvegarde : exporte toute ta bibliothèque (séries, films, historique de visionnage) dans un fichier JSON, et restaure-la à tout moment depuis ce fichier — un filet de sécurité indépendant de la synchronisation cloud, utile aussi pour migrer vers un nouveau compte
+- Rappels de sortie : active les notifications dans Profil > Paramètres pour être alerté quand un film ou le prochain épisode d'une série suivie approche, avec des délais configurables (30, 14, 8, 1 jour avant, ou le jour même)
+
 ## 0.21.1 — 31 juillet 2026
 ### 🔒 Sécurité
 - L'application est désormais compilée et signée avec une clé de publication dédiée, séparée de la clé de développement — auparavant, la version distribuée utilisait encore la clé de debug
