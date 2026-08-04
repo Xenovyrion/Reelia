@@ -18,6 +18,15 @@ interface WatchLogDao {
     @Query("SELECT COUNT(*) FROM watch_log WHERE syncId = :syncId")
     suspend fun countBySyncId(syncId: String): Int
 
+    /** Full raw dump, used by the library export/backup feature. */
+    @Query("SELECT * FROM watch_log")
+    suspend fun getAllEntriesOnce(): List<WatchLogEntryEntity>
+
+    /** Used by backup import to dedupe against entries already present, without a per-row
+     * round trip (a personal watch log can be several thousand rows). */
+    @Query("SELECT syncId FROM watch_log")
+    suspend fun getAllSyncIds(): List<String>
+
     @Query("SELECT COUNT(*) FROM watch_log WHERE (:mediaType IS NULL OR mediaType = :mediaType)")
     fun countEntries(mediaType: MediaType? = null): Flow<Int>
 

@@ -23,6 +23,9 @@ interface MovieDao {
     @Upsert
     suspend fun upsertMovie(movie: TrackedMovieEntity)
 
+    @Upsert
+    suspend fun upsertMovies(movies: List<TrackedMovieEntity>)
+
     @Query(
         "UPDATE tracked_movies SET watched = :watched, watchedAt = :watchedAt, lastModifiedAt = :lastModifiedAt WHERE tmdbId = :movieId",
     )

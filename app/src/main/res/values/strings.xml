@@ -291,6 +291,31 @@
     <string name="tvtime_import_unmatched_explanation">You can add these manually from the search tab.</string>
     <string name="tvtime_import_failed">Something went wrong during the import: %1$s</string>
 
+    <string name="settings_backup_button">Backup</string>
+
+    <string name="backup_screen_title">Backup</string>
+    <string name="backup_export_section_title">Export</string>
+    <string name="backup_export_explanation">Save your entire library (shows, movies, watch history) to a JSON file — a safety net independent of cloud sync, or a way to move your library to a fresh account later.</string>
+    <string name="backup_export_button">Export library</string>
+    <string name="backup_export_file_name">reelia-backup-%1$s.json</string>
+    <string name="backup_export_success">Export saved.</string>
+    <string name="backup_export_failed">Export failed: %1$s</string>
+    <string name="backup_import_section_title">Restore</string>
+    <string name="backup_import_explanation">Restore your library from a previously exported file. Existing titles are updated, nothing already tracked is removed.</string>
+    <string name="backup_import_pick_file_button">Choose backup file</string>
+    <string name="backup_import_parsing">Reading the backup file…</string>
+    <string name="backup_import_parse_failed">Couldn\'t read this file. Make sure you picked a Reelia backup exported from this screen.</string>
+    <string name="backup_import_unsupported_version">This backup was exported by a newer version of Reelia — update the app before importing it.</string>
+    <string name="backup_import_try_again_button">Try again</string>
+    <string name="backup_import_ready_summary">Found %1$d shows and %2$d movies (exported %3$s).</string>
+    <string name="backup_import_ready_explanation">This restores everything as it was at export time — favorites, ratings, and watched episodes included.</string>
+    <string name="backup_import_start_button">Restore this backup</string>
+    <string name="backup_import_importing">Restoring…</string>
+    <string name="backup_import_failed">Something went wrong during the restore: %1$s</string>
+    <string name="backup_import_done_title">Restore complete</string>
+    <string name="backup_import_done_summary">%1$d shows (%2$d episodes) and %3$d movies restored.</string>
+    <string name="backup_import_finish_button">Done</string>
+
     <string name="settings_reset_library_button">Reset library</string>
     <string name="settings_reset_library_dialog_title">Reset your library?</string>
     <string name="settings_reset_library_dialog_message">This permanently deletes every show and movie in your library, all watch history, and stats — locally and on your other synced device. Your account and settings (TMDB key, language) are kept. This can\'t be undone.</string>

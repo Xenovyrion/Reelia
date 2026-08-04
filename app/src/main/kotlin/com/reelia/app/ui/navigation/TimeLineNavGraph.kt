@@ -12,6 +12,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.reelia.app.domain.model.MediaType
+import com.reelia.app.ui.backup.LibraryBackupScreen
 import com.reelia.app.ui.guide.GuideScreen
 import com.reelia.app.ui.home.HomeScreen
 import com.reelia.app.ui.library.LibraryScreen
@@ -106,6 +107,7 @@ fun TimeLineNavGraph(navController: NavHostController, modifier: Modifier = Modi
         composable(Routes.PROFILE) {
             ProfileScreen(
                 onImportClick = { navController.navigate(Routes.TV_TIME_IMPORT) },
+                onBackupClick = { navController.navigate(Routes.LIBRARY_BACKUP) },
                 onReleaseNotesClick = { navController.navigate(Routes.RELEASE_NOTES) },
                 onGuideClick = { navController.navigate(Routes.GUIDE) },
                 onStatsDetailClick = { filterType, filterId, filterLabel ->
@@ -115,6 +117,9 @@ fun TimeLineNavGraph(navController: NavHostController, modifier: Modifier = Modi
         }
         composable(Routes.TV_TIME_IMPORT) {
             TvTimeImportScreen(onBack = { navController.popBackStack() })
+        }
+        composable(Routes.LIBRARY_BACKUP) {
+            LibraryBackupScreen(onBack = { navController.popBackStack() })
         }
         composable(Routes.RELEASE_NOTES) {
             ReleaseNotesScreen(onBack = { navController.popBackStack() })

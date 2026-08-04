@@ -26,6 +26,9 @@ interface ShowDao {
     @Upsert
     suspend fun upsertShow(show: TrackedShowEntity)
 
+    @Upsert
+    suspend fun upsertShows(shows: List<TrackedShowEntity>)
+
     @Query("UPDATE tracked_shows SET isFavorite = :isFavorite, lastModifiedAt = :lastModifiedAt WHERE tmdbId = :showId")
     suspend fun setShowFavorite(showId: Int, isFavorite: Boolean, lastModifiedAt: Instant)
 

@@ -135,6 +135,7 @@ private fun formatWatchDuration(totalHours: Double): String {
 @Composable
 fun ProfileScreen(
     onImportClick: () -> Unit = {},
+    onBackupClick: () -> Unit = {},
     onReleaseNotesClick: () -> Unit = {},
     onGuideClick: () -> Unit = {},
     onStatsDetailClick: (filterType: String, filterId: String, filterLabel: String) -> Unit = { _, _, _ -> },
@@ -282,6 +283,7 @@ fun ProfileScreen(
                     onApiKeyInputChange = { apiKeyInput = it },
                     viewModel = viewModel,
                     onImportClick = onImportClick,
+                    onBackupClick = onBackupClick,
                     onReleaseNotesClick = onReleaseNotesClick,
                     onDeleteAccountClick = { showDeleteConfirmation = true },
                     onResetClick = { showResetConfirmation = true },
@@ -309,6 +311,7 @@ private fun ProfileSettingsContent(
     onApiKeyInputChange: (String) -> Unit,
     viewModel: ProfileViewModel,
     onImportClick: () -> Unit,
+    onBackupClick: () -> Unit,
     onReleaseNotesClick: () -> Unit,
     onDeleteAccountClick: () -> Unit,
     onResetClick: () -> Unit,
@@ -399,6 +402,16 @@ private fun ProfileSettingsContent(
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.error,
                 modifier = Modifier.padding(top = 8.dp),
+            )
+        }
+        OutlinedButton(
+            onClick = onBackupClick,
+            modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
+        ) {
+            Text(
+                stringResource(R.string.settings_backup_button),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.labelLarge,
             )
         }
 

@@ -15,6 +15,7 @@ object Routes {
     const val MOVIE_PREVIEW = "movie_preview/{tmdbId}"
     const val PERSON_DETAIL = "person_detail/{personId}"
     const val TV_TIME_IMPORT = "tv_time_import"
+    const val LIBRARY_BACKUP = "library_backup"
     const val RELEASE_NOTES = "release_notes"
     const val GUIDE = "guide"
     const val STATS_DETAIL = "stats_detail/{filterType}/{filterId}/{filterLabel}"

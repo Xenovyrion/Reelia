@@ -12,6 +12,11 @@ interface EpisodeDao {
     @Upsert
     suspend fun upsertEpisodes(episodes: List<EpisodeEntity>)
 
+    /** Every episode across every tracked show — backs the library export/backup feature,
+     * which needs a flat dump rather than the per-show queries used everywhere else. */
+    @Query("SELECT * FROM episodes")
+    suspend fun getAllEpisodesOnce(): List<EpisodeEntity>
+
     @Query("SELECT * FROM episodes WHERE showId = :showId ORDER BY seasonNumber, episodeNumber")
     fun getEpisodesForShow(showId: Int): Flow<List<EpisodeEntity>>
 

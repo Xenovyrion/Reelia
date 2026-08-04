@@ -288,6 +288,31 @@
     <string name="tvtime_import_finish_button">Terminer</string>
     <string name="tvtime_import_failed">Une erreur est survenue pendant l\'import : %1$s</string>
 
+    <string name="settings_backup_button">Sauvegarde</string>
+
+    <string name="backup_screen_title">Sauvegarde</string>
+    <string name="backup_export_section_title">Exporter</string>
+    <string name="backup_export_explanation">Enregistre toute ta bibliothèque (séries, films, historique de visionnage) dans un fichier JSON — un filet de sécurité indépendant de la sync cloud, ou un moyen de migrer ta bibliothèque vers un nouveau compte plus tard.</string>
+    <string name="backup_export_button">Exporter la bibliothèque</string>
+    <string name="backup_export_file_name">reelia-sauvegarde-%1$s.json</string>
+    <string name="backup_export_success">Export enregistré.</string>
+    <string name="backup_export_failed">L\'export a échoué : %1$s</string>
+    <string name="backup_import_section_title">Restaurer</string>
+    <string name="backup_import_explanation">Restaure ta bibliothèque depuis un fichier exporté précédemment. Les titres existants sont mis à jour, rien de déjà suivi n\'est supprimé.</string>
+    <string name="backup_import_pick_file_button">Choisir un fichier de sauvegarde</string>
+    <string name="backup_import_parsing">Lecture du fichier de sauvegarde…</string>
+    <string name="backup_import_parse_failed">Impossible de lire ce fichier. Vérifie que tu as choisi une sauvegarde Reelia exportée depuis cet écran.</string>
+    <string name="backup_import_unsupported_version">Cette sauvegarde a été exportée avec une version plus récente de Reelia — mets à jour l\'application avant de l\'importer.</string>
+    <string name="backup_import_try_again_button">Réessayer</string>
+    <string name="backup_import_ready_summary">%1$d séries et %2$d films trouvés (exporté le %3$s).</string>
+    <string name="backup_import_ready_explanation">Ceci restaure tout tel que c\'était au moment de l\'export — favoris, notes et épisodes vus inclus.</string>
+    <string name="backup_import_start_button">Restaurer cette sauvegarde</string>
+    <string name="backup_import_importing">Restauration…</string>
+    <string name="backup_import_failed">Une erreur est survenue pendant la restauration : %1$s</string>
+    <string name="backup_import_done_title">Restauration terminée</string>
+    <string name="backup_import_done_summary">%1$d séries (%2$d épisodes) et %3$d films restaurés.</string>
+    <string name="backup_import_finish_button">Terminer</string>
+
     <string name="settings_reset_library_button">Réinitialiser la bibliothèque</string>
     <string name="settings_reset_library_dialog_title">Réinitialiser ta bibliothèque ?</string>
     <string name="settings_reset_library_dialog_message">Ceci supprime définitivement toutes tes séries et films, tout l\'historique de visionnage et les statistiques — en local et sur ton autre appareil synchronisé. Ton compte et tes réglages (clé TMDB, langue) sont conservés. Action irréversible.</string>
