@@ -2,8 +2,8 @@ package com.reelia.app.ui.widget
 
 import android.content.Context
 import androidx.glance.GlanceId
+import androidx.glance.action.ActionParameters
 import androidx.glance.appwidget.action.ActionCallback
-import androidx.glance.appwidget.action.ActionParameters
 
 /**
  * Backs the widget's own "⟳" refresh icon (see [ReeliaWidget]'s header row). Glance instantiates
