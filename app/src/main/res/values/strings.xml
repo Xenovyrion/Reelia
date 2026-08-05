@@ -73,6 +73,11 @@
     <string name="days_until_in_days">In %1$d days</string>
     <string name="days_until_unit_label">DAYS</string>
 
+    <!-- Home screen widget -->
+    <string name="widget_title">Reelia</string>
+    <string name="widget_refresh_content_description">Refresh</string>
+    <string name="widget_empty_state">No upcoming releases</string>
+
     <!-- Séries tab -->
     <string name="series_title">Series</string>
     <string name="series_empty_state">Add a show from the Search tab.</string>

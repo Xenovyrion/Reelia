@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.glance.appwidget.updateAll
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.ListenableWorker.Result
@@ -22,6 +23,7 @@ import com.reelia.app.data.repository.MovieRepository
 import com.reelia.app.data.repository.ShowRepository
 import com.reelia.app.domain.model.MediaType
 import com.reelia.app.ui.common.format.daysUntilOrNull
+import com.reelia.app.ui.widget.createReeliaWidget
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import java.time.Instant
@@ -103,6 +105,11 @@ class ReleaseReminderWorker @AssistedInject constructor(
                 },
             )
         }
+
+        // Same refresh pass feeds both consumers: the notifications above, and the widget's
+        // "what's coming up" list — no separate periodic work needed for the widget.
+        runCatching { createReeliaWidget(applicationContext).updateAll(applicationContext) }
+
         Result.success()
     }.getOrElse { Result.success() }
 

@@ -58,6 +58,19 @@
                 android:value="androidx.startup"
                 tools:node="remove" />
         </provider>
+
+        <!-- Home screen widget showing upcoming releases — not exported, only the launcher/home
+             app on-device can address it via the standard APPWIDGET_UPDATE broadcast. -->
+        <receiver
+            android:name=".ui.widget.ReeliaWidgetReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/reelia_widget_info" />
+        </receiver>
     </application>
 
 </manifest>
