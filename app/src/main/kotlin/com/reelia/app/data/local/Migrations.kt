@@ -75,3 +75,20 @@ val MIGRATION_9_10 = object : Migration(9, 10) {
         )
     }
 }
+
+/**
+ * Single source of truth for every registered migration, in order — [DatabaseModule]'s
+ * `.addMigrations(...)` call and [AppDatabaseMigrationCoverageTest] both read this same list
+ * instead of each keeping their own copy. A version bump with no matching migration added here
+ * (the exact bug behind an earlier destructive-migration incident — see AppDatabase's own
+ * `fallbackToDestructiveMigration` comment) now fails a fast, non-Android unit test instead of
+ * silently wiping every user's local database on their next update.
+ */
+val ALL_MIGRATIONS: Array<Migration> = arrayOf(
+    MIGRATION_4_5,
+    MIGRATION_5_6,
+    MIGRATION_6_7,
+    MIGRATION_7_8,
+    MIGRATION_8_9,
+    MIGRATION_9_10,
+)

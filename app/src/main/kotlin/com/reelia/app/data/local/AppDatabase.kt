@@ -22,6 +22,12 @@ import com.reelia.app.data.local.entity.TrackedMovieEntity
 import com.reelia.app.data.local.entity.TrackedShowEntity
 import com.reelia.app.data.local.entity.WatchLogEntryEntity
 
+/** The single source of truth for the schema version — referenced both by [AppDatabase]'s own
+ * `@Database` annotation and by AppDatabaseMigrationCoverageTest, so a version bump with no
+ * matching migration registered in [ALL_MIGRATIONS] fails a fast unit test instead of only
+ * showing up as a silent destructive-migration data wipe at runtime. */
+const val APP_DATABASE_VERSION = 10
+
 @Database(
     entities = [
         TrackedShowEntity::class,
@@ -35,7 +41,7 @@ import com.reelia.app.data.local.entity.WatchLogEntryEntity
         SyncOutboxEntity::class,
         NotifiedReminderEntity::class,
     ],
-    version = 10,
+    version = APP_DATABASE_VERSION,
     exportSchema = false,
 )
 @TypeConverters(Converters::class)
