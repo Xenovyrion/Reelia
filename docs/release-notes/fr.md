@@ -1,5 +1,9 @@
 # Notes de version
 
+## 0.23.0 — 6 août 2026
+### ✨ Nouveautés
+- Widget écran d'accueil : ajoute le widget Reelia sur ton écran d'accueil pour voir en un coup d'œil tes 5 prochaines sorties (séries et films), avec affiche et compte à rebours ; un appui sur un titre ouvre directement sa fiche, et un bouton dédié permet de le rafraîchir manuellement
+
 ## 0.22.0 — 4 août 2026
 ### ✨ Nouveautés
 - Profil > Sauvegarde : exporte toute ta bibliothèque (séries, films, historique de visionnage) dans un fichier JSON, et restaure-la à tout moment depuis ce fichier — un filet de sécurité indépendant de la synchronisation cloud, utile aussi pour migrer vers un nouveau compte

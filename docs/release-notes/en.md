@@ -1,5 +1,9 @@
 # Release notes
 
+## 0.23.0 — August 6, 2026
+### ✨ New
+- Home screen widget: add the Reelia widget to your home screen to see your next 5 upcoming releases (shows and movies) at a glance, with poster and countdown; tap a title to jump straight to its detail screen, and use the built-in button to refresh it manually
+
 ## 0.22.0 — August 4, 2026
 ### ✨ New
 - Profile > Backup: export your entire library (shows, movies, watch history) to a JSON file, and restore it anytime from that file — a safety net independent of cloud sync, also handy for moving to a new account
