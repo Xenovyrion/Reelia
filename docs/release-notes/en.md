@@ -1,5 +1,9 @@
 # Release notes
 
+## 0.23.1 — September 20, 2026
+### 🐛 Fixes
+- After a reinstall or device switch with an already sizeable library, some shows could resync with their seasons visible but an empty episode list — fixed, with an automatic repair on launch for shows already affected
+
 ## 0.23.0 — August 6, 2026
 ### ✨ New
 - Home screen widget: add the Reelia widget to your home screen to see your next 5 upcoming releases (shows and movies) at a glance, with poster and countdown; tap a title to jump straight to its detail screen, and use the built-in button to refresh it manually

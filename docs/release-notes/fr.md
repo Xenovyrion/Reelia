@@ -1,5 +1,9 @@
 # Notes de version
 
+## 0.23.1 — 20 septembre 2026
+### 🐛 Corrections
+- Après une réinstallation ou un changement d'appareil avec une bibliothèque déjà bien remplie, certaines séries pouvaient se resynchroniser avec leurs saisons visibles mais une liste d'épisodes vide — corrigé, avec réparation automatique au lancement pour les séries déjà touchées par ce problème
+
 ## 0.23.0 — 6 août 2026
 ### ✨ Nouveautés
 - Widget écran d'accueil : ajoute le widget Reelia sur ton écran d'accueil pour voir en un coup d'œil tes 5 prochaines sorties (séries et films), avec affiche et compte à rebours ; un appui sur un titre ouvre directement sa fiche, et un bouton dédié permet de le rafraîchir manuellement
