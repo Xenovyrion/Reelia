@@ -30,6 +30,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 
 @Singleton
 class ShowRepository @Inject constructor(
@@ -41,6 +43,11 @@ class ShowRepository @Inject constructor(
     private val syncOutboxDao: SyncOutboxDao,
     private val firestoreSyncRepository: FirestoreSyncRepository,
 ) {
+    // Shared across every hydration call this repository makes (it's a singleton) — bounds how
+    // many TMDB requests are in flight at once regardless of how many shows are being hydrated
+    // concurrently, e.g. from FirestoreSyncRepository's initial full-library snapshot.
+    private val hydrationSemaphore = Semaphore(permits = 6)
+
     fun getAllShows(): Flow<List<TrackedShowEntity>> = showDao.getAllShows()
 
     fun getShowWithDetails(showId: Int): Flow<ShowWithDetails?> = showDao.getShowWithDetails(showId)
@@ -109,10 +116,20 @@ class ShowRepository @Inject constructor(
 
     /** Used by FirestoreSyncRepository when a show is discovered remotely for the first time —
      * fetches TMDB metadata only, without pushing back to Firestore (the caller applies the
-     * authoritative remote personal-state right after, so there's nothing new to push yet). */
+     * authoritative remote personal-state right after, so there's nothing new to push yet).
+     *
+     * All TMDB calls here go through [hydrationSemaphore] — a fresh install with a nontrivial
+     * library fires this once per show, all roughly at once, from FirestoreSyncRepository's
+     * initial snapshot. Left unbounded, that many concurrent shows each fetching several
+     * seasons in parallel easily outruns OkHttp's default 5-connections-per-host limit, so some
+     * of the season-detail calls queue past the read timeout and fail — leaving the show with
+     * its metadata and season list persisted but zero actual episodes (see
+     * [SeasonDao.getSeasonsMissingEpisodes] / [ShowRepository.repairShowsMissingEpisodes]). */
     suspend fun fetchAndPersistFromTmdb(tmdbId: Int): Unit = coroutineScope {
-        val detailsDeferred = async { tmdbApi.getTvDetails(tmdbId) }
-        val contentRatingDeferred = async { runCatching { tmdbApi.getTvContentRatings(tmdbId) }.getOrNull()?.toContentRating() }
+        val detailsDeferred = async { hydrationSemaphore.withPermit { tmdbApi.getTvDetails(tmdbId) } }
+        val contentRatingDeferred = async {
+            hydrationSemaphore.withPermit { runCatching { tmdbApi.getTvContentRatings(tmdbId) }.getOrNull()?.toContentRating() }
+        }
         val details = detailsDeferred.await()
         val contentRating = contentRatingDeferred.await()
         showDao.upsertShow(details.toEntity(status = WatchStatus.PLAN_TO_WATCH, addedAt = Instant.now(), contentRating = contentRating))
@@ -131,10 +148,33 @@ class ShowRepository @Inject constructor(
     }
 
     /** Fetches and caches a season's episode list. Safe to call even if it's already loaded —
-     * upsert is idempotent. */
+     * upsert is idempotent. Bounded by [hydrationSemaphore], same as the rest of this show's
+     * hydration. */
     suspend fun ensureSeasonEpisodesLoaded(showId: Int, seasonNumber: Int, defaultRuntimeMinutes: Int?) {
-        val seasonDetails = tmdbApi.getSeasonDetails(showId, seasonNumber)
+        val seasonDetails = hydrationSemaphore.withPermit { tmdbApi.getSeasonDetails(showId, seasonNumber) }
         episodeDao.upsertEpisodes(seasonDetails.toEpisodeEntities(showId, defaultRuntimeMinutes))
+    }
+
+    /** One-time repair for shows caught by the exact partial-hydration failure described on
+     * [fetchAndPersistFromTmdb]: season metadata (and therefore the "X/Y episodes" count, which
+     * reads from [com.reelia.app.data.local.entity.SeasonEntity.episodeCount]) looks fine, but
+     * the episode list itself is empty because the follow-up fetch never completed — and never
+     * retries on its own, since the sync listener's "was this show already hydrated" check only
+     * looks at whether the show row exists, not whether its episodes do. Retries loading
+     * exactly the missing seasons, so already-healthy shows/seasons aren't touched. */
+    suspend fun repairShowsMissingEpisodes() = coroutineScope {
+        val missing = seasonDao.getSeasonsMissingEpisodes()
+        if (missing.isEmpty()) return@coroutineScope
+        missing.groupBy { it.showId }.map { (showId, seasons) ->
+            async {
+                val defaultRuntimeMinutes = runCatching {
+                    hydrationSemaphore.withPermit { tmdbApi.getTvDetails(showId) }.episodeRunTime.firstOrNull()
+                }.getOrNull()
+                seasons.forEach { season ->
+                    runCatching { ensureSeasonEpisodesLoaded(showId, season.seasonNumber, defaultRuntimeMinutes) }
+                }
+            }
+        }.awaitAll()
     }
 
     private suspend fun persistGenres(genres: List<GenreEntity>, showId: Int) {

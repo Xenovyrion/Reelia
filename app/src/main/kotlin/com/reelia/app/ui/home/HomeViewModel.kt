@@ -83,6 +83,13 @@ class HomeViewModel @Inject constructor(
             movieRepository.reconcileAllStatuses()
         }
 
+        // Repairs shows left with season metadata but an empty episode list by a Firestore
+        // full-library resync that overwhelmed TMDB with concurrent requests before the fix in
+        // ShowRepository's hydrationSemaphore — cheap no-op query when the library is healthy.
+        viewModelScope.launch {
+            showRepository.repairShowsMissingEpisodes()
+        }
+
         // Movies, shows, and suggestions each update discoverData and flip their own loading
         // flag independently as soon as THEY resolve — previously all three were awaited
         // together before a single combined update, so a slow suggestions fetch (up to 3
