@@ -1,5 +1,14 @@
 # Notes de version
 
+## 0.24.0 — 6 octobre 2026
+### ✨ Nouveautés
+- Agenda : depuis Accueil > À venir, un nouveau bouton ouvre un écran listant toutes tes prochaines sorties (épisodes et films), groupées par date, en plus du bandeau existant
+### 🐛 Corrections
+- Un épisode ou un film déjà diffusé pouvait rester affiché indéfiniment dans "À venir" et le widget si les notifications de sortie n'étaient pas activées — la mise à jour des dates ne dépend plus de ce réglage
+- Cocher un épisode qui rattrape automatiquement plusieurs épisodes précédents non vus l'indique maintenant clairement, au lieu de le faire silencieusement
+- Retirer un titre depuis les résultats de recherche demande maintenant une confirmation, comme c'était déjà le cas depuis sa fiche détaillée
+- Ajouter un titre depuis la fiche d'un·e acteur·rice ne laisse plus un écran de prévisualisation obsolète dans l'historique de navigation
+
 ## 0.23.1 — 20 septembre 2026
 ### 🐛 Corrections
 - Après une réinstallation ou un changement d'appareil avec une bibliothèque déjà bien remplie, certaines séries pouvaient se resynchroniser avec leurs saisons visibles mais une liste d'épisodes vide — corrigé, avec réparation automatique au lancement pour les séries déjà touchées par ce problème

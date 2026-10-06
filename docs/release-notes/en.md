@@ -1,5 +1,14 @@
 # Release notes
 
+## 0.24.0 — October 6, 2026
+### ✨ New
+- Agenda: from Home > Upcoming, a new button opens a full screen listing every upcoming release (episodes and movies), grouped by date, alongside the existing row
+### 🐛 Fixes
+- An already-aired episode or released movie could stay stuck showing up in "Upcoming" and the widget forever if release notifications weren't enabled — date refreshing no longer depends on that setting
+- Checking an episode that automatically catches up several earlier unwatched ones now clearly tells you so, instead of doing it silently
+- Removing a title from search results now asks for confirmation, matching its detail screen
+- Adding a title from an actor's/actress's page no longer leaves a stale preview screen in your navigation history
+
 ## 0.23.1 — September 20, 2026
 ### 🐛 Fixes
 - After a reinstall or device switch with an already sizeable library, some shows could resync with their seasons visible but an empty episode list — fixed, with an automatic repair on launch for shows already affected
