@@ -1,5 +1,10 @@
 # Notes de version
 
+## 0.26.1 — 7 octobre 2026
+### 🐛 Corrections
+- Fiche série : la distribution utilise maintenant les crédits TMDB agrégés sur toutes les saisons — un·e acteur·rice ayant rejoint le casting en cours de route (ex. Parminder Nagra dans Blacklist) apparaît bien maintenant, au lieu d'être absent·e d'une liste limitée à une seule saison
+- Recherche par acteur/actrice : les résultats sont maintenant classés par nombre de votes plutôt que par "popularité" TMDB (un score qui reflète la tendance du moment, pas la notoriété réelle) — les rôles vraiment connus remontent au lieu de titres obscurs ponctuellement tendance
+
 ## 0.26.0 — 7 octobre 2026
 ### ✨ Nouveautés
 - Recherche (ajout bibliothèque) : quand un filtre (genre, année, note, langue) est actif et qu'aucun texte n'est tapé, les résultats proposés viennent maintenant de tout le catalogue TMDB correspondant à ces critères, plutôt que des seules tendances de la semaine

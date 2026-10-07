@@ -1,5 +1,10 @@
 # Release notes
 
+## 0.26.1 — October 7, 2026
+### 🐛 Fixes
+- Show detail: cast now comes from TMDB's aggregated credits across every season — an actor who joined the show partway through (e.g. Parminder Nagra in The Blacklist) now shows up, instead of being missing from a list limited to a single season
+- Actor/actress search: results are now ranked by vote count instead of TMDB's "popularity" (a score reflecting current trending, not lasting fame) — genuinely well-known roles surface instead of obscure titles that happen to be trending right now
+
 ## 0.26.0 — October 7, 2026
 ### ✨ New
 - Search (add to library): when a filter chip (genre, year, rating, language) is active and no text is typed, results now come from the whole matching TMDB catalog instead of just this week's trends
