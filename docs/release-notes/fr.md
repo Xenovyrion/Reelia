@@ -1,5 +1,11 @@
 # Notes de version
 
+## 0.26.0 — 7 octobre 2026
+### ✨ Nouveautés
+- Recherche (ajout bibliothèque) : quand un filtre (genre, année, note, langue) est actif et qu'aucun texte n'est tapé, les résultats proposés viennent maintenant de tout le catalogue TMDB correspondant à ces critères, plutôt que des seules tendances de la semaine
+### 🐛 Corrections
+- Recherche par acteur/actrice : les apparitions "en tant que soi-même" (talk-shows, remises de prix) ne noient plus les vraies séries/films dans les résultats, qui sont maintenant classés par popularité du titre plutôt que par date
+
 ## 0.25.0 — 7 octobre 2026
 ### ✨ Nouveautés
 - Recherche (ajout bibliothèque) : nouveau mode de recherche par acteur/actrice — bascule "Titre"/"Acteur-Actrice" sur le même champ. En mode Acteur, saisir un nom affiche directement toute sa filmographie (séries + films) comme résultats, sans passer par sa fiche

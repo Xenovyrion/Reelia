@@ -1,5 +1,11 @@
 # Release notes
 
+## 0.26.0 — October 7, 2026
+### ✨ New
+- Search (add to library): when a filter chip (genre, year, rating, language) is active and no text is typed, results now come from the whole matching TMDB catalog instead of just this week's trends
+### 🐛 Fixes
+- Actor/actress search: self-appearances (talk shows, award ceremonies) no longer drown out real shows/movies in the results, which are now ranked by the title's own popularity instead of air date
+
 ## 0.25.0 — October 7, 2026
 ### ✨ New
 - Search (add to library): new actor/actress search mode — a "Title"/"Actor-Actress" toggle on the same field. In Actor mode, typing a name shows their full filmography (shows + movies) directly as results, no detour through their person page
