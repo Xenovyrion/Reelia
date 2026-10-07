@@ -1,5 +1,12 @@
 # Notes de version
 
+## 0.27.0 — 7 octobre 2026
+### ✨ Nouveautés
+- Recherche : nouveau bouton Trier (séparé du Filtrer) avec 5 options — pertinence, date (récent/ancien), note, popularité toutes périodes. Par défaut : pertinence en mode Titre, popularité toutes périodes en mode Acteur/Actrice
+- Recherche par acteur/actrice : les filtres genre/année/note/langue fonctionnent maintenant aussi sur la filmographie d'un acteur (ex. ne garder que les séries d'un genre donné)
+### 🐛 Corrections
+- Recherche : le champ de saisie ne s'agrandit plus en passant en mode Acteur/Actrice (le libellé repassait à la ligne)
+
 ## 0.26.1 — 7 octobre 2026
 ### 🐛 Corrections
 - Fiche série : la distribution utilise maintenant les crédits TMDB agrégés sur toutes les saisons — un·e acteur·rice ayant rejoint le casting en cours de route (ex. Parminder Nagra dans Blacklist) apparaît bien maintenant, au lieu d'être absent·e d'une liste limitée à une seule saison

@@ -1,5 +1,12 @@
 # Release notes
 
+## 0.27.0 — October 7, 2026
+### ✨ New
+- Search: new Sort button (separate from Filter) with 5 options — relevance, date (newest/oldest), rating, all-time popularity. Default: relevance in Title mode, all-time popularity in Actor/Actress mode
+- Actor/actress search: genre/year/rating/language filters now also work on an actor's filmography (e.g. narrow it down to shows of one genre)
+### 🐛 Fixes
+- Search: the input field no longer grows taller when switching to Actor/Actress mode (the label used to wrap to two lines)
+
 ## 0.26.1 — October 7, 2026
 ### 🐛 Fixes
 - Show detail: cast now comes from TMDB's aggregated credits across every season — an actor who joined the show partway through (e.g. Parminder Nagra in The Blacklist) now shows up, instead of being missing from a list limited to a single season
