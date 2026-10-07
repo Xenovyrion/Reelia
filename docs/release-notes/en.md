@@ -1,5 +1,9 @@
 # Release notes
 
+## 0.24.1 — October 7, 2026
+### 🐛 Fixes
+- The fix for stuck "Upcoming" dates (0.24.0) could take up to 24h to kick in while waiting for the periodic background task — dates now also refresh right on app launch
+
 ## 0.24.0 — October 6, 2026
 ### ✨ New
 - Agenda: from Home > Upcoming, a new button opens a full screen listing every upcoming release (episodes and movies), grouped by date, alongside the existing row

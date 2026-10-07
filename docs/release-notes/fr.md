@@ -1,5 +1,9 @@
 # Notes de version
 
+## 0.24.1 — 7 octobre 2026
+### 🐛 Corrections
+- Le fix des dates bloquées dans "À venir" (0.24.0) attendait jusqu'à 24h avant de s'appliquer, le temps que la tâche périodique se déclenche — les dates se rafraîchissent maintenant aussi au lancement de l'application
+
 ## 0.24.0 — 6 octobre 2026
 ### ✨ Nouveautés
 - Agenda : depuis Accueil > À venir, un nouveau bouton ouvre un écran listant toutes tes prochaines sorties (épisodes et films), groupées par date, en plus du bandeau existant
