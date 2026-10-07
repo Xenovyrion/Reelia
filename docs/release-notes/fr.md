@@ -1,5 +1,12 @@
 # Notes de version
 
+## 0.24.4 — 7 octobre 2026
+### ✨ Nouveautés
+- Accueil et Bibliothèque : les cartes "à venir" sont maintenant cliquables — toucher une série ouvre directement son prochain épisode, toucher un film ouvre sa fiche
+- Agenda : quand une saison entière sort le même jour, ses épisodes sont regroupés en une seule ligne ("Saison X — N épisodes disponibles") au lieu d'une ligne par épisode
+### 🐛 Corrections
+- Une série sans prochain épisode confirmé par TMDB pouvait rester bloquée indéfiniment sur "Diffusé" dans "À venir" (Accueil, Bibliothèque et widget) — ces trois écrans utilisent maintenant la même source fiable que l'Agenda et la série disparaît correctement de la liste
+
 ## 0.24.3 — 7 octobre 2026
 ### ✨ Nouveautés
 - Accueil : les suggestions apparaissent maintenant avant les favoris

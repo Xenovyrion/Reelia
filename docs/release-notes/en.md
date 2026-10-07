@@ -1,5 +1,12 @@
 # Release notes
 
+## 0.24.4 — October 7, 2026
+### ✨ New
+- Home and Shows/Movies: "Upcoming" cards are now clickable — tapping a show opens its next episode directly, tapping a movie opens its detail screen
+- Agenda: when a whole season releases on the same day, its episodes now collapse into a single row ("Season X — N episodes available") instead of one row per episode
+### 🐛 Fixes
+- A show with no next episode confirmed by TMDB could stay stuck showing "Aired" forever in "Upcoming" (Home, Shows/Movies, and the widget) — all three now use the same reliable source as the Agenda, so the show correctly drops off the list
+
 ## 0.24.3 — October 7, 2026
 ### ✨ New
 - Home: Suggestions now appears before Favorites
