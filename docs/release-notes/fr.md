@@ -1,5 +1,12 @@
 # Notes de version
 
+## 0.24.3 — 7 octobre 2026
+### ✨ Nouveautés
+- Accueil : les suggestions apparaissent maintenant avant les favoris
+- Séries/Films : le filtrage (statut, genre, favoris, chaîne, année, ma note) et le tri ont chacun leur propre bouton au lieu d'être mélangés dans un seul écran
+- Séries/Films : nouveaux critères de filtre — favoris uniquement, chaîne de diffusion, année de sortie, note personnelle minimale
+- Recherche (ajout à la bibliothèque) : ajout d'une flèche retour, comme sur le reste de l'appli
+
 ## 0.24.2 — 7 octobre 2026
 ### ✨ Nouveautés
 - Agenda : chaque épisode à venir d'une saison annoncée est maintenant listé individuellement avec sa date (plus seulement le tout prochain), et chaque ligne affiche la saison en plus de l'épisode

@@ -1,5 +1,12 @@
 # Release notes
 
+## 0.24.3 — October 7, 2026
+### ✨ New
+- Home: Suggestions now appears before Favorites
+- Shows/Movies: filtering (status, genre, favorites, channel, year, my rating) and sorting each get their own button instead of being mixed into one sheet
+- Shows/Movies: new filter criteria — favorites only, broadcast channel, release year, minimum personal rating
+- Search (add to library): added a back arrow, consistent with the rest of the app
+
 ## 0.24.2 — October 7, 2026
 ### ✨ New
 - Agenda: every upcoming episode of an announced season is now listed individually with its own date (not just the very next one), and each row shows the season alongside the episode
