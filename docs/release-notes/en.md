@@ -1,5 +1,12 @@
 # Release notes
 
+## 0.24.2 — October 7, 2026
+### ✨ New
+- Agenda: every upcoming episode of an announced season is now listed individually with its own date (not just the very next one), and each row shows the season alongside the episode
+- Agenda: tapping an episode opens its detail directly within the show, on the Episodes tab
+### 🐛 Fixes
+- A show with no next episode confirmed by TMDB could stay stuck in the Agenda showing "Aired" forever — it now correctly drops off the list
+
 ## 0.24.1 — October 7, 2026
 ### 🐛 Fixes
 - The fix for stuck "Upcoming" dates (0.24.0) could take up to 24h to kick in while waiting for the periodic background task — dates now also refresh right on app launch

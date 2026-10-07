@@ -1,5 +1,12 @@
 # Notes de version
 
+## 0.24.2 — 7 octobre 2026
+### ✨ Nouveautés
+- Agenda : chaque épisode à venir d'une saison annoncée est maintenant listé individuellement avec sa date (plus seulement le tout prochain), et chaque ligne affiche la saison en plus de l'épisode
+- Agenda : toucher un épisode ouvre directement sa fiche détaillée dans la série, sur l'onglet Épisodes
+### 🐛 Corrections
+- Une série sans prochain épisode confirmé par TMDB pouvait rester affichée indéfiniment dans l'Agenda avec la mention "Diffusé" — elle disparaît maintenant correctement de la liste
+
 ## 0.24.1 — 7 octobre 2026
 ### 🐛 Corrections
 - Le fix des dates bloquées dans "À venir" (0.24.0) attendait jusqu'à 24h avant de s'appliquer, le temps que la tâche périodique se déclenche — les dates se rafraîchissent maintenant aussi au lancement de l'application
