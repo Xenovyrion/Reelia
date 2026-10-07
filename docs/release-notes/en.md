@@ -1,5 +1,9 @@
 # Release notes
 
+## 0.25.0 — October 7, 2026
+### ✨ New
+- Search (add to library): new actor/actress search mode — a "Title"/"Actor-Actress" toggle on the same field. In Actor mode, typing a name shows their full filmography (shows + movies) directly as results, no detour through their person page
+
 ## 0.24.5 — October 7, 2026
 ### ✨ New
 - Search (add to library): new Year, Minimum rating and Language filters, alongside the existing genre filter

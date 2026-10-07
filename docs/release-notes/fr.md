@@ -1,5 +1,9 @@
 # Notes de version
 
+## 0.25.0 — 7 octobre 2026
+### ✨ Nouveautés
+- Recherche (ajout bibliothèque) : nouveau mode de recherche par acteur/actrice — bascule "Titre"/"Acteur-Actrice" sur le même champ. En mode Acteur, saisir un nom affiche directement toute sa filmographie (séries + films) comme résultats, sans passer par sa fiche
+
 ## 0.24.5 — 7 octobre 2026
 ### ✨ Nouveautés
 - Recherche (ajout bibliothèque) : nouveaux filtres Année, Note minimale et Langue, en plus du genre déjà présent
