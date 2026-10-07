@@ -1,5 +1,10 @@
 # Release notes
 
+## 0.24.5 — October 7, 2026
+### ✨ New
+- Search (add to library): new Year, Minimum rating and Language filters, alongside the existing genre filter
+- Search: filter icon uniformized with the one on Shows/Movies
+
 ## 0.24.4 — October 7, 2026
 ### ✨ New
 - Home and Shows/Movies: "Upcoming" cards are now clickable — tapping a show opens its next episode directly, tapping a movie opens its detail screen

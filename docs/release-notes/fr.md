@@ -1,5 +1,10 @@
 # Notes de version
 
+## 0.24.5 — 7 octobre 2026
+### ✨ Nouveautés
+- Recherche (ajout bibliothèque) : nouveaux filtres Année, Note minimale et Langue, en plus du genre déjà présent
+- Recherche : icône de filtre uniformisée avec celle de Séries/Films
+
 ## 0.24.4 — 7 octobre 2026
 ### ✨ Nouveautés
 - Accueil et Bibliothèque : les cartes "à venir" sont maintenant cliquables — toucher une série ouvre directement son prochain épisode, toucher un film ouvre sa fiche
