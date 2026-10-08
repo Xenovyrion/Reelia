@@ -1,5 +1,12 @@
 # Release notes
 
+## 0.30.0 — October 8, 2026
+### ✨ New
+- Library: new original-language filter, same as on the Search screen (a new field stored per tracked title, backfilled gradually on the next refresh — no impact on titles already tracked)
+- Stats: scatter/dot plots now connect their points with a thin line, and show a dashed average reference line with its exact value in a caption
+### 🐛 Fixes
+- A show with no confirmed air date (e.g. an announced season TMDB already lists episodes for but without a date yet, like Ahsoka season 2 or The Trauma Code) could wrongly show up in "Continue" on Home, the show's detail screen, and Library — fixed in all three places
+
 ## 0.29.0 — October 8, 2026
 ### ✨ New
 - Trailers now play directly inside the app, right on a show's or movie's detail screen (its own section, under "About") — no more jumping out to YouTube

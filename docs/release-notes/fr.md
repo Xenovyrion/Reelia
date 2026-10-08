@@ -1,5 +1,12 @@
 # Notes de version
 
+## 0.30.0 — 8 octobre 2026
+### ✨ Nouveautés
+- Bibliothèque : nouveau filtre par langue originale, comme sur l'écran Recherche (donnée stockée pour chaque titre suivi, backfillée progressivement au prochain rafraîchissement — aucun impact sur les titres déjà suivis)
+- Stats : les nuages de points sont désormais reliés entre eux par une ligne fine, et affichent une ligne de moyenne en pointillés avec sa valeur exacte en légende
+### 🐛 Corrections
+- Une série sans date de sortie confirmée (ex. une saison annoncée dont TMDB liste déjà les épisodes mais sans date, comme Ahsoka saison 2 ou The Trauma Code) pouvait apparaître à tort dans "Continuer" sur Accueil, la fiche série et la Bibliothèque — corrigé aux trois endroits
+
 ## 0.29.0 — 8 octobre 2026
 ### ✨ Nouveautés
 - Bandes-annonces lisibles directement dans l'app, sur la fiche d'une série ou d'un film (section dédiée, sous "À propos") — fini la sortie vers YouTube
