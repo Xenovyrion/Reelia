@@ -1,5 +1,15 @@
 # Release notes
 
+## 0.29.0 — October 8, 2026
+### ✨ New
+- Trailers now play directly inside the app, right on a show's or movie's detail screen (its own section, under "About") — no more jumping out to YouTube
+- Search screen (add to library): a title's preview now uses the same layout as a tracked title's detail screen, trailer included
+- Changing the language in Profil now triggers a background refresh of already-tracked titles, so title/overview/episode names actually switch into the new language instead of staying frozen in the old one
+- Profil tab: Settings reorganized into clear sections (Account, Library, Preferences, Notifications, API Key, Updates) with visual separation, instead of a list with no real hierarchy
+- Stats: the weekly/monthly/day-of-week charts are now scatter/dot plots, still tappable for the exact value
+### 🐛 Fixes
+- **Important**: a bug could silently reset a tracked title's status, personal rating, favorite flag, and even watched episodes during automatic background refreshes. This is fixed — if you noticed statuses or episodes seemingly "unchecking" themselves over the past few days, this was the cause
+
 ## 0.27.0 — October 7, 2026
 ### ✨ New
 - Search: new Sort button (separate from Filter) with 5 options — relevance, date (newest/oldest), rating, all-time popularity. Default: relevance in Title mode, all-time popularity in Actor/Actress mode

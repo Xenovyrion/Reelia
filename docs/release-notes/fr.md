@@ -1,5 +1,15 @@
 # Notes de version
 
+## 0.29.0 — 8 octobre 2026
+### ✨ Nouveautés
+- Bandes-annonces lisibles directement dans l'app, sur la fiche d'une série ou d'un film (section dédiée, sous "À propos") — fini la sortie vers YouTube
+- Écran Recherche (ajout bibliothèque) : l'aperçu d'un titre a désormais la même mise en page que la fiche détaillée d'un titre suivi, bande-annonce comprise
+- Changer la langue dans Profil déclenche maintenant un rafraîchissement en arrière-plan des titres déjà suivis, pour que titre/résumé/noms d'épisodes passent bien dans la nouvelle langue au lieu de rester figés dans l'ancienne
+- Onglet Profil : Réglages réorganisé en sections claires (Compte, Bibliothèque, Préférences, Notifications, Clé API, Mises à jour) séparées visuellement, au lieu d'une liste sans vraie hiérarchie
+- Stats : les graphiques hebdo/mensuel/jour de la semaine passent en nuage de points, toujours tapables pour voir la valeur exacte
+### 🐛 Corrections
+- **Important** : un bug pouvait réinitialiser silencieusement, lors des rafraîchissements automatiques en arrière-plan, le statut, la note personnelle, le favori et même les épisodes marqués comme vus d'un titre déjà suivi. C'est corrigé — si tu as remarqué des statuts ou des épisodes qui semblaient se "décocher" tout seuls ces derniers jours, c'était ce bug
+
 ## 0.27.0 — 7 octobre 2026
 ### ✨ Nouveautés
 - Recherche : nouveau bouton Trier (séparé du Filtrer) avec 5 options — pertinence, date (récent/ancien), note, popularité toutes périodes. Par défaut : pertinence en mode Titre, popularité toutes périodes en mode Acteur/Actrice
