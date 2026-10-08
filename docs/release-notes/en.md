@@ -1,5 +1,15 @@
 # Release notes
 
+## 0.32.0 — October 8, 2026
+### ✨ New
+- Stats: chart points and the line connecting them are now perfectly aligned (a slight visual offset fixed), and no longer overflow the chart box when a value is 0
+- Home: the Agenda entry point is now more visible — a proper "Agenda" button instead of a bare arrow
+- Library and Search: the initial load now shows an animated preview of the upcoming layout instead of a plain spinner
+- Clearer empty states (Home, Library, Search, Agenda, Stats): an icon now accompanies the message instead of plain text alone
+- General visual consistency refined (theme, spacing, pickers) — groundwork that sets up future screens, not very visible day-to-day
+### 🐛 Fixes
+- Accessibility: a poster's favorite badge and the release notes' expand/collapse button now correctly announce their state to screen readers
+
 ## 0.30.0 — October 8, 2026
 ### ✨ New
 - Library: new original-language filter, same as on the Search screen (a new field stored per tracked title, backfilled gradually on the next refresh — no impact on titles already tracked)

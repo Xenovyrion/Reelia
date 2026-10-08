@@ -1,5 +1,15 @@
 # Notes de version
 
+## 0.32.0 — 8 octobre 2026
+### ✨ Nouveautés
+- Stats : les points des graphiques et la ligne qui les relie sont maintenant parfaitement alignés (léger décalage visuel corrigé), et ne débordent plus du cadre quand une valeur est à zéro
+- Accueil : accès à l'Agenda plus visible — bouton "Agenda" à la place d'une simple flèche
+- Bibliothèque et Recherche : le chargement initial affiche maintenant un aperçu animé de la mise en page à venir, à la place d'un simple rond de chargement
+- États vides plus clairs (Accueil, Bibliothèque, Recherche, Agenda, Stats) : une icône accompagne maintenant le message, plutôt qu'un texte seul
+- Cohérence visuelle générale affinée (thème, espacements, sélecteurs) — travail de fond qui prépare les prochains écrans, peu visible au quotidien
+### 🐛 Corrections
+- Accessibilité : le badge favori sur une affiche et le bouton replier/déplier des notes de version annoncent maintenant correctement leur état pour les lecteurs d'écran
+
 ## 0.30.0 — 8 octobre 2026
 ### ✨ Nouveautés
 - Bibliothèque : nouveau filtre par langue originale, comme sur l'écran Recherche (donnée stockée pour chaque titre suivi, backfillée progressivement au prochain rafraîchissement — aucun impact sur les titres déjà suivis)
