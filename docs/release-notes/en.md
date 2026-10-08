@@ -1,5 +1,13 @@
 # Release notes
 
+## 0.33.0 — October 8, 2026
+### 🐛 Fixes
+- **Important — sync reliability**: in some cases, one device's sync push could overwrite the cloud copy of a season's "watched" episodes that another device hadn't locally loaded yet, which could then disappear after syncing. Fixed: sync now only adds/updates fields, never replaces the whole document
+- An announced-but-not-yet-aired episode can no longer show up wrongly checked as "watched" — a fix that self-applies automatically if an episode had ever ended up in that state
+- An ongoing show you're fully caught up on (next episode not out yet): the progress ring/bar now reads 100%, instead of a percentage that looked stuck below it
+- An upcoming episode's detail sheet now shows "Airs today/tomorrow/in N days" instead of a bare date when no summary is available yet
+- A TMDB rating with no votes yet no longer displays as a fake "0.0/10" on detail and preview screens
+
 ## 0.32.0 — October 8, 2026
 ### ✨ New
 - Stats: chart points and the line connecting them are now perfectly aligned (a slight visual offset fixed), and no longer overflow the chart box when a value is 0

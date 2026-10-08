@@ -1,5 +1,13 @@
 # Notes de version
 
+## 0.33.0 — 8 octobre 2026
+### 🐛 Corrections
+- **Important — fiabilité de la synchro** : dans certains cas, un appareil pouvait écraser en ligne les épisodes "vus" d'une saison pas encore chargée localement sur un autre appareil, qui pouvaient alors disparaître après synchro. Corrigé : la synchro ne fait plus qu'ajouter/mettre à jour, jamais remplacer tout le document
+- Un épisode annoncé mais pas encore diffusé ne peut plus apparaître coché "vu" par erreur — un correctif qui s'applique automatiquement si jamais un épisode s'était retrouvé dans cet état
+- Série en cours mais déjà entièrement rattrapée (prochain épisode pas encore sorti) : l'anneau/barre de progression affiche maintenant 100%, au lieu d'un pourcentage qui semblait coincé en dessous
+- Fiche d'un épisode à venir : affiche maintenant "Diffusion aujourd'hui/demain/dans N jours" plutôt qu'une simple date isolée quand aucun résumé n'est encore disponible
+- Une note TMDB non encore attribuée (0 vote) ne s'affiche plus comme une fausse note de "0,0/10" sur les fiches et aperçus
+
 ## 0.32.0 — 8 octobre 2026
 ### ✨ Nouveautés
 - Stats : les points des graphiques et la ligne qui les relie sont maintenant parfaitement alignés (léger décalage visuel corrigé), et ne débordent plus du cadre quand une valeur est à zéro
