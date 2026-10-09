@@ -1,5 +1,16 @@
 # Release notes
 
+## 0.39.0 — October 9, 2026
+### ✨ New
+- A show's personal rating is now set per episode (episode detail sheet) — the season's and the
+  show's overall rating now display automatically as an average, no separate input needed
+- Library: the text search field now has its own dedicated bar (search icon), with title
+  suggestions appearing as you type
+### 🔧 Improvements
+- Episode detail: the free-text "My thoughts" field has been removed, replaced by the star rating
+### 🐛 Fixes
+- Library export/import: a show's/movie's original language wasn't included in the backup
+
 ## 0.38.0 — October 9, 2026
 ### ✨ New
 - You can now rate movies directly (5 stars, half-star steps) and shows season by season from the

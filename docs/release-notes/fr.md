@@ -1,5 +1,18 @@
 # Notes de version
 
+## 0.39.0 — 9 octobre 2026
+### ✨ Nouveautés
+- La note personnelle d'une série se saisit maintenant par épisode (fiche épisode) — la note de
+  la saison et la note globale de la série s'affichent automatiquement en moyenne, sans avoir à
+  les saisir séparément
+- Bibliothèque : le champ de recherche texte a sa propre barre dédiée (icône loupe), avec des
+  suggestions de titres qui s'affichent au fur et à mesure de la saisie
+### 🔧 Améliorations
+- Fiche épisode : le champ "Mon avis" (texte libre) a été retiré, remplacé par la note en étoiles
+### 🐛 Corrections
+- Export/import de bibliothèque : la langue d'origine d'une série/d'un film n'était pas incluse
+  dans la sauvegarde
+
 ## 0.38.0 — 9 octobre 2026
 ### ✨ Nouveautés
 - Possibilité de noter les films directement (5 étoiles, demi-étoiles) et les séries saison par
