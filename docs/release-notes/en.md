@@ -1,5 +1,13 @@
 # Release notes
 
+## 0.35.0 — October 9, 2026
+### ✨ New
+- Episode detail sheet: new "My thoughts" field to jot down free-text notes on an episode —
+  synced across devices and included in library backups
+### 🐛 Fixes
+- Release notes: opening/closing a version now animates smoothly instead of popping instantly,
+  which used to clash with the tap ripple
+
 ## 0.34.0 — October 9, 2026
 ### ✨ New
 - Library: an ongoing show you're fully caught up on (nothing new to watch right now) no longer

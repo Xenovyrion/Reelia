@@ -1,5 +1,13 @@
 # Notes de version
 
+## 0.35.0 — 9 octobre 2026
+### ✨ Nouveautés
+- Fiche épisode : nouveau champ "Mon avis" pour noter librement ses impressions sur un épisode —
+  synchronisé entre appareils et inclus dans la sauvegarde de bibliothèque
+### 🐛 Corrections
+- Notes de version : l'ouverture/fermeture d'une version se fait maintenant avec une animation
+  fluide, au lieu d'un affichage instantané qui tranchait avec l'effet de toucher
+
 ## 0.34.0 — 9 octobre 2026
 ### ✨ Nouveautés
 - Bibliothèque : une série en cours mais entièrement rattrapée (rien de nouveau à regarder pour
