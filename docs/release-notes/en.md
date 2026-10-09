@@ -1,5 +1,10 @@
 # Release notes
 
+## 0.36.0 — October 9, 2026
+### ✨ New
+- Stats: new "My Year" card opening a "Wrapped"-style yearly recap — episodes and movies
+  watched, hours watched, and favorite genres, navigable year by year
+
 ## 0.35.0 — October 9, 2026
 ### ✨ New
 - Episode detail sheet: new "My thoughts" field to jot down free-text notes on an episode —

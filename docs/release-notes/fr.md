@@ -1,5 +1,10 @@
 # Notes de version
 
+## 0.36.0 — 9 octobre 2026
+### ✨ Nouveautés
+- Stats : nouvelle carte "Mon année" ouvrant un récap annuel façon "Wrapped" — épisodes et films
+  vus, heures regardées et genres préférés, navigable d'une année à l'autre
+
 ## 0.35.0 — 9 octobre 2026
 ### ✨ Nouveautés
 - Fiche épisode : nouveau champ "Mon avis" pour noter librement ses impressions sur un épisode —
