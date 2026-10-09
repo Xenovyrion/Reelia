@@ -1,5 +1,10 @@
 # Notes de version
 
+## 0.40.0 — 9 octobre 2026
+### 🐛 Corrections
+- Notes de version : les entrées un peu longues s'affichaient tronquées à leur première phrase —
+  corrigé, c'était un bug d'affichage, pas une erreur de rédaction
+
 ## 0.39.0 — 9 octobre 2026
 ### ✨ Nouveautés
 - La note personnelle d'une série se saisit maintenant par épisode (fiche épisode) — la note de

@@ -1,5 +1,10 @@
 # Release notes
 
+## 0.40.0 — October 9, 2026
+### 🐛 Fixes
+- Release notes: longer entries showed only their first sentence, cut off — fixed, this was a
+  display bug, not a writing mistake
+
 ## 0.39.0 — October 9, 2026
 ### ✨ New
 - A show's personal rating is now set per episode (episode detail sheet) — the season's and the
