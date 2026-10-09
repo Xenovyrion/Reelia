@@ -1,5 +1,16 @@
 # Release notes
 
+## 0.34.0 — October 9, 2026
+### ✨ New
+- Library: an ongoing show you're fully caught up on (nothing new to watch right now) no longer
+  stays listed under "Watching". If the next episode already has a known air date, it now only
+  shows up in the "Upcoming" carousel; otherwise it moves to a new "Up to date" section
+- Library and Search: the Filter icon now switches color and shows a badge with the number of
+  active filters as soon as at least one is selected, so it's clear at a glance whether filters
+  are applied
+- Search (add to library) and Library's local search: the number of results found is now shown
+  while searching
+
 ## 0.33.0 — October 8, 2026
 ### 🐛 Fixes
 - **Important — sync reliability**: in some cases, one device's sync push could overwrite the cloud copy of a season's "watched" episodes that another device hadn't locally loaded yet, which could then disappear after syncing. Fixed: sync now only adds/updates fields, never replaces the whole document

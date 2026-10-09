@@ -1,5 +1,17 @@
 # Notes de version
 
+## 0.34.0 — 9 octobre 2026
+### ✨ Nouveautés
+- Bibliothèque : une série en cours mais entièrement rattrapée (rien de nouveau à regarder pour
+  l'instant) ne reste plus affichée dans "En cours". Si la suite a déjà une date connue, elle ne
+  figure plus que dans le carrousel "À venir" ; sinon, elle bascule dans une nouvelle section
+  "À jour"
+- Bibliothèque et Recherche : l'icône Filtrer change de couleur et affiche un badge avec le
+  nombre de filtres actifs dès qu'au moins un est sélectionné, pour qu'on sache d'un coup d'œil
+  si des filtres sont appliqués
+- Recherche (ajout bibliothèque) et recherche dans la Bibliothèque : le nombre de résultats
+  trouvés s'affiche maintenant pendant une recherche
+
 ## 0.33.0 — 8 octobre 2026
 ### 🐛 Corrections
 - **Important — fiabilité de la synchro** : dans certains cas, un appareil pouvait écraser en ligne les épisodes "vus" d'une saison pas encore chargée localement sur un autre appareil, qui pouvaient alors disparaître après synchro. Corrigé : la synchro ne fait plus qu'ajouter/mettre à jour, jamais remplacer tout le document
