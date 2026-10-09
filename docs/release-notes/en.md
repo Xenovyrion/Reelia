@@ -1,5 +1,10 @@
 # Release notes
 
+## 0.37.0 — October 9, 2026
+### 🔒 Security
+- Code obfuscation (R8) enabled on published builds — makes the APK significantly harder to
+  decompile or copy
+
 ## 0.36.0 — October 9, 2026
 ### ✨ New
 - Stats: new "My Year" card opening a "Wrapped"-style yearly recap — episodes and movies

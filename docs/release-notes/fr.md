@@ -1,5 +1,10 @@
 # Notes de version
 
+## 0.37.0 — 9 octobre 2026
+### 🔒 Sécurité
+- Obfuscation du code (R8) activée sur les builds publiés — rend l'APK nettement plus difficile
+  à décompiler ou copier
+
 ## 0.36.0 — 9 octobre 2026
 ### ✨ Nouveautés
 - Stats : nouvelle carte "Mon année" ouvrant un récap annuel façon "Wrapped" — épisodes et films
