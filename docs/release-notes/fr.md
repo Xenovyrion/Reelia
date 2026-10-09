@@ -1,5 +1,14 @@
 # Notes de version
 
+## 0.38.0 — 9 octobre 2026
+### ✨ Nouveautés
+- Possibilité de noter les films directement (5 étoiles, demi-étoiles) et les séries saison par
+  saison depuis la fiche série — la note globale d'une série s'affiche désormais comme la moyenne
+  de ses saisons notées
+### 🐛 Corrections
+- Bibliothèque et Recherche : le champ de recherche texte (dans le panneau Filtrer) effaçait
+  parfois la lettre qu'on venait de taper
+
 ## 0.37.0 — 9 octobre 2026
 ### 🔒 Sécurité
 - Obfuscation du code (R8) activée sur les builds publiés — rend l'APK nettement plus difficile

@@ -1,5 +1,13 @@
 # Release notes
 
+## 0.38.0 — October 9, 2026
+### ✨ New
+- You can now rate movies directly (5 stars, half-star steps) and shows season by season from the
+  show detail screen — a show's overall rating is now shown as the average of its rated seasons
+### 🐛 Fixes
+- Library and Search: the text search field (in the Filter sheet) would sometimes erase the
+  letter you just typed
+
 ## 0.37.0 — October 9, 2026
 ### 🔒 Security
 - Code obfuscation (R8) enabled on published builds — makes the APK significantly harder to
