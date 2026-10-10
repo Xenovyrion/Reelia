@@ -1,5 +1,17 @@
 # Release notes
 
+## 0.41.0 - October 10, 2026
+### ✨ New
+- Settings screen split from Profile (reachable via the gear icon) - Profile now only holds
+  account identity and stats
+- Voice search (mic button) on the Library and Search screens' search fields
+- Back up your library to Google Drive (a hidden app-specific folder), alongside the existing
+  manual JSON export/import
+### 🔧 Improvements
+- Library: quick search suggestions now respect your chosen grid/list view mode
+- Release notes: versions shipped the same day are now grouped under one date instead of
+  repeating it for each
+
 ## 0.40.0 - October 9, 2026
 ### 🐛 Fixes
 - Release notes: longer entries showed only their first sentence, cut off - fixed, this was a

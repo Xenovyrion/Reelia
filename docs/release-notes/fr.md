@@ -1,5 +1,19 @@
 # Notes de version
 
+## 0.41.0 - 10 octobre 2026
+### ✨ Nouveautés
+- Écran Réglages séparé du Profil (accessible via l'icône engrenage) - le Profil ne garde que
+  l'identité du compte et les statistiques
+- Recherche vocale (bouton micro) sur les champs de recherche de la Bibliothèque et de l'écran
+  Recherche
+- Sauvegarde de la bibliothèque sur Google Drive (dossier caché propre à l'app), en plus de
+  l'export/import JSON manuel existant
+### 🔧 Améliorations
+- Bibliothèque : les suggestions de recherche rapide respectent maintenant le mode d'affichage
+  grille/liste choisi
+- Notes de version : les versions publiées le même jour sont désormais regroupées sous une seule
+  date au lieu de la répéter pour chacune
+
 ## 0.40.0 - 9 octobre 2026
 ### 🐛 Corrections
 - Notes de version : les entrées un peu longues s'affichaient tronquées à leur première phrase -
