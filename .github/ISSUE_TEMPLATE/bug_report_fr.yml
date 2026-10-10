@@ -1,4 +1,4 @@
-name: Signaler un bug
+name: "🐛 Signaler un bug (Français)"
 description: Quelque chose ne fonctionne pas comme prévu dans Reelia
 labels: ["bug"]
 body:

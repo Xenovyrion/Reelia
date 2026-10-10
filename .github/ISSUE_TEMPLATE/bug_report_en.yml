@@ -1,0 +1,38 @@
+name: "🐛 Report a bug (English)"
+description: Something isn't working as expected in Reelia
+labels: ["bug"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What happens? What did you expect instead?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: How can this be reproduced?
+      placeholder: |
+        1. Open ...
+        2. Tap ...
+        3. ...
+  - type: input
+    id: version
+    attributes:
+      label: App version
+      description: Visible in Profile > Settings > Updates
+      placeholder: "e.g. 0.43.0"
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: Device and Android version
+      placeholder: "e.g. Pixel 8, Android 15"
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots
+      description: If relevant, drag one or more images here

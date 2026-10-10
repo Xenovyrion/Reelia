@@ -1,0 +1,20 @@
+name: "💡 Request a feature (English)"
+description: An idea or improvement for Reelia
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What need or problem would this solve?
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Suggested solution
+      description: How do you imagine this would work?
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Have you tried something else, or seen this elsewhere?
