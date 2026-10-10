@@ -1,5 +1,11 @@
 # Notes de version
 
+## 0.44.0 - 10 octobre 2026
+### ✨ Nouveautés
+- Nouvel écran "Aide et retours" (Réglages) pour signaler un bug ou proposer une idée
+  directement depuis l'appli - ouvre une page GitHub pré-remplie (titre, description, et
+  version/appareil pour un bug) à relire avant d'envoyer
+
 ## 0.43.0 - 10 octobre 2026
 ### 🐛 Corrections
 - Sauvegarde sur Google Drive : la sauvegarde manuelle échouait systématiquement avec une erreur

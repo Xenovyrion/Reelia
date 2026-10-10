@@ -1,5 +1,11 @@
 # Release notes
 
+## 0.44.0 - October 10, 2026
+### ✨ New
+- New "Help & feedback" screen (Settings) to report a bug or suggest an idea directly from
+  the app - opens a pre-filled GitHub page (title, description, and version/device for a
+  bug) for you to review before sending
+
 ## 0.43.0 - October 10, 2026
 ### 🐛 Fixes
 - Google Drive backup: manually backing up consistently failed with a technical error
