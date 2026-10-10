@@ -1,6 +1,6 @@
-# reelia-content
+# Reelia
 
-Public content and release channel for [Reelia](https://github.com/Xenovyrion/Reelia), a
+Public content and release channel for [Reelia](https://github.com/Xenovyrion/Reelia-source), a
 personal Android series/movie tracking app. The app's source code lives in a private repo;
 this one stays public so a few things keep working without authentication:
 
