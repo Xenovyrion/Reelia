@@ -1,16 +1,28 @@
-# Reelia
+<p align="center">
+  <img src="logo.png" alt="Logo Reelia" width="120" height="120" />
+</p>
 
-*[Read in English](README.en.md)*
+<h1 align="center">Reelia</h1>
 
-![Dernière version](https://img.shields.io/github/v/release/Xenovyrion/Reelia?label=derni%C3%A8re%20version&color=8C8FFF)
-![Licence](https://img.shields.io/badge/licence-propri%C3%A9taire-lightgrey)
-![Android](https://img.shields.io/badge/Android-8.0%2B-3DDC84?logo=android&logoColor=white)
+<p align="center"><em>Suivi de séries et films, épisode par épisode</em></p>
+
+<p align="center"><em><a href="README.en.md">Read in English</a></em></p>
+
+<p align="center">
+  <img src="https://img.shields.io/github/v/release/Xenovyrion/Reelia?label=derni%C3%A8re%20version&color=8C8FFF" alt="Dernière version" />
+  <img src="https://img.shields.io/badge/licence-propri%C3%A9taire-lightgrey" alt="Licence" />
+  <img src="https://img.shields.io/badge/Android-8.0%2B-3DDC84?logo=android&logoColor=white" alt="Android 8.0+" />
+</p>
+
+## ✨ Présentation
 
 Reelia est une application Android personnelle de suivi de séries et films, pensée comme un
 remplaçant de TV Time : une bibliothèque unique, synchronisée entre tous tes appareils, pour
 suivre ce que tu regardes épisode par épisode plutôt que série par série.
 
-## Fonctionnalités
+Développée par une seule personne, sans publicité ni collecte de données à des fins commerciales.
+
+## 🎬 Fonctionnalités
 
 - **Suivi épisode par épisode**, avec rattrapage automatique des épisodes précédents non vus
   d'une même saison.
@@ -33,32 +45,29 @@ Toutes les informations sur les séries et films (affiches, résumés, casting, 
 [TMDB](https://www.themoviedb.org/), une base de données communautaire gratuite. *This product
 uses the TMDB API but is not endorsed or certified by TMDB.*
 
-Reelia est développée par une seule personne, sans publicité ni collecte de données à des fins
-commerciales.
-
-## Télécharger
+## 📲 Télécharger
 
 Dernière version APK sur la [page Releases](https://github.com/Xenovyrion/Reelia/releases)
 (Android 8.0 ou plus récent). L'app détecte elle-même les mises à jour suivantes, pas besoin de
 revenir ici à chaque fois.
 
-## Guide d'utilisation
+## 📖 Guide d'utilisation
 
 Toute la documentation (premiers pas, fonctionnement de la synchro, confidentialité) est sur le
 [wiki GitHub](https://github.com/Xenovyrion/Reelia/wiki) - le même contenu que l'écran Aide de
 l'application.
 
-## Signaler un bug ou proposer une idée
+## 🐛 Signaler un bug ou proposer une idée
 
 Directement depuis l'app (Réglages > Aide et retours), ou via une
 [nouvelle issue](https://github.com/Xenovyrion/Reelia/issues/new/choose).
 
-## Confidentialité
+## 🔒 Confidentialité
 
 Voir [`docs/privacy-policy/fr.md`](docs/privacy-policy/fr.md)
 ([`en`](docs/privacy-policy/en.md)).
 
-## Structure de ce dépôt
+## 🗂️ Structure de ce dépôt
 
 Ce dépôt héberge le contenu public de l'app et son canal de distribution ; le code source vit
 dans un dépôt séparé, privé. Celui-ci reste public pour que certaines choses continuent de
