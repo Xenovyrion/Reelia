@@ -1,5 +1,10 @@
 # Notes de version
 
+## 0.43.0 - 10 octobre 2026
+### 🐛 Corrections
+- Sauvegarde sur Google Drive : la sauvegarde manuelle échouait systématiquement avec une erreur
+  technique ("Échec Google Drive : unexpected header : content-type") - corrigé
+
 ## 0.42.0 - 10 octobre 2026
 ### 🔧 Améliorations
 - Écran "Sauvegarde" renommé "Sauvegarde et restauration", pour refléter qu'il permet aussi de

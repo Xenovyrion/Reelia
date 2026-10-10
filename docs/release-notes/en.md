@@ -1,5 +1,10 @@
 # Release notes
 
+## 0.43.0 - October 10, 2026
+### 🐛 Fixes
+- Google Drive backup: manually backing up consistently failed with a technical error
+  ("Google Drive failed: unexpected header: content-type") - fixed
+
 ## 0.42.0 - October 10, 2026
 ### 🔧 Improvements
 - "Backup" screen renamed "Backup & Restore", to reflect that it also handles restoring your
