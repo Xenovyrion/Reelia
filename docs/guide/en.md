@@ -1,14 +1,14 @@
-# User Guide — Reelia
+# User Guide - Reelia
 
 Reelia is a personal show/movie tracking app, designed as a TV Time replacement. This guide
 covers the parts that aren't obvious from daily use.
 
 ## Getting started
 
-1. **TMDB API key** — Reelia uses [TMDB](https://www.themoviedb.org/) for all its info
+1. **TMDB API key** - Reelia uses [TMDB](https://www.themoviedb.org/) for all its info
    (posters, synopsis, episodes...). Create a free TMDB account, generate a v3 API key in
    your account settings, then paste it into **Settings** on first launch.
-2. **Reelia account** — an email/password (or Google) account lets you sync your library
+2. **Reelia account** - an email/password (or Google) account lets you sync your library
    across multiple devices.
 
 ## How sync works
@@ -31,7 +31,7 @@ the sync and brings back everything already saved on Firebase.
 Home is a discovery hub, not a second library: it surfaces continue watching, suggestions
 based on your favorites/recent additions, trending titles, and the latest movie/show
 releases (via TMDB, free). A title tapped from Home isn't necessarily already in your
-library — it opens its TMDB page with a button to add it, same as from Search.
+library - it opens its TMDB page with a button to add it, same as from Search.
 
 ## Marking episodes as watched
 
@@ -47,7 +47,7 @@ library — it opens its TMDB page with a button to add it, same as from Search.
 ## Privacy
 
 - Your library and API key are stored in a Firestore document accessible only by your
-  account (Firebase security rules — no one else can access it, even with the project URL).
+  account (Firebase security rules - no one else can access it, even with the project URL).
 - Your password is never stored by the app: it's sent to Firebase Authentication, which
   handles it end-to-end (the app never sees it in clear text after entry).
 
@@ -55,7 +55,7 @@ library — it opens its TMDB page with a button to add it, same as from Search.
 
 Each color has a fixed meaning throughout the app:
 
-- **Teal** — watching / completed
-- **Amber** — planned / on hold
-- **Periwinkle** — want to watch later
-- **Coral** — favorite (independent of watch status)
+- **Teal** - watching / completed
+- **Amber** - planned / on hold
+- **Periwinkle** - want to watch later
+- **Coral** - favorite (independent of watch status)

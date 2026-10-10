@@ -1,4 +1,4 @@
-# Guide d'utilisation — Reelia
+# Guide d'utilisation - Reelia
 
 Reelia est une application personnelle de suivi de séries et films, pensée comme un
 remplaçant de TV Time. Ce guide explique les points qui ne sont pas évidents en utilisant
@@ -6,11 +6,11 @@ l'app au quotidien.
 
 ## Premiers pas
 
-1. **Clé API TMDB** — Reelia utilise [TMDB](https://www.themoviedb.org/) pour toutes les
+1. **Clé API TMDB** - Reelia utilise [TMDB](https://www.themoviedb.org/) pour toutes les
    infos (posters, synopsis, épisodes...). Crée un compte gratuit sur TMDB, génère une clé
    API v3 dans les paramètres de ton compte, puis colle-la dans **Réglages** au premier
    lancement.
-2. **Compte Reelia** — un compte email/mot de passe (ou Google) te permet de synchroniser
+2. **Compte Reelia** - un compte email/mot de passe (ou Google) te permet de synchroniser
    ta bibliothèque entre plusieurs appareils.
 
 ## Comment fonctionne la synchronisation
@@ -34,7 +34,7 @@ ce qui était déjà enregistré sur Firebase.
 L'accueil est un hub de découverte, pas une deuxième bibliothèque : il propose la suite
 de visionnage, des suggestions basées sur tes favoris/ajouts récents, les tendances du
 moment, et les derniers films/séries sortis (via TMDB, gratuit). Un titre cliqué depuis
-l'accueil n'est pas forcément déjà dans ta bibliothèque — ça ouvre sa fiche TMDB avec un
+l'accueil n'est pas forcément déjà dans ta bibliothèque - ça ouvre sa fiche TMDB avec un
 bouton pour l'ajouter, comme depuis Rechercher.
 
 ## Marquer des épisodes comme vus
@@ -51,7 +51,7 @@ bouton pour l'ajouter, comme depuis Rechercher.
 ## Confidentialité
 
 - Ta bibliothèque et ta clé API sont stockées dans un document Firestore accessible
-  uniquement par ton compte (règles de sécurité Firebase — personne d'autre ne peut y
+  uniquement par ton compte (règles de sécurité Firebase - personne d'autre ne peut y
   accéder, même avec l'URL du projet).
 - Ton mot de passe n'est jamais stocké par l'app : il est envoyé à Firebase Authentication,
   qui le gère de bout en bout (l'app ne le voit jamais en clair après la saisie).
@@ -60,7 +60,7 @@ bouton pour l'ajouter, comme depuis Rechercher.
 
 Chaque couleur a un sens fixe dans toute l'app :
 
-- **Sarcelle (teal)** — en cours de visionnage / terminé
-- **Ambre** — planifié / en pause
-- **Périwinkle** — à voir plus tard
-- **Corail** — favori (indépendant du statut de visionnage)
+- **Sarcelle (teal)** - en cours de visionnage / terminé
+- **Ambre** - planifié / en pause
+- **Périwinkle** - à voir plus tard
+- **Corail** - favori (indépendant du statut de visionnage)
