@@ -1,0 +1,20 @@
+name: Proposer une fonctionnalité
+description: Une idée ou une amélioration pour Reelia
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Quel besoin ou problème ça résoudrait ?
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Idée de solution
+      description: Comment imagines-tu que ça fonctionnerait ?
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives envisagées
+      description: As-tu essayé autre chose, ou vu cette fonctionnalité ailleurs ?

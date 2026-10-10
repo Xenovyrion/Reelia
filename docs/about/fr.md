@@ -16,5 +16,7 @@ Reelia te permet de suivre ce que tu regardes : séries et films, épisode par �
 ## D'où viennent les données ?
 Toutes les informations sur les séries et films (affiches, résumés, casting, notes) proviennent de TMDB (The Movie Database), une base de données communautaire gratuite.
 
+*This product uses the TMDB API but is not endorsed or certified by TMDB.*
+
 ## Un projet personnel
 Reelia est développée par une seule personne, pour un usage personnel, sans publicité ni collecte de données à des fins commerciales.

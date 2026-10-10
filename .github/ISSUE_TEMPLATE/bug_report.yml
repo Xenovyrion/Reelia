@@ -1,0 +1,38 @@
+name: Signaler un bug
+description: Quelque chose ne fonctionne pas comme prévu dans Reelia
+labels: ["bug"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Que se passe-t-il ? Qu'attendais-tu à la place ?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Étapes pour reproduire
+      description: Comment peut-on reproduire le problème ?
+      placeholder: |
+        1. Ouvrir ...
+        2. Appuyer sur ...
+        3. ...
+  - type: input
+    id: version
+    attributes:
+      label: Version de l'application
+      description: Visible dans Profil > Réglages > Mises à jour
+      placeholder: "ex. 0.43.0"
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: Appareil et version d'Android
+      placeholder: "ex. Pixel 8, Android 15"
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Captures d'écran
+      description: Si pertinent, glisse une ou plusieurs images ici

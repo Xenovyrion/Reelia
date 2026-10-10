@@ -16,5 +16,7 @@ Reelia lets you track what you watch: shows and movies, episode by episode, with
 ## Where does the data come from?
 All show and movie information (posters, synopses, cast, ratings) comes from TMDB (The Movie Database), a free community-driven database.
 
+*This product uses the TMDB API but is not endorsed or certified by TMDB.*
+
 ## A personal project
 Reelia is built by a single person, for personal use, with no ads and no data collection for commercial purposes.
