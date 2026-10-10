@@ -1,5 +1,12 @@
 # Release notes
 
+## 0.42.0 - October 10, 2026
+### 🔧 Improvements
+- "Backup" screen renamed "Backup & Restore", to reflect that it also handles restoring your
+  library, not just exporting it
+- Sections reordered: manual export and restore now grouped together first, Google Drive
+  separated below
+
 ## 0.41.0 - October 10, 2026
 ### ✨ New
 - Settings screen split from Profile (reachable via the gear icon) - Profile now only holds

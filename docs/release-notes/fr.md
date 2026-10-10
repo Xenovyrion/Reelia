@@ -1,5 +1,12 @@
 # Notes de version
 
+## 0.42.0 - 10 octobre 2026
+### 🔧 Améliorations
+- Écran "Sauvegarde" renommé "Sauvegarde et restauration", pour refléter qu'il permet aussi de
+  restaurer sa bibliothèque, pas seulement de l'exporter
+- Sections réorganisées : export et restauration manuelle regroupés en premier, Google Drive
+  séparé en dessous
+
 ## 0.41.0 - 10 octobre 2026
 ### ✨ Nouveautés
 - Écran Réglages séparé du Profil (accessible via l'icône engrenage) - le Profil ne garde que
