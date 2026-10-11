@@ -1,5 +1,10 @@
 # Notes de version
 
+## 0.50.0 - 11 octobre 2026
+### 🔧 Améliorations
+- Travail de fond sur les briques techniques du projet (Gradle, Android Gradle Plugin, Hilt,
+  Compose, Java) - sans impact visible au quotidien
+
 ## 0.49.0 - 11 octobre 2026
 ### ✨ Nouveautés
 - Nouvel écran "À propos" (icône Profil) : wiki/aide, notes de version, signalement de bug,

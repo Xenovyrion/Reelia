@@ -1,5 +1,10 @@
 # Release notes
 
+## 0.50.0 - October 11, 2026
+### 🔧 Improvements
+- Background work on the project's technical foundations (Gradle, Android Gradle Plugin, Hilt,
+  Compose, Java) - no visible day-to-day impact
+
 ## 0.49.0 - October 11, 2026
 ### ✨ New
 - New "About" screen (Profile icon): wiki/help, release notes, bug reporting, legal info (privacy
