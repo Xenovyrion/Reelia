@@ -34,8 +34,8 @@ Développée par une seule personne, sans publicité ni collecte de données à 
   mensuels, récap annuel façon "Wrapped".
 - **Notes personnelles** par épisode et par film, avec moyennes saison/série calculées
   automatiquement.
-- **Recherche par titre ou par acteur/actrice**, avec filtres (genre, année, note, langue) et
-  bandes-annonces lisibles directement dans l'app.
+- **Recherche par titre ou par acteur/actrice**, avec filtres (genre, année, note, langue),
+  saisie vocale et bandes-annonces lisibles directement dans l'app.
 - **Import depuis TV Time** de ta bibliothèque existante.
 - **Synchronisation multi-appareils** via un compte (email/mot de passe ou Google).
 - **Sauvegarde manuelle ou sur Google Drive**, en plus de la synchro cloud.

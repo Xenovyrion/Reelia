@@ -34,8 +34,8 @@ Built by a single person, with no ads and no data collection for commercial purp
   "Wrapped"-style yearly recap.
 - **Personal ratings** per episode and per movie, with season/show averages computed
   automatically.
-- **Search by title or by actor/actress**, with filters (genre, year, rating, language) and
-  trailers playable directly in the app.
+- **Search by title or by actor/actress**, with filters (genre, year, rating, language), voice
+  input and trailers playable directly in the app.
 - **Import from TV Time** of your existing library.
 - **Multi-device sync** via an account (email/password or Google).
 - **Manual or Google Drive backup**, in addition to cloud sync.
