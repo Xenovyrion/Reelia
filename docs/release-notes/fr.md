@@ -1,5 +1,13 @@
 # Notes de version
 
+## 0.46.0 - 11 octobre 2026
+### 🐛 Corrections
+- Correctif plus complet du bug de synchro de la 0.45.0 : dans certains cas (notamment après une
+  déconnexion/reconnexion ayant vidé la bibliothèque locale), l'historique "vu" d'une série
+  pouvait s'effondrer à un seul épisode au lieu d'être restauré en entier depuis le cloud. La
+  cause réelle - plusieurs opérations internes qui se marchaient dessus sur la même série au même
+  moment - est maintenant corrigée à la racine
+
 ## 0.45.0 - 11 octobre 2026
 ### 🐛 Corrections
 - Dans de rares cas, une déconnexion/reconnexion ayant vidé la bibliothèque locale (par exemple

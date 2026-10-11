@@ -1,5 +1,13 @@
 # Release notes
 
+## 0.46.0 - October 11, 2026
+### 🐛 Fixes
+- A more complete fix for the 0.45.0 sync bug: in some cases (notably after a sign-out/sign-in
+  that cleared the local library), a show's watched-episode history could collapse down to a
+  single episode instead of being fully restored from the cloud. The real cause - several
+  internal operations stepping on each other for the same show at the same time - is now fixed
+  at the root
+
 ## 0.45.0 - October 11, 2026
 ### 🐛 Fixes
 - In rare cases, a sign-out/sign-in that cleared the local library (e.g. after deleting another
