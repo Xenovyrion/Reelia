@@ -1,5 +1,19 @@
 # Release notes
 
+## 0.45.0 - October 11, 2026
+### 🐛 Fixes
+- In rare cases, a sign-out/sign-in that cleared the local library (e.g. after deleting another
+  account) could leave a show or your stats looking incomplete - fixed, personal state (watched,
+  rating, favorite) is now always restored from the cloud
+### ✨ New
+- Forgot password on the login screen (sends a reset email)
+- Change password from Settings, for email/password accounts
+### 🔧 Improvements
+- The Help button (Profile) and "Learn more" (login) now open the GitHub wiki, with more complete
+  content that's easier to keep up to date
+- Behind-the-scenes work on the project's technical foundations (Gradle, Android Gradle Plugin,
+  Kotlin, Compose, Room...) - no visible day-to-day impact
+
 ## 0.44.0 - October 10, 2026
 ### ✨ New
 - New "Help & feedback" screen (Settings) to report a bug or suggest an idea directly from

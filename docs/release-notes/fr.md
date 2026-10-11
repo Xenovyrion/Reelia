@@ -1,5 +1,20 @@
 # Notes de version
 
+## 0.45.0 - 11 octobre 2026
+### 🐛 Corrections
+- Dans de rares cas, une déconnexion/reconnexion ayant vidé la bibliothèque locale (par exemple
+  après la suppression d'un autre compte) pouvait laisser une série ou les statistiques
+  incomplètes - corrigé, l'état personnel (vu, note, favori) est maintenant toujours restauré
+  depuis le cloud
+### ✨ Nouveautés
+- Mot de passe oublié sur l'écran de connexion (envoi d'un email de réinitialisation)
+- Changement de mot de passe depuis Réglages, pour les comptes email/mot de passe
+### 🔧 Améliorations
+- Le bouton Aide (Profil) et "En savoir plus" (connexion) ouvrent le wiki GitHub, avec un contenu
+  plus complet et mis à jour plus facilement
+- Travail de fond sur les briques techniques du projet (Gradle, Android Gradle Plugin, Kotlin,
+  Compose, Room...) - sans impact visible au quotidien
+
 ## 0.44.0 - 10 octobre 2026
 ### ✨ Nouveautés
 - Nouvel écran "Aide et retours" (Réglages) pour signaler un bug ou proposer une idée
