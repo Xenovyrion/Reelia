@@ -1,5 +1,13 @@
 # Release notes
 
+## 0.47.0 - October 11, 2026
+### 🐛 Fixes
+- A possible crash during a large library resync (e.g. after a sign-in that cleared the local
+  library) - fixed
+### 🔧 Improvements
+- A progress bar now shows during a large library resync, so the app no longer looks stuck or
+  empty while it catches up in the background
+
 ## 0.46.0 - October 11, 2026
 ### 🐛 Fixes
 - A more complete fix for the 0.45.0 sync bug: in some cases (notably after a sign-out/sign-in

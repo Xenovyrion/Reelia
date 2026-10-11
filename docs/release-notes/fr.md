@@ -1,5 +1,14 @@
 # Notes de version
 
+## 0.47.0 - 11 octobre 2026
+### 🐛 Corrections
+- Plantage possible pendant une resynchronisation importante de la bibliothèque (ex. après une
+  reconnexion ayant vidé la bibliothèque locale) - corrigé
+### 🔧 Améliorations
+- Une barre de progression s'affiche désormais pendant une resynchronisation importante de la
+  bibliothèque, pour ne plus avoir l'impression que l'appli est bloquée ou vide pendant que ça se
+  met à jour en arrière-plan
+
 ## 0.46.0 - 11 octobre 2026
 ### 🐛 Corrections
 - Correctif plus complet du bug de synchro de la 0.45.0 : dans certains cas (notamment après une
