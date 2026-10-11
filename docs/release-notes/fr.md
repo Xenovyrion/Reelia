@@ -1,5 +1,20 @@
 # Notes de version
 
+## 0.49.0 - 11 octobre 2026
+### ✨ Nouveautés
+- Nouvel écran "À propos" (icône Profil) : wiki/aide, notes de version, signalement de bug,
+  informations légales (confidentialité, licence) et attribution TMDB, désormais regroupés au même
+  endroit - Réglages ne garde que le configurable
+- Détection automatique d'une version canary disponible : une bannière discrète propose de la
+  télécharger directement si tu en utilises une
+### 🔧 Améliorations
+- La barre de progression de resynchronisation s'affiche maintenant en bas de l'écran (ne cache
+  plus le message de bienvenue) et est animée plus fluide
+- Le bouton "Signaler un bug" (Réglages) a reçu le même style que les autres
+- Le message après une demande de réinitialisation de mot de passe rappelle de vérifier le dossier
+  spam
+- La recherche dans la bibliothèque n'affiche plus certains résultats en double
+
 ## 0.48.0 - 11 octobre 2026
 ### 🔧 Améliorations
 - Barre de progression de resynchronisation redessinée, plus fine et avec le pourcentage affiché

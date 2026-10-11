@@ -1,5 +1,19 @@
 # Release notes
 
+## 0.49.0 - October 11, 2026
+### ✨ New
+- New "About" screen (Profile icon): wiki/help, release notes, bug reporting, legal info (privacy
+  policy, license) and TMDB attribution are now all in one place - Settings only keeps what's
+  configurable
+- Automatic canary-build detection: a subtle banner offers a direct download if a newer canary
+  build is published and you're already using one
+### 🔧 Improvements
+- The resync progress bar now sits at the bottom of the screen (no longer covers the welcome
+  message) and animates more smoothly
+- The "Report a bug" button (Settings) now matches the other buttons' style
+- The message after requesting a password reset now reminds you to check your spam folder
+- Library search no longer shows some results twice
+
 ## 0.48.0 - October 11, 2026
 ### 🔧 Improvements
 - Redesigned the resync progress bar - thinner, with a percentage readout
