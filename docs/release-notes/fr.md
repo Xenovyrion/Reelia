@@ -1,5 +1,12 @@
 # Notes de version
 
+## 0.48.0 - 11 octobre 2026
+### 🔧 Améliorations
+- Barre de progression de resynchronisation redessinée, plus fine et avec le pourcentage affiché
+- Certains boutons (changer le mot de passe, importer TV Time, sauvegarde et restauration,
+  export de bibliothèque, sauvegarde Google Drive) sont maintenant plus visibles au lieu de
+  rester gris
+
 ## 0.47.0 - 11 octobre 2026
 ### 🐛 Corrections
 - Plantage possible pendant une resynchronisation importante de la bibliothèque (ex. après une

@@ -1,5 +1,11 @@
 # Release notes
 
+## 0.48.0 - October 11, 2026
+### 🔧 Improvements
+- Redesigned the resync progress bar - thinner, with a percentage readout
+- Some buttons (change password, TV Time import, backup & restore, library export, Google Drive
+  backup) are now more visible instead of staying gray
+
 ## 0.47.0 - October 11, 2026
 ### 🐛 Fixes
 - A possible crash during a large library resync (e.g. after a sign-in that cleared the local
