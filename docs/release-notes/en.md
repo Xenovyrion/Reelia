@@ -1,5 +1,14 @@
 # Release notes
 
+## 0.51.0 - October 14, 2026
+### 🔒 Security
+- The TMDB API key is now encrypted on-device (Android Keystore) instead of being stored in
+  plain text - nothing to redo on your end, the migration is automatic
+### ✨ New
+- Automatic, configurable Google Drive backup (Settings > Library > Google Drive): frequency
+  (1/3/7/14 days) and how many backups to keep (3/5/7/14/30), on top of the existing manual
+  backup/restore buttons
+
 ## 0.50.0 - October 11, 2026
 ### 🔧 Improvements
 - Background work on the project's technical foundations (Gradle, Android Gradle Plugin, Hilt,

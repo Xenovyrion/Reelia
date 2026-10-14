@@ -1,5 +1,14 @@
 # Notes de version
 
+## 0.51.0 - 14 octobre 2026
+### 🔒 Sécurité
+- La clé API TMDB est désormais chiffrée sur l'appareil (Android Keystore) au lieu d'être stockée
+  en clair - rien à refaire de ton côté, la migration est automatique
+### ✨ Nouveautés
+- Sauvegarde Google Drive automatique et configurable (Réglages > Bibliothèque > Google Drive) :
+  fréquence (1/3/7/14 jours) et nombre de sauvegardes à conserver (3/5/7/14/30), en complément des
+  boutons de sauvegarde/restauration manuels déjà existants
+
 ## 0.50.0 - 11 octobre 2026
 ### 🔧 Améliorations
 - Travail de fond sur les briques techniques du projet (Gradle, Android Gradle Plugin, Hilt,
