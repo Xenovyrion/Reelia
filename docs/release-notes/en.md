@@ -1,5 +1,12 @@
 # Release notes
 
+## 0.52.0 - October 14, 2026
+### 🔧 Improvements
+- All backup settings (manual export/import, automatic local backup, Google Drive) are now
+  grouped in the "Backup and restore" screen (Library), instead of being scattered between that
+  screen and Settings
+- Renamed "snapshot" to "backup" in the app's text, clearer for everyone
+
 ## 0.51.0 - October 14, 2026
 ### 🔒 Security
 - The TMDB API key is now encrypted on-device (Android Keystore) instead of being stored in

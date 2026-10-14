@@ -1,5 +1,12 @@
 # Notes de version
 
+## 0.52.0 - 14 octobre 2026
+### 🔧 Améliorations
+- Tous les réglages de sauvegarde (export/import manuel, sauvegarde locale automatique, Google
+  Drive) sont désormais regroupés dans l'écran "Sauvegarde et restauration" (Bibliothèque), au lieu
+  d'être éparpillés entre cet écran et Réglages
+- Renommage de "snapshot" en "sauvegarde" dans les textes de l'appli, plus clair pour tout le monde
+
 ## 0.51.0 - 14 octobre 2026
 ### 🔒 Sécurité
 - La clé API TMDB est désormais chiffrée sur l'appareil (Android Keystore) au lieu d'être stockée
