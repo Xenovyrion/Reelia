@@ -1,5 +1,11 @@
 # Release notes
 
+## 0.53.0 - October 15, 2026
+### 🐛 Fixes
+- Automatic backups (local and Google Drive) were re-running on every app launch instead of
+  respecting the frequency chosen in settings - fixed, the configured frequency is now actually
+  honored
+
 ## 0.52.0 - October 14, 2026
 ### 🔧 Improvements
 - All backup settings (manual export/import, automatic local backup, Google Drive) are now

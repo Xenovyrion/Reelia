@@ -1,5 +1,11 @@
 # Notes de version
 
+## 0.53.0 - 15 octobre 2026
+### 🐛 Correctifs
+- Les sauvegardes automatiques (locale et Google Drive) se relançaient à chaque ouverture de
+  l'app au lieu de respecter la fréquence choisie dans les réglages - corrigé, la fréquence
+  configurée est maintenant bien respectée
+
 ## 0.52.0 - 14 octobre 2026
 ### 🔧 Améliorations
 - Tous les réglages de sauvegarde (export/import manuel, sauvegarde locale automatique, Google
